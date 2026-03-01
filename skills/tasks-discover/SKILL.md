@@ -48,28 +48,22 @@ file."
 
 #### 2b. Recent code TODOs
 
-Grep for TODO/FIXME comments in source files:
+Grep for TODO/FIXME comments in `src/`:
 
 ```bash
 grep -rn "TODO\|FIXME" src/ --include="*.py" | head -30
 ```
 
-Adjust the path and file extension to match the project language.
 Distinguish long-standing tech debt from recently added items by
 checking `git log` for the lookback period.
 
 #### 2c. Slack DM reminders
 
-Search for bot-sent reminders using MCP Slack tools (read mode).
-
-**Configure your bot's user ID first** — find it in Slack app
-settings under "App credentials" → "Bot User OAuth Token" or by
-calling `auth.test` on the token. Store it in project memory or
-the plugin config.
+Search for bot-sent reminders using MCP Slack tools (read mode):
 
 ```
-slack_search_public_and_private
-  query: "from:<@YOUR_BOT_USER_ID> 🔖 after:LOOKBACK_DATE"
+mcp__claude_ai_Slack__slack_search_public_and_private
+  query: "from:<@U0AD92X4X1S> 🔖 after:LOOKBACK_DATE"
   include_bots: true
   sort: timestamp
   sort_dir: desc
@@ -80,7 +74,7 @@ The `🔖` emoji is the standard prefix from `dx:remind`.
 
 If no results with `🔖`, broaden to:
 ```
-from:<@YOUR_BOT_USER_ID> after:LOOKBACK_DATE defer OR TODO OR reminder
+from:<@U0AD92X4X1S> after:LOOKBACK_DATE defer OR TODO OR reminder
 ```
 
 #### 2d. Memory files
