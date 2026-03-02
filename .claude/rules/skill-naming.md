@@ -62,8 +62,32 @@ The `tasks-*` family uses shortened invocation names for ergonomics:
 Other skills use the full directory name: `dx:git-worktree`,
 `dx:skill-audit`, `dx:skill-create`.
 
+## Sub-Namespace Families
+
+Some skill families use a `dx:<family>:<skill>` double-colon format
+to group related skills by domain:
+
+| Directory             | Invocation name         |
+|-----------------------|-------------------------|
+| `ticket-from-commit/` | `dx:ticket:from-commit` |
+
+Use the double-colon format when a skill belongs to a domain family
+where future members are anticipated (e.g., `dx:ticket:create`,
+`dx:ticket:branch`). If a family has only one member and no planned
+additions, prefer the single-colon format for consistency.
+
+## Evolving Patterns
+
+When a PR introduces a new naming format variant (new separator,
+prefix, or sub-namespace), `skill-naming.md` must be updated in
+the same PR. Reviewers should flag the absence as WARNING.
+
+Skills with vague descriptions get skipped by the router — the
+`description:` field must explain when to trigger the skill.
+
 ## Rationale Summary
 
 - **Directory**: plain name → clean filesystem, no redundant prefix
 - **Invocation**: `dx:` prefix → namespace isolation at call time
 - **Abbreviations**: allowed for frequently-used skill families
+- **Sub-namespaces**: `dx:<family>:<skill>` for grouped families
