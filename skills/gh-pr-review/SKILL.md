@@ -90,7 +90,27 @@ Compose:
   ```
   ````
 
-### Step 7: Post Review to GitHub
+### Step 7: Hide Obsolete Review Summaries
+
+Before posting the new review, minimize previous Claude review
+summaries that are fully resolved (per `review-guidelines.md` step 6):
+
+1. Query review threads via GraphQL — check `isResolved` and group
+   by `pullRequestReview.databaseId`
+2. For each previous Claude review with a non-empty body:
+   - ALL threads resolved → minimize with `OUTDATED` classifier
+   - ANY thread unresolved → leave visible
+   - No inline threads (summary-only) → minimize
+3. Use `gh api graphql` with `minimizeComment` mutation:
+   ```graphql
+   mutation { minimizeComment(input: {
+     subjectId: "<review_node_id>", classifier: OUTDATED
+   }) { minimizedComment { isMinimized } } }
+   ```
+
+Skip this step on the first review (no previous summaries exist).
+
+### Step 8: Post Review to GitHub
 
 Use the Write tool to create the review JSON, then post via `gh api --input`:
 
@@ -124,7 +144,7 @@ gh api repos/{owner}/{repo}/pulls/{N}/reviews \
 - Include `commit_id` from the PR's latest commit
 - Inline comments must reference lines that exist in the PR diff
 
-### Step 8: Report to User
+### Step 9: Report to User
 
 Confirm what was posted:
 - Link to the review on GitHub
