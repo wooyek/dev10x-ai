@@ -70,6 +70,7 @@ The body should be **compact** to avoid cluttering Slack previews.
 1. A JTBD Job Story as the **first paragraph** (1-3 lines, see `git-jtbd.md`)
 2. `Fixes:` link at the end — either:
    - `Fixes: https://github.com/wooyek/dev10x-claude-plugin/issues/NUMBER`
+   - `Fixes: none — self-motivated refactor` (if no issue tracks this work)
 
 **Optional elements** (keep brief):
 - Compact commit list with links (one line per commit)
@@ -83,8 +84,8 @@ The body should be **compact** to avoid cluttering Slack previews.
 **When** reviewing PRs without automated checks, **I want to** have
 Claude review code quality, **so I can** catch issues before merging.
 
-[`b3a015a`](REPO_URL/pull/N/commits/HASH) ✨ GH-7 Enable code review
-[`fec4999`](REPO_URL/pull/N/commits/HASH) 📝 GH-7 Document review agents
+[`b3a015a`](REPO_URL/commit/HASH) ✨ GH-7 Enable code review
+[`fec4999`](REPO_URL/commit/HASH) 📝 GH-7 Document review agents
 
 Fixes: https://github.com/wooyek/dev10x-claude-plugin/issues/7
 ```

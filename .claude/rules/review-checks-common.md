@@ -49,6 +49,9 @@ Before raising any of these, **verify actual code**:
 11. **`allowed-tools ~/.claude/skills/` paths**: a skill's own installed
     script (`Bash(~/.claude/skills/<name>/scripts/...)`) is the correct path
     — do NOT flag as a user-specific path violation.
+12. **`/pull/new/` commit links**: pre-creation artifacts generated before the
+    PR number is assigned — flag as RECOMMENDED to update to
+    `/pull/<number>/commits/<sha>`, not REQUIRED.
 
 ## Parameter Change Analysis
 
