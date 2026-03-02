@@ -9,6 +9,11 @@
             "type": "command",
             "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/session-start-tmpdir.sh",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/session-start-git-aliases.sh",
+            "timeout": 5
           }
         ]
       }
