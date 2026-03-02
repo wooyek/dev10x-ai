@@ -78,8 +78,8 @@ jobs:
               .github/workflows/**) → .claude/agents/reviewer-infra.md
             - Documentation (docs/**/*.md, .claude/**/*.md, CLAUDE.md)
               → .claude/agents/reviewer-docs.md
-            - Rules/agents (.claude/rules/**, .claude/agents/**)
-              → .claude/agents/reviewer-rules-maintenance.md
+            - Rules/agents (.claude/rules/**, .claude/agents/**,
+              references/**) → .claude/agents/reviewer-rules-maintenance.md
             - Python/shell code (**/*.py, **/*.sh, not covered above)
               → .claude/agents/reviewer-generic.md
 

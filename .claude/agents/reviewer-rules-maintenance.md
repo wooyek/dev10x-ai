@@ -6,7 +6,7 @@ budget compliance and structural consistency.
 ## Trigger
 
 Files matching: `.claude/rules/**/*.md`, `.claude/agents/**/*.md`,
-`CLAUDE.md`
+`references/**/*.md`, `CLAUDE.md`
 
 ## Required Reading
 
