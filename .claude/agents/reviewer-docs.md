@@ -6,7 +6,11 @@ with the codebase.
 ## Trigger
 
 Files matching: `docs/**/*.md`, `.claude/**/*.md`, `CLAUDE.md`,
-`README.md`
+`README.md`. Note: `.claude-plugin/` JSON manifests are out of scope.
+
+## Required Reading
+
+- `.claude/rules/review-checks-common.md` — CLI verification, false positives
 
 ## Checklist
 
@@ -34,6 +38,8 @@ Files matching: `docs/**/*.md`, `.claude/**/*.md`, `CLAUDE.md`,
 4. **Skill name accuracy** — when README or docs reference skill
    invocation names, verify each exists in `skills/*/SKILL.md`
    `name:` fields using Grep
+5. **CLI command verification** — verify README commands appear in
+   CLAUDE.md Development section or are known Claude Code built-ins
 
 ## Output Format
 
