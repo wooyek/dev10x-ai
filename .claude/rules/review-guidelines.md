@@ -42,9 +42,13 @@ scope.
 ### Hygiene Review Severity Labels
 
 - **REQUIRED**: Breaks tooling (missing gitmoji, no `Fixes:` link,
-  fixup commits remaining)
+  fixup commits remaining). Advisory — does not auto-gate merge,
+  but authors should address or justify before merging.
 - **RECOMMENDED**: Style preferences (compact commit list, ticket ID
   in title, JTBD wording)
+
+When no tracked issue exists, `Fixes: none — self-motivated refactor`
+is an accepted `Fixes:` value.
 
 ## Scope & Noise
 
