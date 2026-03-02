@@ -44,5 +44,5 @@ Use `TaskUpdate` with the task ID and new `status`:
 
 ## Used By
 
-- `dx:defer` — when user picks "keep for this session"
+- `dx:park` — when user picks "keep for this session"
 - `dx:wrap-up` — Phase 1 auto-scan reads the task list

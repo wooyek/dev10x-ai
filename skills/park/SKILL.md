@@ -1,16 +1,16 @@
 ---
-name: dx:defer
+name: dx:park
 description: >
   Use when a task should be saved for later — so deferred items land
   where they will actually be rediscovered (PR, ticket, code, Slack,
   or project TODO) instead of being forgotten.
 user-invocable: true
-invocation-name: dx:defer
+invocation-name: dx:park
 ---
 
-# dx:defer — Smart Deferral Router
+# dx:park — Smart Deferral Router
 
-**Announce:** "Using dx:defer to save this item for later."
+**Announce:** "Using dx:park to save this item for later."
 
 ## Overview
 
@@ -23,7 +23,7 @@ invoked standalone or called by `dx:wrap-up` for each open loop.
 
 Accept the item to defer. This is either:
 - Passed from `dx:wrap-up` (structured)
-- Provided by user directly: `/dx:defer "item description"`
+- Provided by user directly: `/dx:park "item description"`
 
 ### 2. Detect context
 
@@ -75,13 +75,13 @@ For each selected target:
 
 | Target | Action |
 |--------|--------|
-| `.claude/TODO.md` | Invoke `dx:todo` (project file mode) |
-| Slack DM | Invoke `dx:remind` |
+| `.claude/TODO.md` | Invoke `dx:park-todo` (project file mode) |
+| Slack DM | Invoke `dx:park-remind` |
 | Create issue | Ask user which tracker (Linear, GitHub Issues, Jira, etc.) then create the issue with the deferred item as description |
 | Issue tracker comment | Post comment via the appropriate tracker MCP or CLI tool |
 | PR comment | Post as PR comment (simple format) |
 | PR session bookmark | Post as PR comment with rich metadata (see PR Bookmark Format below) |
-| Inline TODO/FIXME | Invoke `dx:todo` (inline mode) — ask user for file path if not provided |
+| Inline TODO/FIXME | Invoke `dx:park-todo` (inline mode) — ask user for file path if not provided |
 | Keep in session | Invoke `dx:tasks` to create a TaskCreate entry |
 
 ### 5. Confirm

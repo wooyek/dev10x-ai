@@ -1,15 +1,15 @@
 ---
-name: dx:discover
+name: dx:park-discover
 description: >
   Use when checking for deferred items across all sources — so nothing
   is missed when starting a session or picking up where you left off.
 user-invocable: true
-invocation-name: dx:discover
+invocation-name: dx:park-discover
 ---
 
-# dx:discover — Gather Deferred Items
+# dx:park-discover — Gather Deferred Items
 
-**Announce:** "Using dx:discover to check all deferral sources."
+**Announce:** "Using dx:park-discover to check all deferral sources."
 
 ## When to Use
 
@@ -19,8 +19,8 @@ Invoke this skill when the user asks about existing deferred items:
 - "what do we have to pick up"
 - "check for deferrals"
 
-Do NOT use for writing new deferrals — use `dx:todo` or
-`dx:defer` instead.
+Do NOT use for writing new deferrals — use `dx:park-todo` or
+`dx:park` instead.
 
 ## Workflow
 
@@ -70,7 +70,7 @@ mcp__claude_ai_Slack__slack_search_public_and_private
   limit: 20
 ```
 
-The `🔖` emoji is the standard prefix from `dx:remind`.
+The `🔖` emoji is the standard prefix from `dx:park-remind`.
 
 If no results with `🔖`, broaden to:
 ```
@@ -155,5 +155,5 @@ If deferred items were found, ask:
 
 ## Used By
 
-- `dx:todo` — redirects here when user asks to review/check
+- `dx:park-todo` — redirects here when user asks to review/check
   deferrals instead of write them

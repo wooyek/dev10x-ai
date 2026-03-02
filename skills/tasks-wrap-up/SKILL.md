@@ -96,13 +96,13 @@ For each open loop, present a choice using `AskUserQuestion`:
 
 **Options:**
 - **Finish now** — keep as session task, continue working
-- **Defer** — invoke `dx:defer` for target selection
+- **Defer** — invoke `dx:park` for target selection
 - **Drop** — remove, no longer needed
 
 If the user picks "Finish now" for any item, pause the wrap-up and
 let them work. When they return, resume from where they left off.
 
-If the user picks "Defer", invoke `dx:defer` with the item.
+If the user picks "Defer", invoke `dx:park` with the item.
 
 If the user picks "Drop", mark the task as completed via `TaskUpdate`
 and move on.
@@ -110,7 +110,7 @@ and move on.
 ## PR Reminder Format
 
 When deferring an item by posting a reminder comment on an open PR,
-use this standard prefix so `dx:discover` §2f can discover it:
+use this standard prefix so `dx:park-discover` §2f can discover it:
 
 ```markdown
 🔖 **Session bookmark**
@@ -126,7 +126,7 @@ PR author to pick up in a future session.
 ```
 
 The `🔖 **Session bookmark**` prefix on the first line is required —
-`dx:discover` scans for this exact pattern when checking open
+`dx:park-discover` scans for this exact pattern when checking open
 PRs for deferred work.
 
 ## Phase 4: Summary
