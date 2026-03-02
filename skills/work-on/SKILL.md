@@ -232,7 +232,7 @@ Run the task directly. Common detailed tasks delegate to skills:
 
 | Task | Delegated to |
 |------|-------------|
-| Set up workspace (branch) | `ticket:branch` skill (external) |
+| Set up workspace (branch) | `dx:ticket-branch` skill |
 | Set up workspace (worktree) | `dx:git-worktree` skill |
 | Draft Job Story | `dx:jtbd` skill (attended mode) |
 | Update ticket status | Linear MCP (see references/team-info.md) |
@@ -286,10 +286,10 @@ Run them in parallel?
 - If in worktree (`.git` is file): offer "Work here" or
   "New worktree"
 - For worktree path: compute branch name, invoke `dx:git-worktree`
-  skill. Do NOT invoke `ticket:branch` first — `dx:git-worktree`
-  creates the branch internally; calling `ticket:branch` first
+  skill. Do NOT invoke `dx:ticket-branch` first — `dx:git-worktree`
+  creates the branch internally; calling `dx:ticket-branch` first
   creates a duplicate branch in the main repo.
-- For work-here path: delegate to `ticket:branch` skill
+- For work-here path: delegate to `dx:ticket-branch` skill
 
 **Job Story drafting:**
 - MUST invoke `Skill(dx:jtbd)` explicitly — never draft inline

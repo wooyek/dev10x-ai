@@ -58,6 +58,10 @@ Skills use family prefixes for tab-completion discoverability:
 | `park-discover/`  | `dx:park-discover`   |
 | `session-tasks/`  | `dx:session-tasks`   |
 | `session-wrap-up/`| `dx:wrap-up`         |
+| `ticket-branch/`  | `dx:ticket-branch`   |
+| `ticket-create/`  | `dx:ticket-create`   |
+| `ticket-jtbd/`    | `dx:ticket-jtbd`     |
+| `ticket-scope/`   | `dx:ticket-scope`    |
 
 Other skills use the full directory name: `dx:git-worktree`,
 `dx:skill-audit`, `dx:skill-create`.
