@@ -31,7 +31,9 @@ Files matching: `skills/**`
    executable; `git ls-files --stage <path>` mode `100644` = not executable.
 6. **Error handling** — scripts use `set -e`; handle missing dependencies
 7. **No hardcoded paths** — scripts should use relative paths or
-   environment variables, not absolute user-specific paths
+   environment variables, not absolute user-specific paths.
+   Applies equally to shell code blocks in SKILL.md workflow
+   descriptions and `references/` documents, not just deployed scripts.
 8. **`allowed-tools` coverage** — if SKILL.md calls external scripts,
    front matter must declare matching `Bash(...)` entries (missing entries
    cause per-invocation approval prompts). Plugin-distributed scripts must
@@ -65,7 +67,8 @@ Files matching: `skills/**`
      table (e.g., "Aliases Configured"), cross-check documented values
      against the script; mismatches are a reliable bug signal.
 11. **Embedded shell templates** — POSIX-compatible, no silent `|| true`,
-    `<>` placeholder markers for user-replaceable values.
+    `<>` placeholder markers for user-replaceable values. Flag `{VALUE}`
+    curly-brace notation — ambiguous with shell variable expansion.
 11b. **Embedded Python templates** — Python code blocks inside SKILL.md that
      are generated into scripts must pass the same quality checks:
      - No duplicate imports (ruff F811)
