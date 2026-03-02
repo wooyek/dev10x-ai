@@ -12,7 +12,8 @@ development workflows.
 | `hooks/`         | PreToolUse / PostToolUse hooks             |
 | `bin/`           | Helper scripts (release, CI)               |
 | `.claude-plugin/`| Plugin manifest (`plugin.json`)            |
-| `.claude/rules/` | Machine-readable rules for reviews         |
+| `references/`    | Shared docs (git, review, JTBD guides)     |
+| `.claude/rules/` | Always-loaded essentials + path-scoped rules |
 | `.claude/agents/`| Domain-specific reviewer agent specs       |
 
 ## Development
@@ -43,7 +44,7 @@ claude plugin validate         # validate plugin structure
 - **Branch naming**: `username/TICKET-ID/short-description`
 - **Commit format**: `<gitmoji> <TICKET-ID> <JTBD outcome>`
 - **Commit titles**: outcome-focused — "Enable X" not "Add X"
-- See `.claude/rules/git-commits.md`, `git-pr.md`, `git-jtbd.md`
+- See `references/git-commits.md`, `git-pr.md`, `git-jtbd.md`
 
 ## Code Review
 

@@ -1,9 +1,7 @@
 # Claude Rules & Agents Directory
 
 Machine-readable rules and agent specifications that Claude follows
-during code reviews and interactive assistance. These are **not**
-user-facing documentation — they are operational instructions consumed
-by Claude Code workflows.
+during code reviews and interactive assistance.
 
 ## Architecture
 
@@ -13,40 +11,47 @@ The code review system uses a **multi-agent architecture**:
    files and dispatches to domain-specific agents
 2. **Agent specs** (`.claude/agents/`) — focused checklists for each
    review domain
-3. **Rules** (`.claude/rules/`) — detailed guidelines referenced by
-   agents on demand
-4. **Cross-cutting checks** (`review-checks-common.md`) — universal
-   checks applied to all domains
+3. **Rules** (`.claude/rules/`) — always-loaded essentials and
+   path-scoped rules
+4. **References** (`references/`) — detailed guides loaded on-demand
+   by skills and CI workflows
 
-## Rules Files
+## Loading Strategy
 
-| File                      | Purpose                                   |
-|---------------------------|-------------------------------------------|
-| `git-commits.md`          | Commit format, branches, gitmoji          |
-| `git-pr.md`               | PR format, grooming, review feedback      |
-| `git-jtbd.md`             | Job Story format, principles, examples    |
-| `github-workflows.md`     | GitHub Actions workflow maintenance rules |
-| `review-checks-common.md` | Cross-cutting: false positives, verification |
-| `review-guidelines.md`    | How to review: workflow, summaries, threads |
-| `skill-naming.md`         | Skill directory and invocation naming     |
+| Location | When loaded | Content |
+|----------|------------|---------|
+| `.claude/rules/essentials.md` | Every session | Universal conventions (~36 lines) |
+| `.claude/rules/skill-naming.md` | When editing `skills/**` | Skill naming conventions |
+| `.claude/rules/github-workflows.md` | When editing `.github/workflows/**` | GitHub Actions patterns |
+| `references/*.md` | On-demand by skills/CI | Detailed git, review, JTBD guides |
+
+## Reference Documents (`references/`)
+
+| File | Topic | Loaded by |
+|------|-------|-----------|
+| `git-commits.md` | Commit format, gitmoji, atomic commits | `dx:git-commit` skill, PR hygiene CI |
+| `git-pr.md` | PR format, grooming, review feedback | `dx:gh-pr-create` skill, PR hygiene CI |
+| `git-jtbd.md` | Job Story format, principles, examples | `dx:jtbd` skill, PR hygiene CI |
+| `review-guidelines.md` | Review workflow, threads, summaries | `dx:gh-pr-review` skill, code review CI |
+| `review-checks-common.md` | False positives, verification | Review agent specs, code review CI |
 
 ## Agent Specs (`.claude/agents/`)
 
-| File                            | Trigger                             | Rules Referenced             |
-|---------------------------------|-------------------------------------|------------------------------|
-| `reviewer-generic.md`           | `**/*.py`, `**/*.sh`                | `review-checks-common.md`    |
-| `reviewer-infra.md`             | `Makefile`, `**/*.sh`, `bin/**`, `.github/workflows/**` | `github-workflows.md` |
-| `reviewer-docs.md`              | `docs/**`, `.claude/**/*.md`        | (self-contained)             |
-| `reviewer-rules-maintenance.md` | `.claude/rules/**`, `.claude/agents/**` | (self-contained)         |
-| `reviewer-skill.md`             | `skills/**`                         | `skill-naming.md`            |
+| File | Trigger | References |
+|------|---------|------------|
+| `reviewer-generic.md` | `**/*.py`, `**/*.sh` | `references/review-checks-common.md` |
+| `reviewer-infra.md` | `Makefile`, `**/*.sh`, `bin/**`, `.github/workflows/**` | `references/review-checks-common.md` |
+| `reviewer-docs.md` | `docs/**`, `.claude/**/*.md` | `references/review-checks-common.md` |
+| `reviewer-rules-maintenance.md` | `.claude/rules/**`, `.claude/agents/**` | (self-contained) |
+| `reviewer-skill.md` | `skills/**` | `.claude/rules/skill-naming.md` |
 
 ## Size Budgets
 
-| File type                | Max lines |
-|--------------------------|-----------|
-| Rule files               | 200       |
-| Agent specs              | 50        |
-| `review-checks-common.md`| 100      |
-| `CLAUDE.md`              | 100       |
+| File type | Max lines |
+|-----------|-----------|
+| Rule files | 200 |
+| Agent specs | 50 |
+| Reference docs | 200 |
+| `CLAUDE.md` | 100 |
 
 When a file reaches 80% of its budget, plan a split.
