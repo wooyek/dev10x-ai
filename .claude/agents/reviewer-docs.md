@@ -40,6 +40,8 @@ Files matching: `docs/**/*.md`, `.claude/**/*.md`, `CLAUDE.md`,
    `name:` fields using Grep
 5. **CLI command verification** — verify README commands appear in
    CLAUDE.md Development section or are known Claude Code built-ins
+6. **PR hygiene** — do NOT flag `Fixes:` links, PR title format, or
+   commit message structure; these are `pr-hygiene-review` scope
 
 ## Output Format
 
