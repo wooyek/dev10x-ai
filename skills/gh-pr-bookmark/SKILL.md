@@ -14,7 +14,7 @@ invocation-name: dx:gh-pr-bookmark
 
 ## Overview
 
-Thin wrapper around `dx:defer` that pre-selects the **PR session
+Thin wrapper around `dx:park` that pre-selects the **PR session
 bookmark** target. Use at end-of-session or when pausing work on a PR.
 
 ## Workflow
@@ -27,18 +27,18 @@ gh pr list --head "$(git branch --show-current)" --state open --json number,url 
 
 If no open PR found, tell the user and stop.
 
-### 2. Delegate to dx:defer
+### 2. Delegate to dx:park
 
-Invoke `dx:defer` with:
+Invoke `dx:park` with:
 - **Item**: the user's description (or "Continuing PR review" if none)
 - **Pre-selected target**: `PR session bookmark`
 
 Skip the target selection prompt — this skill always routes to the
-PR session bookmark target in `dx:defer`.
+PR session bookmark target in `dx:park`.
 
 ### 3. Done
 
-`dx:defer` handles data gathering, composition, posting, and
+`dx:park` handles data gathering, composition, posting, and
 confirmation.
 
 ## Usage
@@ -50,5 +50,5 @@ confirmation.
 
 ## See Also
 
-- `dx:defer` — full deferral router with all targets
+- `dx:park` — full deferral router with all targets
 - `dx:wrap-up` — end-of-session orchestrator that may call this
