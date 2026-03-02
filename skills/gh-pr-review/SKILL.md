@@ -114,7 +114,12 @@ Skip this step on the first review (no previous summaries exist).
 
 Use the Write tool to create the review JSON, then post via `gh api --input`:
 
-1. Write the review payload to `/tmp/claude/pr-review-{N}.json`:
+1. Create a unique temp file:
+```bash
+${CLAUDE_PLUGIN_ROOT}/bin/mktmp.sh git pr-review .json
+```
+
+2. Write the review payload to the unique path:
 ```json
 {
   "event": "COMMENT",
@@ -130,10 +135,10 @@ Use the Write tool to create the review JSON, then post via `gh api --input`:
 }
 ```
 
-2. Post the review:
+3. Post the review:
 ```bash
 gh api repos/{owner}/{repo}/pulls/{N}/reviews \
-  --method POST --input /tmp/claude/pr-review-{N}.json
+  --method POST --input <unique-path>
 ```
 
 > **Do not use `cat <<'JSON' | gh api --input -`** — the heredoc is

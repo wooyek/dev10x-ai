@@ -27,6 +27,10 @@ supervisor-approved work plan. It runs in four phases:
 The supervisor sees progress via `TaskList`, can approve/edit
 the plan, and can pause at any point with `dx:wrap-up`.
 
+**Rule: ALWAYS use `TaskCreate`** — even for single-task work.
+The visible task list is the supervisor's interface for adding
+new tasks mid-session. Skipping it removes that capability.
+
 ## Prerequisites
 
 | Capability | Required for | Tool |
@@ -135,8 +139,13 @@ severity if applicable, related context from Slack/Sentry]
 
 ## Phase 3: Plan (Lightweight Steps)
 
-Build a **high-level task list** using `TaskCreate`. The plan is
-adapted based on what was gathered — not a fixed template.
+Build a **high-level task list** using `TaskCreate`. **This is
+mandatory** — always create at least one task, even when the work
+seems trivial. The task list is the supervisor's interface for
+tracking progress and adding new tasks during the session.
+
+The plan is adapted based on what was gathered — not a fixed
+template.
 
 ### Step Types
 
@@ -331,6 +340,9 @@ and `dx:defer` infrastructure.
 
 ## Important Notes
 
+- **Always create tasks via `TaskCreate`** — never skip the task
+  list, even for single-step work. The supervisor uses it to add
+  new tasks mid-session.
 - Always verify ticket exists before creating a branch
 - If ticket is "Done"/"Canceled" (Linear) or "closed" (GitHub),
   warn the user before proceeding
