@@ -21,8 +21,8 @@ Universal rules for every session. Detailed guides live in
 
 ## PR Body
 
-- First paragraph: JTBD Job Story (`**When** ... **wants to** ...
-  **so** ... **can** ...`)
+- First paragraph: JTBD Job Story (`**When** ... **I want to** ...
+  **so I can** ...`)
 - Last line: `Fixes:` link (issue URL or `none — self-motivated`)
 - Full guide: `references/git-pr.md`
 

@@ -20,6 +20,15 @@ Examples:
 - `janusz/GH-7/add-semver-releases`
 - `maria/GH-42/fix-hook-validation`
 
+### Bot-Generated Branches
+
+The Claude GitHub app generates branches in the `claude/<description>-<random>`
+pattern (e.g., `claude/review-readme-updates-QoauK`). These branches:
+
+- Skip the `username/TICKET-ID/` prefix — random suffix is TICKET-ID exempt
+- Must still target `develop` (not `main`) for feature PRs
+- PRs from these branches must follow the standard body format (JTBD, Fixes:)
+
 ## Commit Message Format
 
 ### Structure

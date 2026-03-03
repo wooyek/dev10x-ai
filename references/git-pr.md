@@ -79,6 +79,17 @@ The body should be **compact** to avoid cluttering Slack previews.
 **Do not include in body**:
 - Detailed summaries (put in first comment)
 - Implementation checklists (put in first comment)
+- Bare `https://claude.ai/code/session_*` URLs — these are
+  internal debug artifacts, not meaningful documentation; remove
+  before publishing the PR
+
+### Hygiene Reviewer — REQUIRED Label
+
+Violations marked **REQUIRED** by the hygiene reviewer are advisory:
+no automated merge gate enforces them.
+Fix REQUIRED violations before requesting human review or merging.
+Bot-authored PRs (`claude/<name>` branches) should address REQUIRED
+violations in a follow-up commit before promotion to human review.
 
 ```markdown
 **When** reviewing PRs without automated checks, **I want to** have
