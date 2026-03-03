@@ -225,7 +225,7 @@ def main() -> None:
             seg_parts = shlex.split(seg)
         except ValueError:
             seg_parts = []
-        if seg_parts and _is_psql_binary(seg_parts[0]):
+        if any(_is_psql_binary(t) for t in seg_parts):
             _block(
                 "BLOCKED: Direct psql calls are not allowed. "
                 f"Use {DB_SH_PATH} instead.\n"
