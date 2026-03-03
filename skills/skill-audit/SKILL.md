@@ -15,6 +15,10 @@ allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/skill-audit/scripts/:*)
   - Bash(ls -t ~/.claude/:*)
   - Bash(wc:*)
+  - Bash(git config --list:*)
+  - Bash(ls ~/.config/fish/functions/:*)
+  - Bash(ls ~/.claude/tools/:*)
+  - Bash(find ~/.claude/skills:*)
 ---
 
 # Skill Audit
