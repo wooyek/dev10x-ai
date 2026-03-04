@@ -1,29 +1,29 @@
 ---
-name: dx:park
+name: dev10x:park
 description: >
   Use when a task should be saved for later — so deferred items land
   where they will actually be rediscovered (PR, ticket, code, Slack,
   or project TODO) instead of being forgotten.
 user-invocable: true
-invocation-name: dx:park
+invocation-name: dev10x:park
 ---
 
-# dx:park — Smart Deferral Router
+# dev10x:park — Smart Deferral Router
 
-**Announce:** "Using dx:park to save this item for later."
+**Announce:** "Using dev10x:park to save this item for later."
 
 ## Overview
 
 Route a single deferred item to the right discovery context. Can be
-invoked standalone or called by `dx:wrap-up` for each open loop.
+invoked standalone or called by `dev10x:wrap-up` for each open loop.
 
 ## Workflow
 
 ### 1. Receive item
 
 Accept the item to defer. This is either:
-- Passed from `dx:wrap-up` (structured)
-- Provided by user directly: `/dx:park "item description"`
+- Passed from `dev10x:wrap-up` (structured)
+- Provided by user directly: `/dev10x:park "item description"`
 
 ### 2. Detect context
 
@@ -75,14 +75,14 @@ For each selected target:
 
 | Target | Action |
 |--------|--------|
-| `.claude/TODO.md` | Invoke `dx:park-todo` (project file mode) |
-| Slack DM | Invoke `dx:park-remind` |
+| `.claude/TODO.md` | Invoke `dev10x:park-todo` (project file mode) |
+| Slack DM | Invoke `dev10x:park-remind` |
 | Create issue | Ask user which tracker (Linear, GitHub Issues, Jira, etc.) then create the issue with the deferred item as description |
 | Issue tracker comment | Post comment via the appropriate tracker MCP or CLI tool |
 | PR comment | Post as PR comment (simple format) |
 | PR session bookmark | Post as PR comment with rich metadata (see PR Bookmark Format below) |
-| Inline TODO/FIXME | Invoke `dx:park-todo` (inline mode) — ask user for file path if not provided |
-| Keep in session | Invoke `dx:session-tasks` to create a TaskCreate entry |
+| Inline TODO/FIXME | Invoke `dev10x:park-todo` (inline mode) — ask user for file path if not provided |
+| Keep in session | Invoke `dev10x:session-tasks` to create a TaskCreate entry |
 
 ### 5. Confirm
 
@@ -188,5 +188,5 @@ gh api repos/{owner}/{repo}/issues/comments/{comment_id} \
 
 ## Used By
 
-- `dx:wrap-up` — Phase 3 calls this for each deferred item
-- `dx:gh-pr-bookmark` — thin wrapper that pre-selects PR session bookmark target
+- `dev10x:wrap-up` — Phase 3 calls this for each deferred item
+- `dev10x:gh-pr-bookmark` — thin wrapper that pre-selects PR session bookmark target

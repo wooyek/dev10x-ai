@@ -1,5 +1,5 @@
 ---
-name: dx:db
+name: dev10x:db
 description: >
   Safe database query planning for Claude Code. When querying any
   database, ensures schema-first construction and read-only safety
@@ -21,7 +21,7 @@ Before writing any SQL:
    the schema files or run an `information_schema` query
 3. **Write the query** — use verified names only
 4. **Execute via engine-specific skill** — delegate to the appropriate
-   execution layer (e.g., `dx:db-psql` for PostgreSQL)
+   execution layer (e.g., `dev10x:db-psql` for PostgreSQL)
 
 ## Context Discovery Convention
 
@@ -91,4 +91,4 @@ SELECT ... FROM ... WHERE ...
 This skill provides query planning guidance. Actual query execution
 is handled by engine-specific skills:
 
-- **`dx:db-psql`** — PostgreSQL via psql wrapper
+- **`dev10x:db-psql`** — PostgreSQL via psql wrapper

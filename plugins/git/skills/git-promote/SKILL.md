@@ -1,8 +1,8 @@
 ---
-name: dx:git-promote
+name: dev10x:git-promote
 description: Convert existing git commits into issue tracker tickets with proper branch management and commit message formatting. Use this skill when a commit needs to be retroactively tracked, typically for tech debt fixes, bug fixes, or improvements that were committed without a ticket reference. This skill automates the workflow of creating the ticket, branching, cherry-picking, and updating the commit message.
 user-invocable: true
-invocation-name: dx:git-promote
+invocation-name: dev10x:git-promote
 ---
 
 # Commit to Ticket
@@ -13,7 +13,7 @@ This skill automates the process of converting an existing git commit into a tra
 
 ## Prerequisites Check
 
-**IMPORTANT:** This skill uses the `dx:ticket-create` skill which supports GitHub Issues, Linear, and JIRA.
+**IMPORTANT:** This skill uses the `dev10x:ticket-create` skill which supports GitHub Issues, Linear, and JIRA.
 
 ## When to Use This Skill
 
@@ -43,11 +43,11 @@ git show <commit-hash>
 
 ### Step 3: Create Ticket
 
-Use the `dx:ticket-create` skill to create a properly structured ticket from the commit.
+Use the `dev10x:ticket-create` skill to create a properly structured ticket from the commit.
 
 ### Step 4: Create Branch
 
-Use the `dx:ticket-branch` skill to create a properly named branch.
+Use the `dev10x:ticket-branch` skill to create a properly named branch.
 
 ### Step 5: Cherry-pick Commit
 
@@ -67,13 +67,13 @@ Show the updated commit and verify changes.
 
 ### Step 8: Push and Create PR (Optional)
 
-Use the `dx:gh-pr-create` skill to push the branch and create a PR.
+Use the `dev10x:gh-pr-create` skill to push the branch and create a PR.
 
 ## Integration with Other Skills
 
 ```
-dx:git-promote
-├── Uses: dx:ticket-create (Step 3)
-├── Uses: dx:ticket-branch (Step 4)
-└── Uses: dx:gh-pr-create (Step 8, optional)
+dev10x:git-promote
+├── Uses: dev10x:ticket-create (Step 3)
+├── Uses: dev10x:ticket-branch (Step 4)
+└── Uses: dev10x:gh-pr-create (Step 8, optional)
 ```

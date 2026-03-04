@@ -1,8 +1,8 @@
 ---
-name: dx:gh-pr-request-review
+name: dev10x:gh-pr-request-review
 description: Request review on a GitHub PR from teams or users
 user-invocable: true
-invocation-name: dx:gh-pr-request-review
+invocation-name: dev10x:gh-pr-request-review
 ---
 
 Request reviews on GitHub pull requests from teams or individual users.

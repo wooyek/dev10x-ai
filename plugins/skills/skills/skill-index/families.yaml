@@ -7,18 +7,18 @@
 # keys from SKILL.md. Skills not in display_map match by exact key.
 
 display_map:
-  commit: dx:git-commit
-  commit:split: dx:git-commit-split
-  commit:fixup: dx:git-fixup
-  commit:to-new-ticket: dx:git-promote
-  branch:groom: dx:git-groom
-  pr:create: dx:gh-pr-create
-  pr:respond: dx:gh-pr-respond
-  pr:monitor: dx:gh-pr-monitor
-  pr:request-review: dx:gh-pr-request-review
-  pr:triage: dx:gh-pr-triage
-  pr:comment-fixup: dx:gh-pr-fixup
-  ticket:work-on: dx:work-on
+  commit: dev10x:git-commit
+  commit:split: dev10x:git-commit-split
+  commit:fixup: dev10x:git-fixup
+  commit:to-new-ticket: dev10x:git-promote
+  branch:groom: dev10x:git-groom
+  pr:create: dev10x:gh-pr-create
+  pr:respond: dev10x:gh-pr-respond
+  pr:monitor: dev10x:gh-pr-monitor
+  pr:request-review: dev10x:gh-pr-request-review
+  pr:triage: dev10x:gh-pr-triage
+  pr:comment-fixup: dev10x:gh-pr-fixup
+  ticket:work-on: dev10x:work-on
   logs: logs:start
   dev10x:investigate: investigate
   triage-sentry: triage-sentry
@@ -56,9 +56,9 @@ families:
   - label: Session
     description: "Track progress, defer & resume work"
     skills:
-      - dx:wrap-up
-      - dx:park
-      - dx:park-discover
+      - dev10x:wrap-up
+      - dev10x:park
+      - dev10x:park-discover
 
   - label: Testing
     description: "pytest, e2e, QA"
@@ -66,8 +66,8 @@ families:
       - test
       - test:fix-flaky
       - tt:e2e-debug
-      - dx:qa-scope
-      - dx:qa-self
+      - dev10x:qa-scope
+      - dev10x:qa-self
 
   - label: Ops
     description: "k8s logs, payment & device debugging"
@@ -98,7 +98,7 @@ families:
   - label: Meta
     description: "Create skills, audit usage, code review"
     skills:
-      - dx:skill-create
-      - dx:skill-audit
-      - dx:skill-index
+      - dev10x:skill-create
+      - dev10x:skill-audit
+      - dev10x:skill-index
       - review

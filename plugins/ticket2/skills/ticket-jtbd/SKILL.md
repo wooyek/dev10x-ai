@@ -1,8 +1,8 @@
 ---
-name: dx:ticket-jtbd
-description: Write a JTBD Job Story and apply it to a target (PR description, GitHub issue, Linear ticket, or JIRA ticket). Delegates drafting to the dx:jtbd base skill, then handles the side-effecting write. Replaces the former /job-story skill.
+name: dev10x:ticket-jtbd
+description: Write a JTBD Job Story and apply it to a target (PR description, GitHub issue, Linear ticket, or JIRA ticket). Delegates drafting to the dev10x:jtbd base skill, then handles the side-effecting write. Replaces the former /job-story skill.
 user-invocable: true
-invocation-name: dx:ticket-jtbd
+invocation-name: dev10x:ticket-jtbd
 allowed-tools:
   - Bash(gh pr view:*)
   - Bash(gh pr diff:*)
@@ -25,7 +25,7 @@ allowed-tools:
 
 ## Overview
 
-This skill drafts a JTBD Job Story using the `dx:jtbd` base skill and
+This skill drafts a JTBD Job Story using the `dev10x:jtbd` base skill and
 then writes the approved story to a target: PR description, GitHub
 issue, Linear ticket description, or JIRA ticket.
 
@@ -73,15 +73,15 @@ gh pr view {PR_NUMBER} --json headRefName -q '.headRefName' | cut -d'/' -f2
 gh pr list --search "{TICKET_ID}" --state open --json number --limit 1
 ```
 
-### Step 3: Delegate to dx:jtbd Base Skill
+### Step 3: Delegate to dev10x:jtbd Base Skill
 
-Invoke the `dx:jtbd` skill in **attended mode** with all available context:
+Invoke the `dev10x:jtbd` skill in **attended mode** with all available context:
 
 - `ticket_id`: extracted ticket ID
 - `pr_number`: extracted PR number
 - `mode`: attended
 
-The `dx:jtbd` skill handles all context gathering, situation
+The `dev10x:jtbd` skill handles all context gathering, situation
 identification, and draft presentation. It returns the approved
 story string (or empty if user rejects).
 
@@ -135,59 +135,59 @@ Updated {target_type} with Job Story.
 
 ## Usage Modes
 
-| Caller | dx:jtbd Mode | Write Target |
+| Caller | dev10x:jtbd Mode | Write Target |
 |--------|-----------|-------------|
-| Standalone `/dx:ticket-jtbd 1167` | attended | PR description |
-| Standalone `/dx:ticket-jtbd PAY-519` | attended | Linear ticket |
-| Standalone `/dx:ticket-jtbd GH-15` | attended | GitHub issue (comment) |
+| Standalone `/dev10x:ticket-jtbd 1167` | attended | PR description |
+| Standalone `/dev10x:ticket-jtbd PAY-519` | attended | Linear ticket |
+| Standalone `/dev10x:ticket-jtbd GH-15` | attended | GitHub issue (comment) |
 | `pr:monitor` Phase 0 | attended | PR description |
 
 ## Examples
 
 ### Example 1: Write to PR
 
-**Input:** `/dx:ticket-jtbd 1167`
+**Input:** `/dev10x:ticket-jtbd 1167`
 
 1. Auto-detect: PR number → target is PR description
 2. Extract ticket ID from branch: `PAY-519`
-3. Delegate to `dx:jtbd` (attended) → user approves draft
+3. Delegate to `dev10x:jtbd` (attended) → user approves draft
 4. Prepend story to PR #1167 description
 5. Confirm: `Updated PR #1167 with Job Story.`
 
 ### Example 2: Write to Linear ticket
 
-**Input:** `/dx:ticket-jtbd PAY-519`
+**Input:** `/dev10x:ticket-jtbd PAY-519`
 
 1. Auto-detect: Linear ticket ID → target is Linear ticket
 2. Find linked PR (if any) for additional context
-3. Delegate to `dx:jtbd` (attended) → user approves draft
+3. Delegate to `dev10x:jtbd` (attended) → user approves draft
 4. Prepend story to PAY-519 description
 5. Confirm: `Updated PAY-519 with Job Story.`
 
 ### Example 3: Both PR and ticket
 
-**Input:** `/dx:ticket-jtbd 1167 PAY-519`
+**Input:** `/dev10x:ticket-jtbd 1167 PAY-519`
 
 1. Auto-detect: PR + ticket → primary target is PR description
-2. Delegate to `dx:jtbd` (attended) with both identifiers
+2. Delegate to `dev10x:jtbd` (attended) with both identifiers
 3. Prepend story to PR #1167 description
 4. Confirm: `Updated PR #1167 with Job Story.`
 
 ### Example 4: Write to GitHub issue
 
-**Input:** `/dx:ticket-jtbd GH-15`
+**Input:** `/dev10x:ticket-jtbd GH-15`
 
 1. Auto-detect: `GH-` prefix → target is GitHub issue
 2. Fetch issue body and comments for context
-3. Delegate to `dx:jtbd` (attended) → user approves draft
+3. Delegate to `dev10x:jtbd` (attended) → user approves draft
 4. Post story as comment on GH-15
 5. Confirm: `Updated GH-15 with Job Story.`
 
 ## Integration with Other Skills
 
 ```
-dx:ticket-jtbd
-├── Delegates to: dx:jtbd (pure base — context gathering + drafting)
+dev10x:ticket-jtbd
+├── Delegates to: dev10x:jtbd (pure base — context gathering + drafting)
 ├── Called by: pr:monitor Phase 0 (when JTBD missing from PR)
 └── Replaces: job-story (former monolithic skill)
 ```

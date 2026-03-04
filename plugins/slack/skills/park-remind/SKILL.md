@@ -1,20 +1,20 @@
 ---
-name: dx:park-remind
+name: dev10x:park-remind
 description: >
   Use when you need a reminder to surface in Slack later — so deferred
   items appear when you are clearing messages, not buried in a file
   you might not open.
 user-invocable: true
-invocation-name: dx:park-remind
+invocation-name: dev10x:park-remind
 allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/slack/slack-notify.py:*)
   - Bash(/tmp/claude/bin/mktmp.sh:*)
   - Write(/tmp/claude/slack/**)
 ---
 
-# dx:park-remind — Slack DM Reminder
+# dev10x:park-remind — Slack DM Reminder
 
-**Announce:** "Using dx:park-remind to send a Slack reminder to yourself."
+**Announce:** "Using dev10x:park-remind to send a Slack reminder to yourself."
 
 ## Overview
 
@@ -78,10 +78,10 @@ Report to user: "Sent reminder to your Slack DMs."
 
 ## Standalone Usage
 
-When invoked directly: `/dx:park-remind "message text"`
+When invoked directly: `/dev10x:park-remind "message text"`
 
 Parse the argument as the item text. Gather context and send.
 
 ## Used By
 
-- `dx:park` — when user picks "Slack DM to self"
+- `dev10x:park` — when user picks "Slack DM to self"

@@ -32,13 +32,13 @@ completion and directory listings.
 
 ## Invocation Name (SKILL.md `name:` field)
 
-Use the `dx:<feature-name>` format in the SKILL.md front matter.
+Use the `dev10x:<feature-name>` format in the SKILL.md front matter.
 
 **Good:**
 ```yaml
-name: dx:git-worktree
-name: dx:skill-audit
-name: dx:park
+name: dev10x:git-worktree
+name: dev10x:skill-audit
+name: dev10x:park
 ```
 
 **Bad:**
@@ -47,7 +47,7 @@ name: git-worktree
 name: skill-audit
 ```
 
-*Why?* The `dx:` namespace prefix identifies this plugin's skills
+*Why?* The `dev10x:` namespace prefix identifies this plugin's skills
 at invocation time. Without it, skills could collide with skills
 from other plugins or built-in commands.
 
@@ -57,36 +57,36 @@ Skills use family prefixes for tab-completion discoverability:
 
 | Directory         | Invocation name      |
 |-------------------|----------------------|
-| `park/`           | `dx:park`            |
-| `park-todo/`      | `dx:park-todo`       |
-| `park-remind/`    | `dx:park-remind`     |
-| `park-discover/`  | `dx:park-discover`   |
-| `session-tasks/`  | `dx:session-tasks`   |
-| `session-wrap-up/`| `dx:wrap-up`         |
-| `ticket-branch/`  | `dx:ticket-branch`   |
-| `ticket-create/`  | `dx:ticket-create`   |
-| `ticket-jtbd/`    | `dx:ticket-jtbd`     |
-| `ticket-scope/`   | `dx:ticket-scope`    |
+| `park/`           | `dev10x:park`            |
+| `park-todo/`      | `dev10x:park-todo`       |
+| `park-remind/`    | `dev10x:park-remind`     |
+| `park-discover/`  | `dev10x:park-discover`   |
+| `session-tasks/`  | `dev10x:session-tasks`   |
+| `session-wrap-up/`| `dev10x:wrap-up`         |
+| `ticket-branch/`  | `dev10x:ticket-branch`   |
+| `ticket-create/`  | `dev10x:ticket-create`   |
+| `ticket-jtbd/`    | `dev10x:ticket-jtbd`     |
+| `ticket-scope/`   | `dev10x:ticket-scope`    |
 
-Other skills use the full directory name: `dx:git-worktree`,
-`dx:skill-audit`, `dx:skill-create`.
+Other skills use the full directory name: `dev10x:git-worktree`,
+`dev10x:skill-audit`, `dev10x:skill-create`.
 
 ## `invocation-name` vs `name`
 
 `name:` is the canonical plugin-registered invocation and MUST use the
-`dx:` prefix. `invocation-name:` is an optional alias and MAY use an
+`dev10x:` prefix. `invocation-name:` is an optional alias and MAY use an
 alternative namespace when the skill bridges to an external skill family:
 
 | `name:`           | `invocation-name:` | Use case                             |
 |-------------------|--------------------|--------------------------------------|
-| `dx:ticket-jtbd`  | `ticket:jtbd`      | Cross-family alias for ticket skills |
-| `dx:git-promote`  | `dx:git-promote`   | Redundant (harmless)                 |
+| `dev10x:ticket-jtbd`  | `ticket:jtbd`      | Cross-family alias for ticket skills |
+| `dev10x:git-promote`  | `dev10x:git-promote`   | Redundant (harmless)                 |
 
-Do NOT flag `invocation-name:` with a non-`dx:` prefix as a naming
-violation when `name:` already carries the correct `dx:` prefix.
+Do NOT flag `invocation-name:` with a non-`dev10x:` prefix as a naming
+violation when `name:` already carries the correct `dev10x:` prefix.
 
 ## Rationale Summary
 
 - **Directory**: plain name → clean filesystem, no redundant prefix
-- **Invocation**: `dx:` prefix → namespace isolation at call time
+- **Invocation**: `dev10x:` prefix → namespace isolation at call time
 - **Families**: prefix groups for tab-completion discoverability

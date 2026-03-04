@@ -1,5 +1,5 @@
 ---
-name: dx:skill-create
+name: dev10x:skill-create
 description: >
   Use when creating or improving a local skill and hitting friction — bash
   commands keep prompting for approval, the skill doesn't appear in MOTD,
@@ -7,12 +7,12 @@ description: >
   get the dev10x-specific setup right without hunting through existing
   skills for examples.
 user-invocable: true
-invocation-name: dx:skill-create
+invocation-name: dev10x:skill-create
 ---
 
 # dev10x Skill Create
 
-**Announce:** "Using dx:skill-create to [create/improve] the `<name>` skill."
+**Announce:** "Using dev10x:skill-create to [create/improve] the `<name>` skill."
 
 **Foundation:** Read `superpowers:writing-skills` first for TDD methodology,
 CSO principles, and quality standards. This skill covers only the local
@@ -28,7 +28,7 @@ dev10x conventions that sit on top of that foundation.
     references/         # markdown reference docs (optional)
 ```
 
-Active namespaces: `my:`, `dx:`, `ticket:`, `pr:`, `commit:`
+Active namespaces: `my:`, `dev10x:`, `ticket:`, `pr:`, `commit:`
 
 ## Frontmatter Template
 
@@ -128,9 +128,9 @@ ${CLAUDE_PLUGIN_ROOT}/skills/skill-index/scripts/generate-motd.sh --force
 
 | Skill | Patterns to study |
 |---|---|
-| `dx:git-worktree` | Step-numbered workflow, `allowed-tools`, templates |
-| `dx:ticket-create` | Prerequisites check, integration section |
-| `dx:skill-index` | Minimal skill that fully delegates to a script |
+| `dev10x:git-worktree` | Step-numbered workflow, `allowed-tools`, templates |
+| `dev10x:ticket-create` | Prerequisites check, integration section |
+| `dev10x:skill-index` | Minimal skill that fully delegates to a script |
 | `commit` | Multi-step workflow with explicit validation gates |
 
 ## Calling Other Skills
@@ -140,7 +140,7 @@ Never `@`-force-load another skill file — it consumes context immediately.
 
 ```markdown
 ## Prerequisites
-**REQUIRED:** Invoke `dx:ticket-branch` before this workflow begins.
+**REQUIRED:** Invoke `dev10x:ticket-branch` before this workflow begins.
 ```
 
 ## Script Conventions

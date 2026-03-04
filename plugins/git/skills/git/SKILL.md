@@ -1,10 +1,10 @@
 ---
-name: dx:git
+name: dev10x:git
 description: Use before running git push or git rebase — so force-pushes to
   protected branches are blocked and non-interactive rebases run unattended
   without manual editor approval prompts.
 user-invocable: true
-invocation-name: dx:git
+invocation-name: dev10x:git
 allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/git/scripts/git-push-safe.sh:*)
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/git/scripts/git-rebase-groom.sh:*)
@@ -15,9 +15,9 @@ allowed-tools:
   - Write(/tmp/claude/git/**)
 ---
 
-**Announce:** "Using dx:git to [push / groom commits]."
+**Announce:** "Using dev10x:git to [push / groom commits]."
 
-# dx:git — Hardened Git Operations
+# dev10x:git — Hardened Git Operations
 
 Provides hardened scripts for safe git push and non-interactive rebase.
 Add the `allowed-tools` entries to your project's `settings.local.json`

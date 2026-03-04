@@ -57,8 +57,8 @@ Before raising any of these, **verify actual code**:
     verify each `<name>` directory actually exists in `skills/`. Use Glob:
     `skills/<name>/SKILL.md`. Non-existent directories are user-level skills
     — the `~/.claude/` prefix must be preserved.
-14. **`invocation-name` with non-`dx:` prefix**: `invocation-name: ticket:foo`
-    alongside `name: dx:ticket-foo` is valid. The `dx:` prefix requirement
+14. **`invocation-name` with non-`dev10x:` prefix**: `invocation-name: ticket:foo`
+    alongside `name: dev10x:ticket-foo` is valid. The `dev10x:` prefix requirement
     applies to `name:` only — do NOT flag `invocation-name:` as a naming
     violation when `name:` is already correct.
 15. **Write-path namespace coverage** — when a `Write(/tmp/claude/<ns>/**)`

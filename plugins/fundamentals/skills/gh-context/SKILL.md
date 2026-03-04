@@ -1,13 +1,13 @@
 ---
-name: dx:gh-context
-description: Use when detecting PR context (number, repo, URL, branch) from a URL, PR number, or current branch — so skills like dx:gh-pr-monitor always get the correct target PR even in multi-worktree setups
+name: dev10x:gh-context
+description: Use when detecting PR context (number, repo, URL, branch) from a URL, PR number, or current branch — so skills like dev10x:gh-pr-monitor always get the correct target PR even in multi-worktree setups
 user-invocable: false
 allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
   - Bash(/tmp/claude/bin/mktmp.sh:*)
 ---
 
-# dx:gh-context — GitHub CLI helpers
+# dev10x:gh-context — GitHub CLI helpers
 
 Shell script wrappers for common `gh` operations. Pre-approved via
 `allowed-tools` so they run without permission prompts.

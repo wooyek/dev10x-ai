@@ -1,8 +1,8 @@
 ---
-name: dx:git-fixup
+name: dev10x:git-fixup
 description: Create a fixup! commit for a PR review comment or standalone improvement. Enforces one fixup per comment thread when linked to a review.
 user-invocable: true
-invocation-name: dx:git-fixup
+invocation-name: dev10x:git-fixup
 ---
 
 # Create Fixup Commit
@@ -23,11 +23,11 @@ Why fixup commits?
 
 ## When to Use This Skill
 
-- Called by `dx:gh-pr-fixup` when addressing review comments
+- Called by `dev10x:gh-pr-fixup` when addressing review comments
 - When you need to create a fixup commit for a specific review comment
 - When you need a standalone fixup for a self-initiated improvement
-- **When you fix a bug or anti-pattern that belongs to a prior commit in the branch** — use `dx:git-fixup` immediately rather than a standalone commit that would need converting later
-- NOT for general commits (use `dx:git-commit` skill instead)
+- **When you fix a bug or anti-pattern that belongs to a prior commit in the branch** — use `dev10x:git-fixup` immediately rather than a standalone commit that would need converting later
+- NOT for general commits (use `dev10x:git-commit` skill instead)
 
 ## Input Requirements
 
@@ -47,17 +47,17 @@ confirm this is a standalone fixup before proceeding.
 If a comment ID or PR comment URL was provided → **review fixup** mode.
 
 If the invocation args include a **target commit SHA + description** (e.g.
-`/dx:git-fixup abc1234 Fix null handling in phone lookup`), intent is clear —
+`/dev10x:git-fixup abc1234 Fix null handling in phone lookup`), intent is clear —
 proceed directly in **standalone fixup** mode without asking.
 
 Otherwise, use `AskUserQuestion` to ask:
 
 > "No review comment provided. Create a standalone fixup?"
 
-Options: "Yes, standalone fixup" / "No, use /dx:git-commit instead"
+Options: "Yes, standalone fixup" / "No, use /dev10x:git-commit instead"
 
 If the user confirms → **standalone fixup** mode.
-If the user declines → suggest using `/dx:git-commit` instead.
+If the user declines → suggest using `/dev10x:git-commit` instead.
 
 ### Step 1: Fetch Comment Details (review fixup only)
 
@@ -206,7 +206,7 @@ echo "Created fixup commit: ${COMMIT_HASH}"
 echo "URL: ${COMMIT_URL}"
 ```
 
-**Return to caller (dx:gh-pr-fixup):**
+**Return to caller (dev10x:gh-pr-fixup):**
 - `commit_hash` - Short hash for reply
 - `commit_url` - Full URL for linking (PR-based when PR number available)
 
@@ -248,17 +248,17 @@ https://github.com/owner/repo/pull/123#discussion_r456789
 This links the fixup to the specific review comment it addresses.
 ```
 
-## Integration with dx:gh-pr-fixup
+## Integration with dev10x:gh-pr-fixup
 
-The `dx:gh-pr-fixup` skill calls this skill instead of creating commits
+The `dev10x:gh-pr-fixup` skill calls this skill instead of creating commits
 directly:
 
 ```
-dx:gh-pr-fixup workflow:
+dev10x:gh-pr-fixup workflow:
 1. Analyze comment
 2. Implement fix
 3. Stage changes: git add {file}
-4. Call dx:git-fixup with (pr_number, comment_id)  <-- uses this skill
+4. Call dev10x:git-fixup with (pr_number, comment_id)  <-- uses this skill
 5. Push: git push
 6. Reply to comment with commit reference
 ```
@@ -277,7 +277,7 @@ dx:gh-pr-fixup workflow:
 
 ## Example Usage
 
-### Review fixup (called by dx:gh-pr-fixup)
+### Review fixup (called by dev10x:gh-pr-fixup)
 
 ```bash
 # Stage the fix
@@ -301,7 +301,7 @@ https://github.com/tiretutorinc/tt-e2e/pull/269#discussion_r2706078039
 # Stage the fix
 git add src/tiretutor_pos/motor/api/nodes.py
 
-# Invoke /dx:git-fixup with no comment argument
+# Invoke /dev10x:git-fixup with no comment argument
 # Claude asks: "No review comment provided. Create a standalone fixup?"
 # User confirms → standalone mode
 ```

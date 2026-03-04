@@ -1,8 +1,8 @@
 ---
-name: dx:git-commit-split
+name: dev10x:git-commit-split
 description: Split monolithic git commits into atomic, cohesive commits following Clean Architecture principles. Uses interactive rebase to separate changes by feature dependency order (utilities → data → DTOs → refactoring → features → API), ensuring each commit is self-contained, passes tests, and maintains proper cohesion. Handles complex scenarios like separating refactoring from new features, and moving DTOs to where they're actually used.
 user-invocable: true
-invocation-name: dx:git-commit-split
+invocation-name: dev10x:git-commit-split
 allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/git-commit-split/scripts/*:*)
 ---
@@ -135,7 +135,7 @@ git add -p path/to/file.py
 
 **Commit with proper message format:**
 
-Use the dx:git-commit skill conventions:
+Use the dev10x:git-commit skill conventions:
 - Gitmoji prefix (new feature, refactor, bug, etc.)
 - Ticket ID from branch name
 - Concise description
@@ -329,7 +329,7 @@ git rebase --exec "pre-commit run --all-files" develop
 
 ## Commit Message Format
 
-Follow the dx:git-commit skill conventions:
+Follow the dev10x:git-commit skill conventions:
 
 **Structure:**
 ```
@@ -463,10 +463,10 @@ See `references/split-commit-example.md` for a complete real-world example of sp
 ## Integration with Other Skills
 
 ```
-dx:git-commit-split
-├── Uses: dx:git-commit (for message formatting)
+dev10x:git-commit-split
+├── Uses: dev10x:git-commit (for message formatting)
 ├── Output: Multiple atomic commits
-└── Followed by: dx:gh-pr-create
+└── Followed by: dev10x:gh-pr-create
 ```
 
 ## Success Criteria

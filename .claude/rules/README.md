@@ -29,10 +29,10 @@ The code review system uses a **multi-agent architecture**:
 
 | File | Topic | Loaded by |
 |------|-------|-----------|
-| `git-commits.md` | Commit format, gitmoji, atomic commits | `dx:git-commit` skill, PR hygiene CI |
-| `git-pr.md` | PR format, grooming, review feedback | `dx:gh-pr-create` skill, PR hygiene CI |
-| `git-jtbd.md` | Job Story format, principles, examples | `dx:jtbd` skill, PR hygiene CI |
-| `review-guidelines.md` | Review workflow, threads, summaries | `dx:gh-pr-review` skill, code review CI |
+| `git-commits.md` | Commit format, gitmoji, atomic commits | `dev10x:git-commit` skill, PR hygiene CI |
+| `git-pr.md` | PR format, grooming, review feedback | `dev10x:gh-pr-create` skill, PR hygiene CI |
+| `git-jtbd.md` | Job Story format, principles, examples | `dev10x:jtbd` skill, PR hygiene CI |
+| `review-guidelines.md` | Review workflow, threads, summaries | `dev10x:gh-pr-review` skill, code review CI |
 | `review-checks-common.md` | False positives, verification | Review agent specs, code review CI |
 
 ## Agent Specs (`.claude/agents/`)

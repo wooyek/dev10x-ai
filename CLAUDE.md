@@ -33,8 +33,8 @@ claude plugin validate         # validate plugin structure
 ## Skill Naming Convention
 
 - **Directory name**: plain feature name — `git-worktree/`, `skill-audit/`
-- **Invocation name** (`name:` in SKILL.md): `dx:<feature>` — `dx:git-worktree`
-- The `dx:` prefix identifies this plugin's skills at invocation time
+- **Invocation name** (`name:` in SKILL.md): `dev10x:<feature>` — `dev10x:git-worktree`
+- The `dev10x:` prefix identifies this plugin's skills at invocation time
   without cluttering the filesystem
 - See `.claude/rules/skill-naming.md` for full convention
 

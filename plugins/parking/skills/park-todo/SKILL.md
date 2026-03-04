@@ -1,16 +1,16 @@
 ---
-name: dx:park-todo
+name: dev10x:park-todo
 description: >
   Use when deferring work to code or project-level storage — so items
   resurface when editing nearby code or starting a new session in the
   same project, instead of being forgotten.
 user-invocable: true
-invocation-name: dx:park-todo
+invocation-name: dev10x:park-todo
 ---
 
-# dx:park-todo — Persistent Code/Project Deferrals
+# dev10x:park-todo — Persistent Code/Project Deferrals
 
-**Announce:** "Using dx:park-todo to [add TODO/FIXME to code | update
+**Announce:** "Using dev10x:park-todo to [add TODO/FIXME to code | update
 project TODO list]."
 
 ## Overview
@@ -86,10 +86,10 @@ When invoked, auto-detect:
 
 If the user asks about **existing** deferred items (e.g., "what's deferred",
 "check for open items", "what do we have from yesterday"), invoke
-`dx:todo-review` instead of this skill. This skill is for *writing*
-deferrals; `dx:todo-review` is for *reading them back*.
+`dev10x:todo-review` instead of this skill. This skill is for *writing*
+deferrals; `dev10x:todo-review` is for *reading them back*.
 
 ## Used By
 
-- `dx:park` — when user picks "project TODO" or "inline code"
-- `dx:wrap-up` — Phase 1 scans `.claude/TODO.md` for existing items
+- `dev10x:park` — when user picks "project TODO" or "inline code"
+- `dev10x:wrap-up` — Phase 1 scans `.claude/TODO.md` for existing items
