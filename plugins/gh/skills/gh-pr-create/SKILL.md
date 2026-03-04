@@ -5,6 +5,7 @@ user-invocable: true
 invocation-name: dx:gh-pr-create
 allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-pr-create/scripts/*:*)
+  # TODO: gh-context moved to fundamentals plugin — cross-plugin script ref needs resolution
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
 ---
 
