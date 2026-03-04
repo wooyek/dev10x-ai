@@ -32,6 +32,9 @@ completion and directory listings.
 
 ## Invocation Name (SKILL.md `name:` field)
 
+**Deprecated:** The `dx:` prefix was superseded by `dev10x:` as of commit 44c0dd8.
+All new skills must use the `dev10x:` namespace; old `dx:` references are no longer recognized.
+
 Use the `dev10x:<feature-name>` format in the SKILL.md front matter.
 
 **Good:**

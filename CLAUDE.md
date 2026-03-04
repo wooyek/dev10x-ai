@@ -12,7 +12,7 @@ development workflows.
 | `hooks/`         | PreToolUse / PostToolUse hooks             |
 | `bin/`           | Helper scripts (release, CI)               |
 | `.claude-plugin/`| Plugin manifest (`plugin.json`)            |
-| `agents/`        | Plugin-distributed Claude Code sub-agent specs |
+| `agents/`        | Plugin-distributed Claude Code sub-agent specs (see `.claude/rules/agents.md`) |
 | `references/`    | Shared docs (git, review, JTBD guides)     |
 | `.claude/rules/` | Always-loaded essentials + path-scoped rules |
 | `.claude/agents/`| Internal domain-specific reviewer agent specs |
@@ -46,6 +46,15 @@ claude plugin validate         # validate plugin structure
 - **Commit format**: `<gitmoji> <TICKET-ID> <JTBD outcome>`
 - **Commit titles**: outcome-focused — "Enable X" not "Add X"
 - See `references/git-commits.md`, `git-pr.md`, `git-jtbd.md`
+
+### Plugin Directory Renames
+
+When renaming a plugin directory (e.g., `plugins/old/ → plugins/new/`):
+
+1. Use `git mv` to preserve history
+2. Update `.claude-plugin/marketplace.json` reference
+3. Update all SKILL.md files that reference the old path
+4. Search codebase for hardcoded directory paths
 
 ## Code Review
 
