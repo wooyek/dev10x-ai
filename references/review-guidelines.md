@@ -186,6 +186,14 @@ fixed code here
 - Do NOT use suggestion blocks for non-code changes (permissions,
   file renames, `git mv`). Use plain text instructions instead.
 
+## Review Comment Format & JTBD Variants
+
+Structure findings as **[REQUIRED/RECOMMENDED]** — [title], explanation,
+rule reference, fix. For JTBD grammar: third-party outcomes like "**so**
+reviewers can catch issues" (per `git-jtbd.md`) are acceptable—mark as
+RECOMMENDED, not REQUIRED. Canonical first-person "**so I can**" is
+preferred but not mandatory when third-party intent is clear.
+
 ## Positive Validation
 
 When a PR demonstrates excellent practices:
