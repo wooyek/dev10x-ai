@@ -215,11 +215,11 @@ Move to Phase 2.5 when ALL of these are true:
 ## Phase 2.5: QA Scope Assessment (REQUIRES USER CONFIRMATION)
 
 This phase runs ONCE when Phase 2 completes. It delegates to the
-`qa:scope` skill if available.
+`dx:qa-scope` skill if available.
 
-1. Invoke the qa:scope skill:
+1. Invoke the dx:qa-scope skill:
    ```
-   Use the Skill tool: skill="qa:scope", args="{pr_number}"
+   Use the Skill tool: skill="dx:qa-scope", args="{pr_number}"
    ```
 
    The qa:scope skill will:
@@ -229,7 +229,7 @@ This phase runs ONCE when Phase 2 completes. It delegates to the
 
 2. Wait for the skill to complete before proceeding to Phase 3.
 
-3. If qa:scope determines the change is low-risk (config-only,
+3. If dx:qa-scope determines the change is low-risk (config-only,
    test-only, docs-only), it will skip ticket creation automatically.
 
 **Note:** This phase only runs once per PR monitor session. If already
@@ -410,7 +410,7 @@ reviewers assigned, Slack notification posted.
         │       └── Skill("dx:gh-pr-respond", args="{pr_url}") — batch mode
         │
         ├── Phase 2.5: QA scope assessment
-        │       └── Skill("qa:scope")
+        │       └── Skill("dx:qa-scope")
         │
         ├── Phase 2.7: Re-review notification (after comments addressed)
         │       ├── AskUserQuestion → confirm notification
