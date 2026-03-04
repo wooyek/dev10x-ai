@@ -63,6 +63,12 @@ git rebase -i $(git merge-base develop HEAD)
 
 Use the main commit's title line (gitmoji + ticket + description).
 
+**Important**: The gitmoji appears in the **commit message**, not in the
+GitHub PR title field. GitHub's UI shows these separately — your main
+commit's gitmoji will automatically appear in release notes and git log
+regardless of how the PR title field is filled. The critical requirement
+is that your commit contains the gitmoji; GitHub renders it in the PR UI.
+
 ### PR Body
 
 The body should be **compact** to avoid cluttering Slack previews.
