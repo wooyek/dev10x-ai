@@ -30,8 +30,8 @@ Universal rules for every session. Detailed guides live in
 
 | Document | Topic | Loaded by |
 |----------|-------|-----------|
-| `references/git-commits.md` | Commit format, gitmoji, atomic commits | `dx:git-commit` skill |
-| `references/git-jtbd.md` | Job Story format, anti-patterns | `dx:jtbd` skill |
-| `references/git-pr.md` | PR body, grooming, review feedback | `dx:gh-pr-create` skill |
-| `references/review-guidelines.md` | Review workflow, threads, summaries | `dx:gh-pr-review` skill |
+| `references/git-commits.md` | Commit format, gitmoji, atomic commits | `dev10x:git-commit` skill |
+| `references/git-jtbd.md` | Job Story format, anti-patterns | `dev10x:jtbd` skill |
+| `references/git-pr.md` | PR body, grooming, review feedback | `dev10x:gh-pr-create` skill |
+| `references/review-guidelines.md` | Review workflow, threads, summaries | `dev10x:gh-pr-review` skill |
 | `references/review-checks-common.md` | False positive prevention, verification | Review agent specs |

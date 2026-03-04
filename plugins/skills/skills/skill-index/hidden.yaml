@@ -5,22 +5,22 @@
 # families.yaml instead.
 
 hidden:
-  - dx:jtbd
-  - dx:linear
-  - dx:session-tasks
-  - dx:scope
-  - dx:gh-context
-  - dx:gh-pr-bookmark
-  - dx:git
-  - dx:git-alias-setup
-  - dx:git-worktree
-  - dx:park-todo
-  - dx:park-remind
-  - dx:py-uv
-  - dx:playwright
-  - dx:slack
-  - dx:ticket-jtbd
-  - dx:gh-pr-review
+  - dev10x:jtbd
+  - dev10x:linear
+  - dev10x:session-tasks
+  - dev10x:scope
+  - dev10x:gh-context
+  - dev10x:gh-pr-bookmark
+  - dev10x:git
+  - dev10x:git-alias-setup
+  - dev10x:git-worktree
+  - dev10x:park-todo
+  - dev10x:park-remind
+  - dev10x:py-uv
+  - dev10x:playwright
+  - dev10x:slack
+  - dev10x:ticket-jtbd
+  - dev10x:gh-pr-review
   - dev10x:report-work-weekly
   - dev10x-py-mockito
   - tiretutor-slides

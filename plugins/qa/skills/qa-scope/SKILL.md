@@ -1,8 +1,8 @@
 ---
-name: dx:qa-scope
+name: dev10x:qa-scope
 description: Analyze a PR for QA needs, check e2e coverage gaps, and create QA sub-tickets when manual testing or new e2e tests are needed.
 user-invocable: true
-invocation-name: dx:qa-scope
+invocation-name: dev10x:qa-scope
 ---
 
 # QA Scope - PR Quality Assurance Assessment
@@ -284,7 +284,7 @@ Output the created ticket ID and URL.
 ## Integration with Other Skills
 
 ```
-dx:qa-scope
+dev10x:qa-scope
 ├── Uses: Linear MCP (ticket data, create sub-ticket)
 ├── Uses: GitHub CLI (PR diff, PR details)
 ├── Reads: /work/tt/tt-e2e/ (e2e coverage check)

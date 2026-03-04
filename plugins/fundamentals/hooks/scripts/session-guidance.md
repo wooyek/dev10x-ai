@@ -23,7 +23,7 @@ the right pattern on the first attempt.
 - `git develop-log` — commits since diverging from develop
 - `git develop-diff` — diff since diverging from develop
 - `git develop-rebase` — interactive rebase onto develop
-- If aliases are missing, run `/dx:git-alias-setup`
+- If aliases are missing, run `/dev10x:git-alias-setup`
 
 ### Multiline content (commit messages, PR bodies)
 1. Write content to a temp file via Write tool
@@ -45,7 +45,7 @@ the right pattern on the first attempt.
 - Never prefix with `uv run --script` — the shebang handles it
 
 ### Worktrees
-- When a worktree is created via `/dx:git-worktree`, the session
+- When a worktree is created via `/dev10x:git-worktree`, the session
   CWD switches to it automatically — no `cd` needed
 - If CWD is already a worktree (`.git` is a file), do not
   `cd` into it before running commands — you are already there
@@ -59,12 +59,12 @@ the right pattern on the first attempt.
 
 | Task | Skill |
 |------|-------|
-| Create commit | `/dx:git-commit` |
-| Create PR | `/dx:gh-pr-create` |
-| Review PR | `/dx:gh-pr-review` |
-| Respond to PR review | `/dx:gh-pr-respond` |
-| Create branch from ticket | `/dx:ticket-branch` |
-| Create worktree | `/dx:git-worktree` |
-| Groom commits before merge | `/dx:git-groom` |
-| Push safely | `/dx:git` (validates protected branches) |
-| Audit this session | `/dx:skill-audit` |
+| Create commit | `/dev10x:git-commit` |
+| Create PR | `/dev10x:gh-pr-create` |
+| Review PR | `/dev10x:gh-pr-review` |
+| Respond to PR review | `/dev10x:gh-pr-respond` |
+| Create branch from ticket | `/dev10x:ticket-branch` |
+| Create worktree | `/dev10x:git-worktree` |
+| Groom commits before merge | `/dev10x:git-groom` |
+| Push safely | `/dev10x:git` (validates protected branches) |
+| Audit this session | `/dev10x:skill-audit` |

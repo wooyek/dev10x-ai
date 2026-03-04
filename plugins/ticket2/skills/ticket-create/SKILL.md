@@ -1,8 +1,8 @@
 ---
-name: dx:ticket-create
+name: dev10x:ticket-create
 description: Create an issue tracker ticket (GitHub issue, Linear, or JIRA) with proper formatting, description structure, and labels. Accepts title, description content, and optional labels. Automatically formats the description with Root Cause, Solution, and Files Changed sections. Returns the created ticket ID.
 user-invocable: true
-invocation-name: dx:ticket-create
+invocation-name: dev10x:ticket-create
 allowed-tools:
   # TODO: gh-context moved to fundamentals plugin — cross-plugin script ref needs resolution
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
@@ -155,7 +155,7 @@ mcp__claude_ai_Linear__save_issue(
 ~/.claude/skills/dev10x:jira/scripts/jira-update.sh "$TICKET_ID" /tmp/claude/jira-payload.json
 ```
 
-> Team-specific IDs are documented in the tracker skill (`dx:linear`, `dev10x:jira`).
+> Team-specific IDs are documented in the tracker skill (`dev10x:linear`, `dev10x:jira`).
 
 ### Step 6: Return Ticket Information
 

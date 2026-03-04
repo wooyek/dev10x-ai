@@ -1,8 +1,8 @@
 ---
-name: dx:gh-pr-monitor
+name: dev10x:gh-pr-monitor
 description: Launch a background agent to monitor PR CI checks and review comments, automatically address issues with fixup commits, and notify team when ready. Use after creating a PR to automate the entire review cycle.
 user-invocable: true
-invocation-name: dx:gh-pr-monitor
+invocation-name: dev10x:gh-pr-monitor
 allowed-tools:
   # TODO: gh-context moved to fundamentals plugin — cross-plugin script ref needs resolution
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
@@ -17,13 +17,13 @@ through its full lifecycle — CI checks, review comments, and team
 notification. The user continues working while the agent handles everything.
 
 **When to use this skill:**
-- After creating a draft PR with `/dx:gh-pr-create`
+- After creating a draft PR with `/dev10x:gh-pr-create`
 - When you want to automate the PR review cycle without blocking your session
 
 ## Execution Model
 
 ```
-User invokes /dx:gh-pr-monitor
+User invokes /dev10x:gh-pr-monitor
     │
     ├── 1. Detect PR number, repo, URL
     ├── 2. Launch background Task agent
@@ -42,11 +42,11 @@ User invokes /dx:gh-pr-monitor
 
 ## Launch Instructions
 
-When the user invokes `/dx:gh-pr-monitor`:
+When the user invokes `/dev10x:gh-pr-monitor`:
 
 ### Step 1: Detect PR context
 
-Use the `dx:gh-context` script to detect PR context in one call:
+Use the `dev10x:gh-context` script to detect PR context in one call:
 
 ```bash
 ${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/gh-pr-detect.sh "$ARG"
@@ -143,7 +143,7 @@ The PR body **must** start with a JTBD Job Story as its first paragraph.
 
 3. If a valid Job Story is present → skip to Phase 1.
 
-4. If missing or malformed → generate one using the `dx:ticket-jtbd` skill.
+4. If missing or malformed → generate one using the `dev10x:ticket-jtbd` skill.
 
 5. After the skill completes, verify the PR body now starts with the
    Job Story.
@@ -192,9 +192,9 @@ For each CI fix:
 
 Repeat until no unaddressed comments remain:
 
-1. Delegate to `dx:gh-pr-respond` in **batch mode** with the PR URL:
+1. Delegate to `dev10x:gh-pr-respond` in **batch mode** with the PR URL:
    ```
-   Use the Skill tool: skill="dx:gh-pr-respond", args="{pr_url}"
+   Use the Skill tool: skill="dev10x:gh-pr-respond", args="{pr_url}"
    ```
 
 2. After all comments are addressed, return to Phase 1 (CI may re-run
@@ -215,21 +215,21 @@ Move to Phase 2.5 when ALL of these are true:
 ## Phase 2.5: QA Scope Assessment (REQUIRES USER CONFIRMATION)
 
 This phase runs ONCE when Phase 2 completes. It delegates to the
-`dx:qa-scope` skill if available.
+`dev10x:qa-scope` skill if available.
 
-1. Invoke the dx:qa-scope skill:
+1. Invoke the dev10x:qa-scope skill:
    ```
-   Use the Skill tool: skill="dx:qa-scope", args="{pr_number}"
+   Use the Skill tool: skill="dev10x:qa-scope", args="{pr_number}"
    ```
 
-   The dx:qa-scope skill will:
+   The dev10x:qa-scope skill will:
    - Analyze the PR diff for QA risk (low/medium/high)
    - Check the project's e2e test directory for existing coverage
    - Present a QA assessment to the user via AskUserQuestion
 
 2. Wait for the skill to complete before proceeding to Phase 3.
 
-3. If dx:qa-scope determines the change is low-risk (config-only,
+3. If dev10x:qa-scope determines the change is low-risk (config-only,
    test-only, docs-only), it will skip ticket creation automatically.
 
 **Note:** This phase only runs once per PR monitor session. If already
@@ -270,16 +270,16 @@ Options: "Post re-review notification" / "Skip".
 
 ### Step 4: Post the notification
 
-If user approves, invoke `Skill("dx:slack-review-request")` with the
+If user approves, invoke `Skill("dev10x:slack-review-request")` with the
 composed message. The skill reads the project's Slack config and posts
 to the configured channel.
 
 Example invocation:
 ```
-Skill("dx:slack-review-request", args="--pr {pr_number} --repo {repo} --message '@{reviewer} please take another look'")
+Skill("dev10x:slack-review-request", args="--pr {pr_number} --repo {repo} --message '@{reviewer} please take another look'")
 ```
 
-The dx:slack-review-request skill will:
+The dev10x:slack-review-request skill will:
 - Resolve the project's configured channel from userspace config
 - Post the message to that channel
 - Report the result back to the agent
@@ -317,10 +317,10 @@ If user approves, execute three delegated steps in sequence:
 **Step 3a: Assign GitHub reviewers**
 
 ```
-Skill("dx:gh-pr-request-review", args="--pr {pr_number} --repo {repo}")
+Skill("dev10x:gh-pr-request-review", args="--pr {pr_number} --repo {repo}")
 ```
 
-The dx:gh-pr-request-review skill will:
+The dev10x:gh-pr-request-review skill will:
 - Read the project's GitHub config for default reviewers
 - Assign them via `gh pr edit --add-reviewer`
 - Report results back to the agent
@@ -328,10 +328,10 @@ The dx:gh-pr-request-review skill will:
 **Step 3b: Post Slack review notification**
 
 ```
-Skill("dx:slack-review-request", args="--pr {pr_number} --repo {repo}")
+Skill("dev10x:slack-review-request", args="--pr {pr_number} --repo {repo}")
 ```
 
-The dx:slack-review-request skill will:
+The dev10x:slack-review-request skill will:
 - Read the project's Slack config (channel, mentions)
 - Format the review notification message
 - Post to the configured Slack channel
@@ -385,41 +385,41 @@ reviewers assigned, Slack notification posted.
 
 ## Integration with Other Skills
 
-1. **dx:gh-pr-create** — Use before this skill to create the draft PR
-2. **dx:ticket-jtbd** — Delegated to by the agent in Phase 0
-3. **dx:gh-pr-respond** — Delegated to by the agent for review comments (Phase 2)
-4. **dx:qa-scope** — Delegated to by the agent for QA risk assessment (Phase 2.5)
-5. **dx:gh-pr-request-review** — Delegated to by the agent in Phase 3 (GitHub reviewer assignment)
-6. **dx:slack-review-request** — Delegated to by the agent in Phase 2.7 and Phase 3 (Slack notifications)
+1. **dev10x:gh-pr-create** — Use before this skill to create the draft PR
+2. **dev10x:ticket-jtbd** — Delegated to by the agent in Phase 0
+3. **dev10x:gh-pr-respond** — Delegated to by the agent for review comments (Phase 2)
+4. **dev10x:qa-scope** — Delegated to by the agent for QA risk assessment (Phase 2.5)
+5. **dev10x:gh-pr-request-review** — Delegated to by the agent in Phase 3 (GitHub reviewer assignment)
+6. **dev10x:slack-review-request** — Delegated to by the agent in Phase 2.7 and Phase 3 (Slack notifications)
 7. **pr-notify.py** — Phase 3 helper script (checklist update only)
 
 ## Delegation Pattern
 
 ```
-/dx:gh-pr-monitor (this skill — launches background agent)
+/dev10x:gh-pr-monitor (this skill — launches background agent)
     │
     └── Background Task Agent
         │
         ├── Phase 0: JTBD Job Story check
         │       ├── Fetch PR body, check first paragraph
-        │       └── If missing → Skill("dx:ticket-jtbd") to generate
+        │       └── If missing → Skill("dev10x:ticket-jtbd") to generate
         │
         ├── Phase 1: CI monitoring (handled directly by agent)
         │
         ├── Phase 2: Comment monitoring
-        │       └── Skill("dx:gh-pr-respond", args="{pr_url}") — batch mode
+        │       └── Skill("dev10x:gh-pr-respond", args="{pr_url}") — batch mode
         │
         ├── Phase 2.5: QA scope assessment
-        │       └── Skill("dx:qa-scope")
+        │       └── Skill("dev10x:qa-scope")
         │
         ├── Phase 2.7: Re-review notification (after comments addressed)
         │       ├── AskUserQuestion → confirm notification
-        │       └── Skill("dx:slack-review-request") → post to Slack
+        │       └── Skill("dev10x:slack-review-request") → post to Slack
         │
         └── Phase 3: Notification (initial review request)
                 ├── AskUserQuestion → confirm message
                 └── If approved, execute three delegated steps:
-                    ├── Skill("dx:gh-pr-request-review") → assign GitHub reviewers
-                    ├── Skill("dx:slack-review-request") → post Slack notification
+                    ├── Skill("dev10x:gh-pr-request-review") → assign GitHub reviewers
+                    ├── Skill("dev10x:slack-review-request") → post Slack notification
                     └── pr-notify.py send (checklist-only mode)
 ```

@@ -1,8 +1,8 @@
 ---
-name: dx:gh-pr-triage
+name: dev10x:gh-pr-triage
 description: Validate a PR review comment against the codebase. If invalid, reply with evidence. Never auto-resolves threads — resolution requires explicit user confirmation. Returns a verdict (VALID, INVALID, QUESTION, OUT_OF_SCOPE) so the caller knows whether a code fix is needed.
 user-invocable: true
-invocation-name: dx:gh-pr-triage
+invocation-name: dev10x:gh-pr-triage
 allowed-tools:
   - Bash(~/.claude/tools/gh-pr-comments.py:*)
 ---
@@ -30,7 +30,7 @@ the PR review needs resolved threads to remain visible so they can
 verify the triage decisions without searching through hidden threads.
 
 **When to use this skill:**
-- Called by `dx:gh-pr-respond` before delegating to `dx:gh-pr-fixup`
+- Called by `dev10x:gh-pr-respond` before delegating to `dev10x:gh-pr-fixup`
 - Standalone when you want to validate a comment without committing to a fix
 
 ## Input Requirements
@@ -41,7 +41,7 @@ verify the triage decisions without searching through hidden threads.
 
 **Optional additional context:**
 - User may provide extra context after the URL
-- Example: `/dx:gh-pr-triage https://...#discussion_r456 this is a Django project`
+- Example: `/dev10x:gh-pr-triage https://...#discussion_r456 this is a Django project`
 
 ## Workflow
 
@@ -140,8 +140,8 @@ Based on investigation, choose one of:
 
 #### VALID — Real issue, needs a fix
 
-Do nothing. Return verdict to caller (usually `dx:gh-pr-respond`) which will
-delegate to `dx:gh-pr-fixup`.
+Do nothing. Return verdict to caller (usually `dev10x:gh-pr-respond`) which will
+delegate to `dev10x:gh-pr-fixup`.
 
 **Output:**
 ```
@@ -211,8 +211,8 @@ gh api \
 ```
 
 **Thread resolution:** Do NOT resolve threads. Return the verdict to the
-caller (`dx:gh-pr-respond` or the user). Resolution only happens when the user
-explicitly confirms it — either via `dx:gh-pr-respond`'s confirmation flow or
+caller (`dev10x:gh-pr-respond` or the user). Resolution only happens when the user
+explicitly confirms it — either via `dev10x:gh-pr-respond`'s confirmation flow or
 by direct user request.
 
 ## Error Handling
@@ -237,24 +237,24 @@ Skipped: Thread already resolved
 ## Integration
 
 ```
-dx:gh-pr-monitor → dx:gh-pr-respond (orchestrator)
-                 ├── dx:gh-pr-triage         ← this skill
-                 └── dx:gh-pr-fixup
+dev10x:gh-pr-monitor → dev10x:gh-pr-respond (orchestrator)
+                 ├── dev10x:gh-pr-triage         ← this skill
+                 └── dev10x:gh-pr-fixup
                       └── commit:fixup
 ```
 
 **Standalone usage:**
 ```bash
-/dx:gh-pr-triage https://github.com/owner/repo/pull/123#discussion_r456
+/dev10x:gh-pr-triage https://github.com/owner/repo/pull/123#discussion_r456
 ```
 
-**Called by dx:gh-pr-respond:**
+**Called by dev10x:gh-pr-respond:**
 ```
-dx:gh-pr-respond receives comment URL
-  → delegates to dx:gh-pr-triage
-  → if VALID → delegates to dx:gh-pr-fixup
-  → if INVALID/QUESTION/OUT_OF_SCOPE → dx:gh-pr-triage replied,
-    dx:gh-pr-respond asks user to confirm thread resolution
+dev10x:gh-pr-respond receives comment URL
+  → delegates to dev10x:gh-pr-triage
+  → if VALID → delegates to dev10x:gh-pr-fixup
+  → if INVALID/QUESTION/OUT_OF_SCOPE → dev10x:gh-pr-triage replied,
+    dev10x:gh-pr-respond asks user to confirm thread resolution
 ```
 
 ## References

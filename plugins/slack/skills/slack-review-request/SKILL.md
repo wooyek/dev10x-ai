@@ -1,8 +1,8 @@
 ---
-name: dx:slack-review-request
+name: dev10x:slack-review-request
 description: Post a Slack review request for a PR using per-project config (channel, mentions). Reads configuration from userspace YAML.
 user-invocable: true
-invocation-name: dx:slack-review-request
+invocation-name: dev10x:slack-review-request
 ---
 
 # Slack Review Request
@@ -102,11 +102,11 @@ Report success: channel ID, thread timestamp (if available).
 
 ## Integration
 
-This skill is invoked by `dx:gh-pr-monitor` Phase 3 (after GitHub
+This skill is invoked by `dev10x:gh-pr-monitor` Phase 3 (after GitHub
 reviewer assignment) to post the Slack notification. It handles only
 Slack posting — no GitHub API calls.
 
-For re-review notifications (Phase 2.7 in `dx:gh-pr-monitor`), the
+For re-review notifications (Phase 2.7 in `dev10x:gh-pr-monitor`), the
 calling skill composes a custom message (e.g., "@reviewer please take
 another look") and invokes this skill with `--message` directly,
 skipping the `prepare` step.
@@ -135,14 +135,14 @@ cc <!subteam^S0EXAMPLE> <@U0ALICE>
 ### Direct invocation (user-facing)
 
 ```
-/dx:slack-review-request                     # uses current branch PR
-/dx:slack-review-request --manual            # force config review
+/dev10x:slack-review-request                     # uses current branch PR
+/dev10x:slack-review-request --manual            # force config review
 ```
 
 ### Programmatic (from other skills)
 
 ```
-Skill("dx:slack-review-request",
+Skill("dev10x:slack-review-request",
   args={
     "pr_number": 42,
     "repo": "org/my-app",
@@ -153,5 +153,5 @@ Skill("dx:slack-review-request",
 
 ## See Also
 
-- `dx:gh-pr-monitor` — calls this skill in Phase 3 (review request workflow)
+- `dev10x:gh-pr-monitor` — calls this skill in Phase 3 (review request workflow)
 - `slack-config.yaml` — mention resolution mappings

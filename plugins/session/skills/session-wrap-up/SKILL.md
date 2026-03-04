@@ -1,16 +1,16 @@
 ---
-name: dx:wrap-up
+name: dev10x:wrap-up
 description: >
   Use at session end or when too many open loops pile up — so
   unfinished work is captured and routed to the right place instead
   of being lost when the session closes.
 user-invocable: true
-invocation-name: dx:wrap-up
+invocation-name: dev10x:wrap-up
 ---
 
-# dx:wrap-up — Session End Orchestrator
+# dev10x:wrap-up — Session End Orchestrator
 
-**Announce:** "Using dx:wrap-up to capture open loops before
+**Announce:** "Using dev10x:wrap-up to capture open loops before
 closing this session."
 
 ## Overview
@@ -96,13 +96,13 @@ For each open loop, present a choice using `AskUserQuestion`:
 
 **Options:**
 - **Finish now** — keep as session task, continue working
-- **Defer** — invoke `dx:park` for target selection
+- **Defer** — invoke `dev10x:park` for target selection
 - **Drop** — remove, no longer needed
 
 If the user picks "Finish now" for any item, pause the wrap-up and
 let them work. When they return, resume from where they left off.
 
-If the user picks "Defer", invoke `dx:park` with the item.
+If the user picks "Defer", invoke `dev10x:park` with the item.
 
 If the user picks "Drop", mark the task as completed via `TaskUpdate`
 and move on.
@@ -110,12 +110,12 @@ and move on.
 ## PR Reminder Format
 
 When deferring an item by posting a reminder comment on an open PR,
-use this standard prefix so `dx:park-discover` §2f can discover it:
+use this standard prefix so `dev10x:park-discover` §2f can discover it:
 
 ```markdown
 🔖 **Session bookmark**
 
-This is an automated self-reminder left by `dx:wrap-up` for the
+This is an automated self-reminder left by `dev10x:wrap-up` for the
 PR author to pick up in a future session.
 
 **Current state:** <brief summary of where the PR stands>
@@ -126,7 +126,7 @@ PR author to pick up in a future session.
 ```
 
 The `🔖 **Session bookmark**` prefix on the first line is required —
-`dx:park-discover` scans for this exact pattern when checking open
+`dev10x:park-discover` scans for this exact pattern when checking open
 PRs for deferred work.
 
 ## Phase 4: Summary
@@ -153,6 +153,6 @@ If the user has many items (>5), offer batch operations:
 
 ## Used By
 
-- Invoked directly by user: `/dx:wrap-up`
+- Invoked directly by user: `/dev10x:wrap-up`
 - Can be suggested by Claude when detecting session-end signals
   (e.g., user says "that's it for today", "let's wrap up")

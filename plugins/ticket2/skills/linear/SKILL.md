@@ -1,5 +1,5 @@
 ---
-name: dx:linear
+name: dev10x:linear
 description: Linear issue tracker operations via MCP tools. Get, create, update issues and list comments. Documentation-only skill — no scripts.
 user-invocable: false
 allowed-tools:
@@ -14,7 +14,7 @@ allowed-tools:
   - mcp__claude_ai_Linear__create_issue_label
 ---
 
-# dx:linear — Linear Issue Tracker
+# dev10x:linear — Linear Issue Tracker
 
 Documentation-only skill centralizing Linear MCP tool references.
 No scripts — all operations use MCP tools directly.

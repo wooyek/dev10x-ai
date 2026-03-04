@@ -60,14 +60,14 @@ their phone:
 
 | Step | Skill | Output |
 |------|-------|--------|
-| Scope | `dx:ticket-scope` | Architecture research, ticket update |
-| Branch | `dx:work-on` | Named branch, gathered context |
-| Commit | `dx:git-commit` | Atomic commits with benefit-focused titles |
-| Groom | `dx:git-groom` | Clean history, no fixup commits |
-| PR | `dx:gh-pr-create` | Job Story description, ticket links |
-| Monitor | `dx:gh-pr-monitor` | Background CI + review watch |
-| Respond | `dx:gh-pr-respond` | Batched review responses, minimal noise |
-| Review | `dx:gh-pr-review` | Domain-routed review across 5 agents |
+| Scope | `dev10x:ticket-scope` | Architecture research, ticket update |
+| Branch | `dev10x:work-on` | Named branch, gathered context |
+| Commit | `dev10x:git-commit` | Atomic commits with benefit-focused titles |
+| Groom | `dev10x:git-groom` | Clean history, no fixup commits |
+| PR | `dev10x:gh-pr-create` | Job Story description, ticket links |
+| Monitor | `dev10x:gh-pr-monitor` | Background CI + review watch |
+| Respond | `dev10x:gh-pr-respond` | Batched review responses, minimal noise |
+| Review | `dev10x:gh-pr-review` | Domain-routed review across 5 agents |
 
 No step produces wall-of-text. Each output is sized for a Slack
 preview, a PR comment, or a task list glance.
@@ -111,8 +111,8 @@ review comment) is concise enough to evaluate in seconds.
 | **Tooling** (2) | `py-uv`, `slack` | Python packaging, Slack notifications |
 | **Meta** (3) | `skill-create`, `skill-audit`, `skill-index` | Create, audit, and discover skills |
 
-All skills use the `dx:` prefix — type `/dx:git-commit` in the Claude
-Code CLI to run it. Run `/dx:skill-index` for the full reference.
+All skills use the `dev10x:` prefix — type `/dev10x:git-commit` in the Claude
+Code CLI to run it. Run `/dev10x:skill-index` for the full reference.
 
 ## Installation
 
@@ -172,7 +172,7 @@ Start a new Claude Code session and check that skills are loaded:
 ```bash
 claude
 # Inside the session, type:
-/dx:skill-index
+/dev10x:skill-index
 ```
 
 You should see a skills reference listing all available commands.

@@ -1,5 +1,5 @@
 ---
-name: dx:playwright
+name: dev10x:playwright
 description: >
   Run Playwright Python scripts against TireTutor staging safely.
   Use when writing or executing a Playwright automation script for self-QA
@@ -10,7 +10,7 @@ allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/playwright/scripts/*:*)
 ---
 
-# dx:playwright
+# dev10x:playwright
 
 ## Overview
 
@@ -176,8 +176,8 @@ uv run --with playwright python3 -m playwright install chromium
 ## Integration
 
 ```
-dx:playwright
-├── Called by: dx:qa-self (Phase 3 execution)
+dev10x:playwright
+├── Called by: dev10x:qa-self (Phase 3 execution)
 ├── Reads: /work/tt/tt-e2e/settings.secrets.env (credentials)
 ├── Scripts: run-playwright.sh (validate + inject + run)
 └── Output: /tmp/claude/playwright/  (screenshots, video)
