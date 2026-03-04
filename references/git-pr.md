@@ -81,6 +81,7 @@ The body should be **compact** to avoid cluttering Slack previews.
 **Do not include in body**:
 - Detailed summaries (put in first comment)
 - Implementation checklists (put in first comment)
+- Known limitations or TODOs (put in first comment)
 
 ```markdown
 **When** reviewing PRs without automated checks, **I want to** have
@@ -98,6 +99,15 @@ release notes process parses PR descriptions by position.
 *Bootstrapping exception:* A PR that introduces a new PR body
 requirement may not follow that requirement itself — the rule
 wasn't enforced when the PR was submitted.
+
+### If Review Issues Are Found
+
+If Claude finds code or metadata issues during review, your PR will be
+automatically converted to **draft** status. This prevents the merge button
+from becoming available while issues remain unfixed.
+
+After fixing all flagged issues, click **"Ready for review"** on the
+PR page to re-trigger the review workflows and allow merge once checks pass.
 
 ### PR First Comment (Summary + Checklist)
 
