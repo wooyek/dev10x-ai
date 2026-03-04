@@ -4,6 +4,7 @@ description: Create an issue tracker ticket (GitHub issue, Linear, or JIRA) with
 user-invocable: true
 invocation-name: ticket:create
 allowed-tools:
+  # TODO: gh-context moved to fundamentals plugin — cross-plugin script ref needs resolution
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
   - Bash(gh issue create:*)
 ---

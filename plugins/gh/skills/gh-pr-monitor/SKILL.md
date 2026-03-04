@@ -4,6 +4,7 @@ description: Launch a background agent to monitor PR CI checks and review commen
 user-invocable: true
 invocation-name: dx:gh-pr-monitor
 allowed-tools:
+  # TODO: gh-context moved to fundamentals plugin — cross-plugin script ref needs resolution
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
 ---
 

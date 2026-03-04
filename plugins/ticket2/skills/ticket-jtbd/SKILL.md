@@ -10,6 +10,7 @@ allowed-tools:
   - Bash(gh pr list:*)
   - Bash(git log:*)
   - Bash(git diff:*)
+  # TODO: gh-context moved to fundamentals plugin — cross-plugin script ref needs resolution
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
   - mcp__claude_ai_Linear__get_issue
   - mcp__claude_ai_Linear__list_issues
