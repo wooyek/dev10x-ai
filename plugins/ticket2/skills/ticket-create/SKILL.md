@@ -2,7 +2,7 @@
 name: dx:ticket-create
 description: Create an issue tracker ticket (GitHub issue, Linear, or JIRA) with proper formatting, description structure, and labels. Accepts title, description content, and optional labels. Automatically formats the description with Root Cause, Solution, and Files Changed sections. Returns the created ticket ID.
 user-invocable: true
-invocation-name: ticket:create
+invocation-name: dx:ticket-create
 allowed-tools:
   # TODO: gh-context moved to fundamentals plugin — cross-plugin script ref needs resolution
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
