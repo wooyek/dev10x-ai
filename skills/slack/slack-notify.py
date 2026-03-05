@@ -69,9 +69,9 @@ def get_token() -> str:
             return token
     except (subprocess.CalledProcessError, FileNotFoundError):
         pass
-    token = os.environ.get("SLACK_TOKEN")
-    if token:
-        return token
+    env_token = os.environ.get("SLACK_TOKEN")
+    if env_token:
+        return env_token
     raise RuntimeError("No Slack token found in system keyring or SLACK_TOKEN env")
 
 
