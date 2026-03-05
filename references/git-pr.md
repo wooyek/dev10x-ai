@@ -71,7 +71,9 @@ The body should be **compact** to avoid cluttering Slack previews.
 1. A JTBD Job Story as the **first paragraph** (1-3 lines, see `git-jtbd.md`)
 2. `Fixes:` link — must be the **absolute last line** of the body:
    - `Fixes: https://github.com/wooyek/dev10x-claude-plugin/issues/NUMBER`
-   - `Fixes: none — self-motivated refactor` (if no issue tracks this work)
+     (for issue-tracked work)
+   - `Fixes: none — self-motivated refactor` (for internal improvements,
+     features, or experiments without a tracking issue)
    - Do NOT add `---`, blank lines, or separators after `Fixes:`
 
 **Optional elements** (keep brief):
