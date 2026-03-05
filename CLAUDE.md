@@ -56,6 +56,18 @@ When renaming a plugin directory (e.g., `plugins/old/ → plugins/new/`):
 3. Update all SKILL.md files that reference the old path
 4. Search codebase for hardcoded directory paths
 
+## Cross-Platform Skill Porting
+
+When porting skills to external platforms (e.g., Codex format):
+
+- **Decision**: Port only stable, well-tested skills with clear reuse cases
+- **SKILL.md changes**: Remove Claude-specific fields (contexts, memory hooks);
+  keep name, description, usage examples, and invocation specs
+- **Validation**: Test ported skills with both `bin/validate-codex-skills.sh`
+  and native validation to ensure compatibility
+- **Documentation**: Include example showing skill's original and ported forms
+- **Commit**: One commit per stable skill or batch of related skills
+
 ## Code Review
 
 Multi-agent architecture with domain-routed reviewers:
