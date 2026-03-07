@@ -14,11 +14,75 @@ architecture design workflows. Not directly invocable — extended by:
 - `dev10x:ticket-scope` — for scoping Linear tickets
 - `dev10x:adr` — for creating Architecture Decision Records
 
+## Orchestration
+
+This skill follows `references/task-orchestration.md` patterns.
+
+**Auto-advance:** Complete each phase, immediately start the next.
+Never pause between phases.
+
+**Task tracking:** Create tasks for each phase at startup:
+
+```
+TaskCreate(subject="Gather technical context",
+    activeForm="Gathering context")
+TaskCreate(subject="Design solution architecture",
+    activeForm="Designing solution")
+TaskCreate(subject="Create implementation plan",
+    activeForm="Planning implementation")
+TaskCreate(subject="Document architecture and decisions",
+    activeForm="Documenting")
+TaskCreate(subject="Validate against principles",
+    activeForm="Validating design")
+```
+
+Set sequential dependencies. Mark each completed as you finish.
+
+**Parallel research in Phase 1:** Dispatch Explore subagents for
+independent research paths (external docs, codebase patterns,
+test expectations) — collect results before moving to Phase 2.
+
+**Decision gate after Phase 2:** Queue a decision for supervisor
+review of the proposed architecture before creating the
+implementation plan. If no other tasks are running, present
+immediately via AskUserQuestion:
+
+```
+AskUserQuestion(questions=[{
+    question: "Architecture design complete. Proceed?",
+    header: "Design",
+    options: [
+        {label: "Proceed to implementation plan (Recommended)",
+         description: "Design looks good, create actionable steps"},
+        {label: "Revise design",
+         description: "I have corrections to the architecture"},
+        {label: "More research needed",
+         description: "Need to explore additional patterns"}
+    ],
+    multiSelect: false
+}])
+```
+
 ## Core Scoping Workflow
 
 ### Phase 1: Context Gathering
 
 **Goal:** Understand the problem space before proposing solutions.
+
+Dispatch parallel Explore subagents for independent research:
+
+```
+Agent(subagent_type="Explore",
+    description="Research external documentation",
+    prompt="Fetch and summarize relevant docs for [topic]. Return: key concepts, APIs, constraints.",
+    run_in_background=true)
+Agent(subagent_type="Explore",
+    description="Find codebase patterns",
+    prompt="Search for similar components in [repo]. Return: pattern names, file paths, signatures.",
+    run_in_background=true)
+```
+
+Collect results, then proceed through sub-steps:
 
 #### 1.1 Identify Starting Point
 
@@ -68,6 +132,12 @@ Document what exists vs. what's needed:
 | **Models** | List existing | List new |
 | **APIs** | List existing | List new |
 
+Mark context gathering task completed, auto-advance:
+```
+TaskUpdate(taskId=gather_task, status="completed")
+TaskUpdate(taskId=design_task, status="in_progress")
+```
+
 ### Phase 2: Solution Design
 
 **Goal:** Design architecture that follows existing patterns.
@@ -111,6 +181,14 @@ Signature: [Method signatures with types]
 Dependencies: [What it needs injected]
 ```
 
+After design, queue the approval decision (see Orchestration
+section above). Auto-advance to Phase 3 after approval.
+
+```
+TaskUpdate(taskId=design_task, status="completed")
+TaskUpdate(taskId=plan_task, status="in_progress")
+```
+
 ### Phase 3: Implementation Planning
 
 **Goal:** Create actionable implementation steps.
@@ -141,6 +219,11 @@ Each step should include:
 
 **Mitigation strategies** for each risk.
 
+```
+TaskUpdate(taskId=plan_task, status="completed")
+TaskUpdate(taskId=doc_task, status="in_progress")
+```
+
 ### Phase 4: Documentation
 
 **Goal:** Create clear, actionable documentation.
@@ -164,6 +247,11 @@ For significant decisions, document:
 - **Decision:** What we chose
 - **Consequences:** What becomes easier/harder
 - **Alternatives:** What we considered and rejected
+
+```
+TaskUpdate(taskId=doc_task, status="completed")
+TaskUpdate(taskId=validate_task, status="in_progress")
+```
 
 ### Phase 5: Review and Iterate
 

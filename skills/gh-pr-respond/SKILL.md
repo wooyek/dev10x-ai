@@ -7,6 +7,38 @@ invocation-name: dev10x:gh-pr-respond
 
 # Respond to PR Review Comments
 
+## Orchestration
+
+This skill follows `references/task-orchestration.md` patterns.
+
+**Auto-advance:** Complete each step, immediately start the next.
+Never pause to ask "should I continue?" between steps.
+
+**Task tracking:** Create tasks so the supervisor can track
+progress through comment processing:
+
+**Mode A (single):**
+```
+TaskCreate(subject="Process comment r{id}", activeForm="Processing comment")
+TaskCreate(subject="Check remaining comments", activeForm="Checking remaining")
+```
+
+**Mode B (batch):**
+```
+TaskCreate(subject="Collect unaddressed comments", activeForm="Collecting comments")
+TaskCreate(subject=f"Triage {N} comments", activeForm="Triaging comments")
+TaskCreate(subject="Execute approved responses", activeForm="Executing responses")
+TaskCreate(subject="Resolve threads", activeForm="Resolving threads")
+```
+
+**Parallel triage (Mode B Step 2):** Dispatch up to 4 triage
+subagents concurrently to reduce processing time. Each subagent
+receives only its comment context and returns verdict + draft
+reply.
+
+**Batched decisions:** Thread resolution decisions are queued
+and presented as a batch after all responses are posted.
+
 ## Overview
 
 This skill handles PR review comments end-to-end in two modes:
@@ -128,11 +160,37 @@ Filter to only comments from that review (match `pull_request_review_id`).
 
 If no unaddressed comments found → report "No unaddressed comments" and stop.
 
-### Step 2: Triage all comments
+### Step 2: Triage all comments (parallel)
 
-For each unaddressed comment, run `dev10x:gh-pr-triage` **investigation only** (do NOT
-post replies or resolve threads yet). Produce a verdict and draft response for
-each.
+```
+TaskUpdate(taskId=triage_task, status="in_progress")
+```
+
+Dispatch parallel triage subagents — up to 4 concurrent. Each
+subagent receives only its comment context (not the full PR diff)
+and returns only the verdict + draft reply:
+
+```
+# In a single tool-call block:
+Agent(description=f"Triage r{id1} on {path1}",
+    prompt=f"""Triage PR comment r{id1}:
+    File: {path1}:{line1}
+    Comment: "{body1}"
+    Code context: {surrounding_code}
+    Evaluate: VALID, INVALID, QUESTION, or OUT_OF_SCOPE?
+    Return: verdict, reason (1 sentence), draft reply (2-3 sentences).""",
+    run_in_background=true)
+Agent(description=f"Triage r{id2} on {path2}", ..., run_in_background=true)
+Agent(description=f"Triage r{id3} on {path3}", ..., run_in_background=true)
+Agent(description=f"Triage r{id4} on {path4}", ..., run_in_background=true)
+```
+
+Collect results as notifications arrive. If more than 4 comments,
+dispatch the next batch as agents complete.
+
+```
+TaskUpdate(taskId=triage_task, status="completed")
+```
 
 Present the full plan to the user as a table:
 
@@ -162,6 +220,10 @@ reviewer").
 
 ### Step 4: Execute approved responses
 
+```
+TaskUpdate(taskId=execute_task, status="in_progress")
+```
+
 For each approved comment:
 
 - **VALID** → delegate to `dev10x:gh-pr-fixup` (one fixup commit per comment)
@@ -174,6 +236,11 @@ For each approved comment:
   Do **NOT** resolve the thread automatically.
 
 Report progress after each comment is processed.
+
+```
+TaskUpdate(taskId=execute_task, status="completed")
+TaskUpdate(taskId=resolve_task, status="in_progress")
+```
 
 ### Step 5: Thread resolution confirmation
 
