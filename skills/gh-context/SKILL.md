@@ -3,14 +3,45 @@ name: dev10x:gh-context
 description: Use when detecting PR context (number, repo, URL, branch) from a URL, PR number, or current branch — so skills like dev10x:gh-pr-monitor always get the correct target PR even in multi-worktree setups
 user-invocable: false
 allowed-tools:
+  - mcp__plugin_Dev10x_gh__*
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
   - Bash(/tmp/claude/bin/mktmp.sh:*)
 ---
 
 # dev10x:gh-context — GitHub CLI helpers
 
-Shell script wrappers for common `gh` operations. Pre-approved via
-`allowed-tools` so they run without permission prompts.
+Shell script wrappers for common `gh` operations. **These operations are
+now available as first-class MCP tools** via the `dev10x-gh` MCP server.
+Both paths (shell scripts and MCP tools) coexist during migration.
+
+## Using MCP Tools (Preferred)
+
+Instead of wrapping shell scripts via Bash, call the MCP tools directly for
+structured JSON responses and input validation:
+
+| Operation | MCP Tool | Replaces |
+|-----------|----------|----------|
+| Detect tracker type | `mcp__plugin_Dev10x_gh__detect_tracker(ticket_id)` | `detect-tracker.sh` |
+| Detect PR context | `mcp__plugin_Dev10x_gh__pr_detect(arg)` | `gh-pr-detect.sh` |
+| Get issue details | `mcp__plugin_Dev10x_gh__issue_get(number, repo?)` | `gh-issue-get.sh` |
+| Get issue comments | `mcp__plugin_Dev10x_gh__issue_comments(number, repo?)` | `gh-issue-comments.sh` |
+| Manage PR comments | `mcp__plugin_Dev10x_gh__pr_comments(action, ...)` | `~/.claude/tools/gh-pr-comments.py` |
+| Request review | `mcp__plugin_Dev10x_gh__request_review(pr_number, reviewers, ...)` | `~/.claude/tools/gh-request-review.py` |
+
+**Example usage in a skill:**
+
+```python
+# Old way (via Bash script):
+result = await run_script("skills/gh-context/scripts/detect-tracker.sh", "TEAM-133")
+tracker = parse_key_value_output(result.stdout)["TRACKER"]
+
+# New way (via MCP tool):
+result = await mcp_tool_detect_tracker(ticket_id="TEAM-133")
+tracker = result["tracker"]
+```
+
+New skills and skill updates should prefer MCP tools for consistency,
+input validation, and structured responses.
 
 ## Orchestration
 
