@@ -9,5 +9,25 @@
   "homepage": "https://www.skool.com/dev10x-1892",
   "repository": "https://github.com/wooyek/dev10x-ai",
   "license": "MIT",
-  "keywords": ["git", "commits", "pull-requests", "code-review", "workflow", "tasks"]
+  "keywords": ["git", "commits", "pull-requests", "code-review", "workflow", "tasks"],
+  "mcpServers": {
+    "gh": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/servers/gh_server.py",
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "git": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/servers/git_server.py",
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "db": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/servers/db_server.py",
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
 }
