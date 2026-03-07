@@ -160,14 +160,14 @@ specific skill families.
 Add the marketplace source and install the plugin:
 
 ```
-/plugin marketplace add wooyek/dev10x-claude-plugin
-/plugin install dev10x@dev10x
+/plugin marketplace add WooYek/Dev10x-AI
+/plugin install Dev10x@WooYek
 ```
 
 Update to the latest version:
 
 ```
-/plugin update dev10x@dev10x
+/plugin update Dev10x@WooYek
 ```
 
 ### Option B: Manual clone
@@ -177,24 +177,24 @@ the [Dev10x community](https://www.skool.com/dev10x-1892). Once you
 have access:
 
 ```bash
-git clone git@github.com:wooyek/dev10x-claude-plugin.git \
-  ~/.claude/plugins/dev10x-claude-plugin
+git clone git@github.com:wooyek/dev10x-ai.git \ 
+  ~/.claude/plugins/dev10x-ai
 ```
 
 > **Using HTTPS?** Replace the URL with
-> `https://github.com/wooyek/dev10x-claude-plugin.git` and
+> `https://github.com/wooyek/dev10x-ai.git` and
 > authenticate when prompted.
 
 Register the plugin so Claude Code loads it on every session:
 
 ```bash
-claude plugin add --local ~/.claude/plugins/dev10x-claude-plugin
+claude plugin add --local ~/.claude/plugins/dev10x-ai
 ```
 
 Update manually with:
 
 ```bash
-cd ~/.claude/plugins/dev10x-claude-plugin && git pull
+cd ~/.claude/plugins/dev10x-ai && git pull
 ```
 
 ### Verify the installation
@@ -214,7 +214,7 @@ You should see a skills reference listing all available commands.
 Load the plugin for a single session:
 
 ```bash
-claude --plugin-dir ~/.claude/plugins/dev10x-claude-plugin
+claude --plugin-dir ~/.claude/plugins/dev10x-ai
 ```
 
 ## Codex Skills (Published Pack)
@@ -276,13 +276,13 @@ To get access:
 Test locally without installing:
 
 ```bash
-claude --plugin-dir /path/to/dev10x-claude-plugin
+claude --plugin-dir /path/to/dev10x-ai
 ```
 
 Validate plugin structure:
 
 ```bash
-claude plugin validate /path/to/dev10x-claude-plugin
+claude plugin validate /path/to/dev10x-ai
 ```
 
 ## License
