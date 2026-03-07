@@ -83,22 +83,46 @@ extracted identifiers. Collect all sources into a list for Phase 2.
 
 ---
 
-## Phase 2: Gather (Quick & Parallel)
+## Phase 2: Gather (Quick & Parallel via Subagents)
 
-Fetch context from all sources **in parallel** — no supervisor
-interaction needed. Use parallel tool calls or Agent subagents.
+Fetch context from all sources in parallel using subagents.
+Each subagent receives only its source identifiers and returns
+a structured summary — keeping the main session lean.
 
-### Fetch Dispatch
+See `references/task-orchestration.md` Pattern 4 (Subagent
+Dispatch) for the full pattern.
 
-| Source type | Fetch method |
-|-------------|-------------|
-| `github-issue` | `dev10x:gh` script: `gh-issue-get.sh "$NUMBER" "$REPO"` |
-| `github-pr` | `gh pr view $NUMBER --repo $REPO --json title,body,headRefName,state,mergedAt,reviews` |
-| `linear-ticket` | `mcp__claude_ai_Linear__get_issue(issueId: "$ID")` — extract title, body, parent, relations, comments |
-| `jira-ticket` | `dev10x:jira` script: `jira-get.sh "$ID"` |
-| `slack-thread` | `mcp__claude_ai_Slack__slack_read_thread(channelId, threadTs)` |
-| `sentry-issue` | `mcp__sentry__get_issue_details(issueId)` — extract error, frequency, stack trace |
-| `note` | No fetch needed — pass through |
+### Subagent Dispatch
+
+Dispatch one Explore subagent per source in a single tool-call
+block. Each returns a structured summary, not raw API output:
+
+```
+# Single tool-call block — all launch concurrently
+Agent(subagent_type="Explore",
+    description=f"Fetch {source.type} {source.id}",
+    prompt=f"""Fetch context for {source.type}: {source.id}
+    {source_specific_instructions}
+    Return a structured summary:
+    - Title/subject
+    - Status (open/closed/merged)
+    - Key details (2-3 sentences)
+    - Cross-references found (URLs, ticket IDs)
+    Do NOT return full body text — summarize.""",
+    run_in_background=true)
+```
+
+### Source-Specific Instructions
+
+| Source type | Subagent instructions |
+|-------------|----------------------|
+| `github-issue` | Run `gh-issue-get.sh "$NUMBER" "$REPO"`. Return title, status, labels, body summary, linked PRs. |
+| `github-pr` | Run `gh pr view --json title,body,headRefName,state,mergedAt,reviews`. Return title, status, branch, review comment count. |
+| `linear-ticket` | Call `mcp__claude_ai_Linear__get_issue(issueId)`. Return title, status, parent ID, relations, comment summaries. |
+| `jira-ticket` | Run `jira-get.sh "$ID"`. Return title, status, assignee, linked issues. |
+| `slack-thread` | Call `mcp__claude_ai_Slack__slack_read_thread(channelId, threadTs)`. Return message count, key decisions, action items. |
+| `sentry-issue` | Call `mcp__sentry__get_issue_details(issueId)`. Return error type, frequency, first/last seen, top stack frame. |
+| `note` | No subagent needed — pass through as-is. |
 
 ### Cross-Reference Expansion (One Level)
 
@@ -314,14 +338,30 @@ Work through the approved task list. Update task status via
 
 ### Auto-Advance Rule
 
+See `references/task-orchestration.md` for the full pattern.
+
 **Complete a task → immediately start the next.** Do not pause
 between tasks to ask "should I continue?" or wait for the user
 to say "go" / "next" / "continue". The approved plan is the
 authorization to proceed.
 
-**Only pause for genuine decisions** — A/B choices where the
-user's preference is unknown and cannot be inferred from
-context. Routine confirmations are not decisions.
+**Batched Decision Queue:** When a task hits a genuine A/B
+decision, do NOT interrupt the user immediately. Instead:
+
+1. Queue the decision in task metadata:
+   ```
+   TaskUpdate(taskId, status="pending",
+       metadata={"decision_needed": "description",
+                 "options": ["A", "B", "C"]})
+   ```
+2. Move to the next unblocked task and keep advancing.
+3. Only interrupt when ALL tasks are blocked — collect all
+   queued decisions into one `AskUserQuestion` batch (1-4 Qs).
+4. After the user answers, unblock and resume auto-advancing.
+
+The supervisor can step away, come back to answer all decisions
+at once, then step away again confident maximum progress will
+happen before the next interruption.
 
 **If blocked on the current task** (waiting for user input,
 external dependency, CI), check whether the next unblocked

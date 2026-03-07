@@ -26,6 +26,32 @@ This skill helps restructure, polish, and clean up git commit history in the cur
 - Before creating a PR to ensure clean history
 - When CI blocks merge due to fixup commits
 
+## Orchestration
+
+This skill follows `references/task-orchestration.md` patterns.
+Read that file for full context on auto-advance and batched
+decision queues.
+
+**Auto-advance:** Complete each phase and immediately start the
+next. Never pause between phases to ask "should I continue?".
+
+**Task tracking:** Create tasks for each phase so the supervisor
+can track progress and expand the plan mid-flight.
+
+```
+TaskCreate(subject="Analyze commit history",
+    activeForm="Analyzing commits")
+TaskCreate(subject="Choose restructuring strategy",
+    activeForm="Choosing strategy")
+TaskCreate(subject="Execute restructure",
+    activeForm="Restructuring commits")
+TaskCreate(subject="Push and update PR references",
+    activeForm="Pushing changes")
+```
+
+Set dependencies: strategy blocked by analysis, execute blocked
+by strategy, push blocked by execute.
+
 ## Workflow
 
 ### Phase 1: Analyze Current State
@@ -48,6 +74,44 @@ Any commit (rebase, amend, reset) changes all descendant SHAs. Using
 analysis-time SHAs in execution scripts will silently target wrong commits.
 
 ### Phase 2: Choose Strategy
+
+After analysis, queue the strategy decision in task metadata.
+If no other tasks are running, present immediately. Otherwise
+the orchestrator batches it with other pending decisions.
+
+```
+TaskUpdate(taskId=strategy_task, status="pending",
+    metadata={"decision_needed": "Which restructuring strategy?",
+              "options": ["Fixup", "Full restructure",
+                          "Mass rewrite", "Interactive rebase"]})
+```
+
+When the decision arrives via `AskUserQuestion`, use previews
+so the supervisor sees the commands each strategy runs:
+
+```
+AskUserQuestion(questions=[{
+    question: "Which restructuring strategy for N commits?",
+    header: "Strategy",
+    options: [
+        {label: "Fixup (Recommended)",
+         description: "Small targeted fixes to specific commits",
+         preview: "git commit --fixup=<sha>\nGIT_SEQUENCE_EDITOR=true git rebase -i --autosquash"},
+        {label: "Full restructure",
+         description: "Reset all commits, rebuild from scratch",
+         preview: "git reset --soft <base>\ngit reset HEAD\ngit add -p"},
+        {label: "Mass rewrite",
+         description: "Non-interactive message rewrite from JSON",
+         preview: "mass-rewrite.py --config rewrite.json"},
+        {label: "Interactive rebase",
+         description: "Full manual control over commit order"}
+    ],
+    multiSelect: false
+}])
+```
+
+After selection, update the execute task description with the
+chosen strategy and auto-advance into Phase 3.
 
 #### Strategy A: Fixup Commits (for small targeted changes)
 
@@ -186,6 +250,13 @@ Commands in interactive rebase:
 
 ### Phase 3: Push Changes
 
+Mark the execute task completed, auto-advance to push:
+
+```
+TaskUpdate(taskId=execute_task, status="completed")
+TaskUpdate(taskId=push_task, status="in_progress")
+```
+
 ```bash
 # Force push with lease (safer than --force)
 git push origin <branch> --force-with-lease
@@ -204,6 +275,11 @@ contain stale commit hashes.
 4. If the PR body has a Job Story, preserve it unchanged
 
 This step is only needed when an open PR exists for the branch.
+
+After completing, mark all tasks done:
+```
+TaskUpdate(taskId=push_task, status="completed")
+```
 
 ## Common Scenarios
 
