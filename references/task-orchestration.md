@@ -1,0 +1,353 @@
+# Task Orchestration Patterns
+
+Shared reference for skills that manage multi-step workflows.
+Skills reference this document; it is not loaded by default.
+
+## Auto-Advance — Universal Rule
+
+This rule applies to ALL skills, regardless of tier. It is the
+single most important orchestration pattern.
+
+**Always auto-advance.** Complete a step or task, immediately
+start the next. Never pause to ask "should I continue?", "ready
+for the next step?", or wait for the user to say "go" / "next" /
+"continue". The invocation of the skill is the authorization to
+proceed through all its steps.
+
+```
+TaskUpdate(taskId=current, status="completed")
+TaskUpdate(taskId=next, status="in_progress")
+# Begin next task work immediately — no pause
+```
+
+**Routine confirmations are not decisions** — skip progress
+acknowledgments and "looks good?" checks. Keep going.
+
+### Batched Decision Queue
+
+When a task hits a genuine A/B decision that cannot be inferred
+from context, do NOT interrupt the user immediately. Instead:
+
+1. **Queue the decision** — record it in task metadata:
+   ```
+   TaskUpdate(taskId, status="pending",
+       metadata={"decision_needed": "Which strategy: fixup vs restructure?",
+                 "options": ["Fixup", "Full restructure", "Mass rewrite"]})
+   ```
+2. **Move to the next unblocked task** — continue advancing on
+   any task that doesn't require this decision.
+3. **Only interrupt when fully blocked** — when NO tasks can
+   advance further without user input, collect ALL queued
+   decisions into a single `AskUserQuestion` batch:
+   ```
+   AskUserQuestion(questions=[
+       {question: "git-groom: Which restructuring strategy?",
+        header: "Strategy", options: [...], multiSelect: false},
+       {question: "scope: Approve context findings?",
+        header: "Findings", options: [...], multiSelect: false},
+       {question: "PR: Which comments to address?",
+        header: "Comments", options: [...], multiSelect: true},
+   ])
+   ```
+4. **Unblock and resume** — after the user answers, update all
+   relevant tasks and resume auto-advancing.
+
+**Why batch?** The supervisor should be able to step away, come
+back to answer all pending decisions at once, then step away
+again confident that maximum progress will happen before the
+next interruption. One batch of 3 questions is better than 3
+separate interruptions spaced minutes apart.
+
+**AskUserQuestion supports 1-4 questions per call.** If more
+than 4 decisions are queued, prioritize by dependency order —
+ask decisions that unblock the most downstream work first.
+
+**Always queue, never ask inline.** Even single-task skills
+must queue their decisions rather than asking immediately. The
+skill does not know whether other skills or agents are running
+in parallel with their own pending decisions. The orchestrator
+(session or work-on) collects all queued decisions and presents
+them as a batch. This ensures the supervisor is interrupted
+once with N questions, not N times with 1 question each.
+
+## Mandatory Task Tracking — Universal Rule
+
+**Every skill MUST use TaskCreate** — even single-step skills.
+The task list is the supervisor's interface for tracking,
+expanding, and coordinating work across skills and agents.
+
+A skill with one step creates one task. The supervisor can then
+split it into two, add follow-up tasks, or let other skills
+contribute tasks to the same plan. Without TaskCreate, the
+skill becomes invisible to the orchestration layer.
+
+```
+# Even a simple skill like git-alias-setup:
+TaskCreate(subject="Configure git aliases",
+    activeForm="Configuring git aliases")
+# ... do work ...
+TaskUpdate(taskId, status="completed")
+```
+
+### Complexity Tiers (guidance, not opt-out)
+
+Tiers guide HOW MUCH orchestration a skill adds, not WHETHER
+it participates. All tiers use TaskCreate + auto-advance.
+
+| Tier | When | Additional patterns | Example skills |
+|------|------|---------------------|----------------|
+| **Full** | 4+ phases, 10+ min, decisions | TaskCreate per phase, AskUserQuestion gates, subagent dispatch, batched decisions | work-on, git-groom, gh-pr-respond, scope, qa-self |
+| **Standard** | 3-6 steps, some decisions | TaskCreate per major step, AskUserQuestion for key choices | git-commit, gh-pr-create, gh-pr-review |
+| **Minimal** | 1-2 steps, no decisions | Single TaskCreate, auto-advance, no gates | git-alias-setup, gh-pr-bookmark, park-todo |
+
+## Pattern 1: Out-of-Order Execution
+
+When the current task is blocked (waiting for user input, CI,
+external dependency), check whether the next unblocked task can
+start:
+
+```
+# Current task blocked — find next unblocked
+TaskUpdate(taskId=current, status="pending", metadata={"blocked": "reason"})
+tasks = TaskList()
+next = first task where status="pending" AND blockedBy is empty
+TaskUpdate(taskId=next, status="in_progress")
+```
+
+Return to the blocked task once the blocker resolves. Examples:
+- Waiting for CI? Start self-review meanwhile.
+- Waiting for user decision on approach? Draft the Job Story.
+- External API timeout? Skip to documentation task.
+
+## Pattern 2: Plan Mutation
+
+Plans are living documents. When new information changes the
+scope, mutate the plan rather than restarting:
+
+```
+# Add a task discovered mid-execution
+TaskCreate(subject="Handle edge case X", ...)
+TaskUpdate(taskId=new, addBlockedBy=[current])
+
+# Remove a task that's no longer needed
+TaskUpdate(taskId=obsolete, status="deleted")
+
+# Reorder by updating dependencies
+TaskUpdate(taskId=task_a, addBlockedBy=[task_b])
+```
+
+Announce mutations briefly: "Adding task for edge case X
+discovered during implementation."
+
+## Pattern 3: AskUserQuestion for Decisions
+
+Replace all plain-text y/n questions with `AskUserQuestion`.
+This gives the user structured widgets instead of free-text
+input.
+
+### When to use AskUserQuestion
+
+| Scenario | Use AskUserQuestion? |
+|----------|---------------------|
+| A/B choice (strategy, approach) | Yes — options with descriptions |
+| Approval gate (plan, PR body) | Yes — Approve / Edit / Skip |
+| Error recovery (retry, skip, abort) | Yes — with context in descriptions |
+| Free-text input (commit message body) | No — plain text is better |
+| Confirmation of auto-detected value | Yes — Confirm / Change |
+
+### Widget patterns
+
+**Binary choice with preview:**
+```
+AskUserQuestion(questions=[{
+    question: "Which commit restructuring strategy?",
+    header: "Strategy",
+    options: [
+        {label: "Fixup (Recommended)", description: "Small targeted fixes to specific commits", preview: "git commit --fixup=<sha>\ngit rebase -i --autosquash"},
+        {label: "Full restructure", description: "Reset and rebuild commit history from scratch"},
+        {label: "Mass rewrite", description: "Non-interactive message rewrite from JSON config"},
+    ],
+    multiSelect: false
+}])
+```
+
+**Multi-select for batch operations:**
+```
+AskUserQuestion(questions=[{
+    question: "Which review comments should I address?",
+    header: "Comments",
+    options: [
+        {label: "r101 — Use SubFactory", description: "VALID: Change LazyFunction to SubFactory in fakers.py:21"},
+        {label: "r102 — Randomize values", description: "VALID: Use Faker() for all fields"},
+        {label: "r103 — TYPE_CHECKING", description: "INVALID: 38+ files use this pattern"},
+    ],
+    multiSelect: true
+}])
+```
+
+**Error recovery:**
+```
+AskUserQuestion(questions=[{
+    question: "Tests failed. How to proceed?",
+    header: "Recovery",
+    options: [
+        {label: "Fix and retry (Recommended)", description: "Adjust the script and re-run"},
+        {label: "Skip this test case", description: "Mark as skipped, continue with remaining"},
+        {label: "Abort", description: "Stop QA execution entirely"},
+    ],
+    multiSelect: false
+}])
+```
+
+## Pattern 4: Subagent Dispatch
+
+Use subagents to reduce main-session token usage. Feed them
+only the context they need; receive only the summary back.
+
+### When to dispatch subagents
+
+| Scenario | Dispatch? |
+|----------|-----------|
+| Research/exploration (docs, codebase) | Yes — Explore agent |
+| Independent triage (N items, no shared state) | Yes — parallel general agents |
+| Sequential execution (rebase, ordered commits) | No — run inline |
+| Quick lookup (single file read, one grep) | No — direct tool call |
+
+### Dispatch pattern
+
+```
+Agent(
+    subagent_type="Explore",
+    description="Research payment retry patterns",
+    prompt="""
+    Context: We're implementing retry logic for Square payments.
+    The current code is in src/payments/square_client.py.
+
+    Find:
+    1. Existing retry patterns in the codebase
+    2. Square API documentation on idempotency
+    3. Test patterns for retry scenarios
+
+    Return: A summary of patterns found with file paths and
+    line numbers. Do not return full file contents.
+    """
+)
+```
+
+**Key principles:**
+- Include only relevant context in the prompt (not full conversation)
+- Ask for summary output, not raw data
+- Use `run_in_background=true` when you have other work to do
+- Use `isolation="worktree"` when the agent needs to modify files
+
+### Parallel dispatch
+
+When N items need independent processing, spawn agents in a
+single tool-call block:
+
+```
+# Triage 4 PR comments in parallel
+Agent(description="Triage comment r101", prompt="...", run_in_background=true)
+Agent(description="Triage comment r102", prompt="...", run_in_background=true)
+Agent(description="Triage comment r103", prompt="...", run_in_background=true)
+Agent(description="Triage comment r104", prompt="...", run_in_background=true)
+```
+
+Collect results as notifications arrive. Update tasks accordingly.
+
+## Pattern 5: Teams for Heavy Parallelism
+
+Use `TeamCreate` when multiple agents need to coordinate on
+shared state or when work products must be merged. Teams are
+heavier than ad-hoc agents — use only when:
+
+- 3+ independent implementation tasks exist
+- Each task produces files that don't conflict
+- A merge/review step follows
+
+For most skill workflows, parallel `Agent` calls with
+`run_in_background=true` are sufficient.
+
+## Pattern 6: Full Orchestration Template
+
+For Tier "Full" skills, structure the SKILL.md like this:
+
+```markdown
+## Phase 1: Gather Context
+
+TaskCreate(subject="Gather context", activeForm="Gathering context")
+
+[Dispatch parallel subagents for research]
+[Collect results, summarize]
+
+TaskUpdate(taskId, status="completed")
+
+## Phase 2: Plan
+
+TaskCreate(subject="Build execution plan", activeForm="Planning")
+
+[Generate sub-tasks via TaskCreate]
+[Set dependencies via TaskUpdate addBlockedBy]
+
+AskUserQuestion: Approve plan? (Approve / Edit)
+
+TaskUpdate(taskId, status="completed")
+
+## Phase 3+: Execute
+
+[Auto-advance through tasks]
+[Expand epics into sub-tasks when reached]
+[Mutate plan if scope changes]
+[Dispatch subagents for independent work]
+
+## Final: Verify
+
+[Check acceptance criteria]
+[Report completion]
+```
+
+## Pattern 7: Lightweight Orchestration Template
+
+For Tier "Light" skills, use a single task with status updates:
+
+```markdown
+TaskCreate(subject="Create PR for TICKET-123",
+    description="Validate state, generate body, run checks, push",
+    activeForm="Creating PR")
+
+### Step 1: Validate
+[Auto — script call]
+
+### Step 2: Generate PR body
+[Auto — template + Job Story]
+
+### Step 3: Decision gate
+AskUserQuestion: Approve PR title and body? (Approve / Edit)
+
+### Step 4: Pre-PR checks
+[Auto — script call, activeForm="Running pre-PR checks"]
+
+### Step 5: Push and create
+[Auto — script call]
+
+TaskUpdate(taskId, status="completed")
+```
+
+## Script Operations as Named Steps
+
+Skills reference scripts by path. When mentioning a script in
+task descriptions, use a descriptive operation name:
+
+| Operation | Script | Used by |
+|-----------|--------|---------|
+| Detect tracker | `gh-context/scripts/detect-tracker.sh` | work-on, gh-pr-create, ticket-jtbd |
+| Detect PR context | `gh-context/scripts/gh-pr-detect.sh` | gh-context, gh-pr-create, gh-pr-monitor |
+| Safe git push | `git/scripts/git-push-safe.sh` | git, git-groom |
+| Non-interactive rebase | `git/scripts/git-rebase-groom.sh` | git, git-groom |
+| Pre-PR quality checks | `gh-pr-create/scripts/pre-pr-checks.sh` | gh-pr-create |
+| Slack notify | `slack/slack-notify.py` | slack, park-remind |
+| Safe DB query | `db-psql/scripts/db.sh` | db-psql, db |
+| Run Playwright | `playwright/scripts/run-playwright.sh` | playwright, qa-self |
+
+This mapping helps subagents understand which operations are
+available without reading full SKILL.md files.
