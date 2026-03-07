@@ -35,6 +35,7 @@ The code review system uses a **multi-agent architecture**:
 | `git-jtbd.md` | Job Story format, principles, examples | `dev10x:jtbd` skill, PR hygiene CI |
 | `review-guidelines.md` | Review workflow, threads, summaries | `dev10x:gh-pr-review` skill, code review CI |
 | `review-checks-common.md` | False positives, verification | Review agent specs, code review CI |
+| `task-orchestration.md` | Auto-advance, batched decisions, TaskCreate | All skills (via `## Orchestration` section) |
 
 ## Agent Specs (`.claude/agents/`)
 
