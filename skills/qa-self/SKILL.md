@@ -23,6 +23,50 @@ Linear.
 - The test requires real hardware (e.g., Square Terminal pairing)
 - E2E tests in tt-e2e already cover the scenario
 
+## Orchestration
+
+This skill follows `references/task-orchestration.md` patterns.
+
+**Auto-advance:** Complete each phase, immediately start the next.
+Never pause between phases to ask "should I continue?".
+
+**Task tracking:** Create tasks for each phase at startup:
+
+```
+TaskCreate(subject="Verify staging deployment",
+    activeForm="Verifying deployment")
+TaskCreate(subject="Write Playwright test script",
+    activeForm="Writing test script")
+TaskCreate(subject="Execute tests on staging",
+    activeForm="Executing tests")
+TaskCreate(subject="Prepare evidence (screenshots + video)",
+    activeForm="Preparing evidence")
+TaskCreate(subject="Post results to Linear",
+    activeForm="Posting results")
+```
+
+Set sequential dependencies: each phase blocked by the previous.
+
+**Error recovery gate (Phase 3):** When tests fail, queue the
+decision in task metadata. If no other tasks can advance, present
+via AskUserQuestion:
+
+```
+AskUserQuestion(questions=[{
+    question: "Playwright tests failed. How to proceed?",
+    header: "Test Failure Recovery",
+    options: [
+        {label: "Fix and retry (Recommended)",
+         description: "Adjust the test script and re-run"},
+        {label: "Skip failing test case",
+         description: "Mark as skipped, continue with passing tests"},
+        {label: "Abort",
+         description: "Stop QA execution entirely"}
+    ],
+    multiSelect: false
+}])
+```
+
 ## Prerequisites
 
 - Linear ticket with test cases (from `dev10x:qa-scope` or manual)
