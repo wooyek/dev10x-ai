@@ -26,6 +26,55 @@ allowed-tools:
 Analyze a Claude Code session transcript for skill compliance, missed invocations,
 user corrections, and process improvements worth persisting into skill definitions.
 
+## Orchestration
+
+This skill follows `references/task-orchestration.md` patterns.
+
+**Auto-advance:** Complete each phase, immediately start the next.
+Never pause between phases.
+
+**Task tracking:** Create tasks for each phase at startup:
+
+```
+TaskCreate(subject="Resolve session file",
+    activeForm="Resolving session")
+TaskCreate(subject="Extract and read transcript",
+    activeForm="Extracting transcript")
+TaskCreate(subject="Run action inventory (Phase 1)",
+    activeForm="Inventorying actions")
+TaskCreate(subject="Run skill coverage analysis (Phase 2)",
+    activeForm="Analyzing skill coverage")
+TaskCreate(subject="Run compliance check (Phase 3)",
+    activeForm="Checking compliance")
+TaskCreate(subject="Run permission friction analysis (Phase 4)",
+    activeForm="Analyzing permissions")
+TaskCreate(subject="Extract lessons learned (Phase 5)",
+    activeForm="Extracting lessons")
+TaskCreate(subject="Propose changes (Phase 6)",
+    activeForm="Proposing changes")
+```
+
+Set sequential dependencies: each phase blocked by the previous.
+
+**Batched decision queue (Phase 6):** As earlier phases discover
+findings that need user decisions (skill updates, memory changes,
+allow rules), queue them in task metadata rather than interrupting:
+
+```
+TaskUpdate(taskId=phase_task, status="completed",
+    metadata={"decisions_queued": [
+        {"type": "SKILL_UPDATE", "skill": "dev10x:some-skill",
+         "change": "Add pitfall entry for X"},
+        {"type": "MEMORY_UPDATE",
+         "change": "Use wrapper Y instead of pattern Z"},
+        {"type": "ALLOW_RULE",
+         "change": "Add Bash(pytest:*) to settings"}
+    ]})
+```
+
+Collect all queued decisions into a single AskUserQuestion batch
+in Phase 6, so the user approves or rejects all changes at once.
+
 ## Arguments
 
 The skill accepts one optional argument, resolved in this order:

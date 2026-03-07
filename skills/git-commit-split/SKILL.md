@@ -13,6 +13,48 @@ allowed-tools:
 
 Split monolithic git commits into atomic, cohesive commits that follow Clean Architecture principles and dependency order. Each resulting commit should be self-contained, pass all tests, and change one well-scoped part of the code.
 
+## Orchestration
+
+This skill follows `references/task-orchestration.md` patterns.
+
+**Auto-advance:** Complete each phase, immediately start the next.
+Never pause between phases to ask "should I continue?".
+
+**Task tracking:** Create tasks for each phase at startup:
+
+```
+TaskCreate(subject="Identify split points and dependency order",
+    activeForm="Analyzing commit")
+TaskCreate(subject="Start interactive rebase",
+    activeForm="Starting rebase")
+TaskCreate(subject="Create atomic commits",
+    activeForm="Creating commits")
+TaskCreate(subject="Verify history and tests",
+    activeForm="Verifying commits")
+```
+
+Set sequential dependencies: each phase blocked by the previous.
+
+**Split strategy decision (Phase 1):** After analyzing the commit,
+queue the split strategy decision in task metadata. If no other
+tasks can advance, present via AskUserQuestion:
+
+```
+AskUserQuestion(questions=[{
+    question: "Proposed split into N commits. Approve?",
+    header: "Split Strategy",
+    options: [
+        {label: "Approve split plan (Recommended)",
+         description: "Proceed with the proposed commit boundaries"},
+        {label: "Adjust boundaries",
+         description: "I want to change how the split is organized"},
+        {label: "Abort",
+         description: "Keep the original monolithic commit"}
+    ],
+    multiSelect: false
+}])
+```
+
 ## Core Principles
 
 ### Atomic Commits
