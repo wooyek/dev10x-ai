@@ -28,6 +28,20 @@ Universal rules for every session. Detailed guides live in
 - Last line: `Fixes:` link (issue URL or `none — self-motivated`)
 - Full guide: `references/git-pr.md`
 
+## Decision Gates & Orchestration
+
+Skills with blocking decision points MUST use `AskUserQuestion` tool calls,
+never plain text questions. This ensures:
+- Execution blocks until the user responds (not auto-progressed)
+- Options are clickable and structured (not free-text)
+- The skill's documented flow is respected
+
+Mark every decision gate in SKILL.md with:
+**REQUIRED: Call `AskUserQuestion`** (do NOT use plain text)
+
+Plain text questions allow agents to silently substitute default answers,
+breaking skill orchestration. See `.claude/rules/skill-gates.md` for pattern.
+
 ## Reference Documents
 
 | Document | Topic | Loaded by |
