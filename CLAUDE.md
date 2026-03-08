@@ -59,6 +59,7 @@ MCP migration: shell scripts → MCP tools. See `.claude/rules/mcp-tools.md`.
 - **Default branch**: `develop` (PR target)
 - **Release branch**: `main` (merge from develop via release script)
 - **Branch naming**: `username/TICKET-ID/short-description`
+  (worktree: `username/TICKET-ID/worktree-name/short-description`)
 - **Commit format**: `<gitmoji> <TICKET-ID> <JTBD outcome>`
 - **Commit titles**: outcome-focused — "Enable X" not "Add X"
 - **Job Story voice** (REQUIRED): First-person "**I want to**" or explicit

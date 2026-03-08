@@ -28,10 +28,12 @@ Common Linear status names (may vary by team):
 ## Branch Naming Convention
 
 Format: `username/TICKET-ID/short-slug`
+Worktree: `username/TICKET-ID/worktree-name/short-slug`
 
 Examples:
 - `janusz/TEAM-133/fix-timeout`
 - `janusz/TEAM-200/add-retry-mechanism`
+- `janusz/TEAM-133/tt-pos-7/fix-timeout` (worktree)
 
 Rules:
 - Username from existing branches (`git branch -a`)

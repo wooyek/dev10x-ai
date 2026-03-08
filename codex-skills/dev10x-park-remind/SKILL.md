@@ -28,7 +28,7 @@ date +%Y-%m-%d
 ```
 
 Extract from branch name:
-- Ticket ID (pattern: `username/TICKET-ID/description`)
+- Ticket ID (pattern: `username/TICKET-ID/[worktree/]description`)
 - Project name (from repo root basename)
 
 ### 2. Format message

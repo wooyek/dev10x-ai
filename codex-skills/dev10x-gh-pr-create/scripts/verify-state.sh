@@ -46,7 +46,7 @@ if [ -n "$MASTER_REF" ]; then
     fi
 fi
 
-# Extract ticket ID from branch name (username/TICKET-ID/description)
+# Extract ticket ID from branch name (username/TICKET-ID/[worktree/]description)
 ISSUE=$(echo "$BRANCH_NAME" | cut -d'/' -f2)
 
 echo "BRANCH_NAME=$BRANCH_NAME"

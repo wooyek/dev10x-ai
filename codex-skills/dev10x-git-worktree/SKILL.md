@@ -15,7 +15,9 @@ The branch name is needed by both paths. Follow project naming conventions:
 
 - username: check `git branch -a` for the pattern used (e.g. `janusz`)
 - slug: lowercase ticket title, hyphens, stop-words removed, max 3–4 words
-- format: `username/TICKET-ID/slug`
+- regular repo: `username/TICKET-ID/slug`
+- worktree: `username/TICKET-ID/worktree-name/slug`
+  (worktree name = basename of the worktree directory, e.g. `tt-pos-7`)
 
 ### Step 2: Choose Worktree Mode
 
