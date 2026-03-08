@@ -35,19 +35,13 @@ decision queues.
 **Auto-advance:** Complete each phase and immediately start the
 next. Never pause between phases to ask "should I continue?".
 
-**Task tracking:** Create tasks for each phase so the supervisor
-can track progress and expand the plan mid-flight.
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Analyze commit history",
-    activeForm="Analyzing commits")
-TaskCreate(subject="Choose restructuring strategy",
-    activeForm="Choosing strategy")
-TaskCreate(subject="Execute restructure",
-    activeForm="Restructuring commits")
-TaskCreate(subject="Push and update PR references",
-    activeForm="Pushing changes")
-```
+1. `TaskCreate(subject="Analyze commit history", activeForm="Analyzing commits")`
+2. `TaskCreate(subject="Choose restructuring strategy", activeForm="Choosing strategy")`
+3. `TaskCreate(subject="Execute restructure", activeForm="Restructuring commits")`
+4. `TaskCreate(subject="Push and update PR references", activeForm="Pushing changes")`
 
 Set dependencies: strategy blocked by analysis, execute blocked
 by strategy, push blocked by execute.

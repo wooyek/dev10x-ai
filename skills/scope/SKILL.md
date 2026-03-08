@@ -21,22 +21,16 @@ This skill follows `references/task-orchestration.md` patterns.
 **Auto-advance:** Complete each phase, immediately start the next.
 Never pause between phases.
 
-**Task tracking:** Create tasks for each phase at startup:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Gather technical context",
-    activeForm="Gathering context")
-TaskCreate(subject="Design solution architecture",
-    activeForm="Designing solution")
-TaskCreate(subject="Create implementation plan",
-    activeForm="Planning implementation")
-TaskCreate(subject="Document architecture and decisions",
-    activeForm="Documenting")
-TaskCreate(subject="Validate against principles",
-    activeForm="Validating design")
-```
+1. `TaskCreate(subject="Gather technical context", activeForm="Gathering context")`
+2. `TaskCreate(subject="Design solution architecture", activeForm="Designing solution")`
+3. `TaskCreate(subject="Create implementation plan", activeForm="Planning implementation")`
+4. `TaskCreate(subject="Document architecture and decisions", activeForm="Documenting")`
+5. `TaskCreate(subject="Validate against principles", activeForm="Validating design")`
 
-Set sequential dependencies. Mark each completed as you finish.
+Set sequential dependencies. Update status as each completes.
 
 **Parallel research in Phase 1:** Dispatch Explore subagents for
 independent research paths (external docs, codebase patterns,

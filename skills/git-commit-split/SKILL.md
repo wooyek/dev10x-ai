@@ -20,18 +20,13 @@ This skill follows `references/task-orchestration.md` patterns.
 **Auto-advance:** Complete each phase, immediately start the next.
 Never pause between phases to ask "should I continue?".
 
-**Task tracking:** Create tasks for each phase at startup:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Identify split points and dependency order",
-    activeForm="Analyzing commit")
-TaskCreate(subject="Start interactive rebase",
-    activeForm="Starting rebase")
-TaskCreate(subject="Create atomic commits",
-    activeForm="Creating commits")
-TaskCreate(subject="Verify history and tests",
-    activeForm="Verifying commits")
-```
+1. `TaskCreate(subject="Identify split points and dependency order", activeForm="Analyzing commit")`
+2. `TaskCreate(subject="Start interactive rebase", activeForm="Starting rebase")`
+3. `TaskCreate(subject="Create atomic commits", activeForm="Creating commits")`
+4. `TaskCreate(subject="Verify history and tests", activeForm="Verifying commits")`
 
 Set sequential dependencies: each phase blocked by the previous.
 

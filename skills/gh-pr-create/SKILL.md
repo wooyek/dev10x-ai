@@ -27,18 +27,13 @@ This skill follows `references/task-orchestration.md` patterns
 **Auto-advance:** Complete each step and immediately start the next.
 Never pause between steps to ask "should I continue?".
 
-**Task tracking:** Create tasks for each major step at startup:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Verify git state",
-    activeForm="Verifying git state")
-TaskCreate(subject="Generate PR body",
-    activeForm="Generating PR body")
-TaskCreate(subject="Run pre-PR checks",
-    activeForm="Running pre-PR checks")
-TaskCreate(subject="Push and create PR",
-    activeForm="Creating PR")
-```
+1. `TaskCreate(subject="Verify git state", activeForm="Verifying git state")`
+2. `TaskCreate(subject="Generate PR body", activeForm="Generating PR body")`
+3. `TaskCreate(subject="Run pre-PR checks", activeForm="Running pre-PR checks")`
+4. `TaskCreate(subject="Push and create PR", activeForm="Creating PR")`
 
 Set sequential dependencies: generate blocked by verify, checks
 blocked by generate, push blocked by checks.

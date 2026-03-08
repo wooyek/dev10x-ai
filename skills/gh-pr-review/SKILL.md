@@ -33,16 +33,12 @@ This skill follows `references/task-orchestration.md` patterns
 **Auto-advance:** Complete each step and immediately start the next.
 Never pause between steps to ask "should I continue?".
 
-**Task tracking:** Create tasks for each major step at startup:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Fetch PR diff",
-    activeForm="Fetching PR context")
-TaskCreate(subject="Review changes",
-    activeForm="Reviewing changes")
-TaskCreate(subject="Post findings",
-    activeForm="Posting review")
-```
+1. `TaskCreate(subject="Fetch PR diff", activeForm="Fetching PR context")`
+2. `TaskCreate(subject="Review changes", activeForm="Reviewing changes")`
+3. `TaskCreate(subject="Post findings", activeForm="Posting review")`
 
 Set sequential dependencies: review blocked by fetch, post blocked
 by review.

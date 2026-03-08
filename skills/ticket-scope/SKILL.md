@@ -31,22 +31,15 @@ with Linear-specific tasks.
 **Auto-advance:** Complete each phase and immediately start the next.
 Never pause between phases to ask "should I continue?".
 
-**Task tracking:** Create tasks for each scoping phase at startup:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Fetch Linear ticket context",
-    activeForm="Fetching ticket")
-TaskCreate(subject="Research technical context",
-    activeForm="Researching codebase")
-TaskCreate(subject="Design solution architecture",
-    activeForm="Designing solution")
-TaskCreate(subject="Estimate complexity and draft Job Story",
-    activeForm="Estimating complexity")
-TaskCreate(subject="Format and present scoping document",
-    activeForm="Formatting scope")
-TaskCreate(subject="Save and update Linear",
-    activeForm="Saving scope")
-```
+1. `TaskCreate(subject="Fetch Linear ticket context", activeForm="Fetching ticket")`
+2. `TaskCreate(subject="Research technical context", activeForm="Researching codebase")`
+3. `TaskCreate(subject="Design solution architecture", activeForm="Designing solution")`
+4. `TaskCreate(subject="Estimate complexity and draft Job Story", activeForm="Estimating complexity")`
+5. `TaskCreate(subject="Format and present scoping document", activeForm="Formatting scope")`
+6. `TaskCreate(subject="Save and update Linear", activeForm="Saving scope")`
 
 Set sequential dependencies: research blocked by fetch, design
 blocked by research, estimate blocked by design, format blocked by

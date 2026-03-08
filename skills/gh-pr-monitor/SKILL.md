@@ -27,26 +27,16 @@ This skill follows `references/task-orchestration.md` patterns.
 **Auto-advance:** Complete each phase, immediately start the next.
 Never pause to ask "should I continue?" between phases.
 
-**Task tracking:** Create tasks for each monitoring phase so the
-supervisor can track progress. The background agent creates these
-tasks after launch:
+**REQUIRED: Create tasks after launch.** The background agent
+executes these `TaskCreate` calls before any monitoring work:
 
-```
-TaskCreate(subject="Detect PR context and launch agent",
-    activeForm="Detecting PR context")
-TaskCreate(subject="Check JTBD Job Story (Phase 0)",
-    activeForm="Checking Job Story")
-TaskCreate(subject="Monitor CI checks (Phase 1)",
-    activeForm="Monitoring CI")
-TaskCreate(subject="Address review comments (Phase 2)",
-    activeForm="Addressing comments")
-TaskCreate(subject="Assess QA scope (Phase 2.5)",
-    activeForm="Assessing QA scope")
-TaskCreate(subject="Notify re-review (Phase 2.7)",
-    activeForm="Notifying re-review")
-TaskCreate(subject="Send review notification (Phase 3)",
-    activeForm="Sending notification")
-```
+1. `TaskCreate(subject="Detect PR context and launch agent", activeForm="Detecting PR context")`
+2. `TaskCreate(subject="Check JTBD Job Story (Phase 0)", activeForm="Checking Job Story")`
+3. `TaskCreate(subject="Monitor CI checks (Phase 1)", activeForm="Monitoring CI")`
+4. `TaskCreate(subject="Address review comments (Phase 2)", activeForm="Addressing comments")`
+5. `TaskCreate(subject="Assess QA scope (Phase 2.5)", activeForm="Assessing QA scope")`
+6. `TaskCreate(subject="Notify re-review (Phase 2.7)", activeForm="Notifying re-review")`
+7. `TaskCreate(subject="Send review notification (Phase 3)", activeForm="Sending notification")`
 
 Set dependencies: each phase blocked by its predecessor. Phases
 2.5 and 2.7 are conditional — skip via TaskUpdate status="deleted"
