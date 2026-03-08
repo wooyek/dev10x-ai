@@ -101,190 +101,44 @@ review comment) is concise enough to evaluate in seconds.
 
 | Family | Skills | What it automates |
 |--------|--------|-------------------|
-| **Git** (8) | `git-commit`, `git-commit-split`, `git-fixup`, `git-groom`, `git-promote`, `git-worktree`, `git`, `git-alias-setup` | Atomic commits, clean history, workspace isolation |
-| **PR** (9) | `gh-pr-create`, `gh-pr-review`, `gh-pr-respond`, `gh-pr-monitor`, `gh-pr-triage`, `gh-pr-fixup`, `gh-pr-request-review`, `gh-pr-bookmark`, `gh-context` | Full PR lifecycle, domain-routed review |
-| **Tickets** (6) | `ticket-create`, `ticket-branch`, `ticket-scope`, `ticket-jtbd`, `work-on`, `linear` | Issue tracker integration, ticket scoping |
-| **Park** (4) | `park`, `park-todo`, `park-remind`, `park-discover` | Deferred work parking |
-| **Scoping** (3) | `scope`, `jtbd`, `adr` | Architecture decisions, Job Story format |
-| **QA** (3) | `qa-scope`, `qa-self`, `playwright` | Test planning, self-review, browser testing |
-| **Session** (2) | `session-tasks`, `wrap-up` | In-session work tracking |
-| **Tooling** (2) | `py-uv`, `slack` | Python packaging, Slack notifications |
-| **Meta** (3) | `skill-create`, `skill-audit`, `skill-index` | Create, audit, and discover skills |
+| **Git** | `git-commit`, `git-commit-split`, `git-fixup`, `git-groom`, `git-promote`, `git-worktree`, `git`, `git-alias-setup` | Atomic commits, clean history, workspace isolation |
+| **PR** | `gh-pr-create`, `gh-pr-review`, `gh-pr-respond`, `gh-pr-monitor`, `gh-pr-triage`, `gh-pr-fixup`, `gh-pr-request-review`, `gh-pr-bookmark`, `gh-context` | Full PR lifecycle, domain-routed review |
+| **Tickets** | `ticket-create`, `ticket-branch`, `ticket-scope`, `ticket-jtbd`, `work-on`, `linear` | Issue tracker integration, ticket scoping |
+| **Park** | `park`, `park-todo`, `park-remind`, `park-discover` | Deferred work parking |
+| **Scoping** | `scope`, `jtbd`, `adr` | Architecture decisions, Job Story format |
+| **QA** | `qa-scope`, `qa-self`, `playwright` | Test planning, self-review, browser testing |
+| **Session** | `session-tasks`, `wrap-up` | In-session work tracking |
+| **Tooling** | `py-uv`, `slack` | Python packaging, Slack notifications |
+| **Meta** | `skill-create`, `skill-audit`, `skill-index` | Create, audit, and discover skills |
 
 All skills use the `dev10x:` prefix — type `/dev10x:git-commit` in the Claude
 Code CLI to run it. Run `/dev10x:skill-index` for the full reference.
 
 ## Installation
 
-### Prerequisites
-
-- [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code)
-  installed and authenticated
-- Git 2.20+ (for worktree support)
-- GitHub CLI (`gh`) installed and authenticated
-
-### External Dependencies
-
-Plugin scripts rely on several external tools. Core tools are
-needed for most workflows; optional tools are only needed by
-specific skill families.
-
-#### Core (required)
-
-| Tool | Used by |
-|------|---------|
-| [Git](https://git-scm.com/downloads) 2.20+ | All skills |
-| [GitHub CLI (`gh`)](https://github.com/cli/cli#installation) | PR, ticket, release skills |
-| [`jq`](https://jqlang.github.io/jq/download/) 1.6+ | Tracker detection, worktree hooks, session hooks |
-| [`uv`](https://docs.astral.sh/uv/getting-started/installation/) | All Python scripts (PEP 723 shebang), worktree setup |
-| [`yq` v4](https://github.com/mikefarah/yq#install) (mikefarah) | `skill-index` (MOTD, skills menu) |
-
-> **Python dependencies** are handled automatically. Scripts use
-> [PEP 723](https://peps.python.org/pep-0723/) inline metadata so
-> `uv` resolves packages like `slack_sdk`, `pyyaml`, and `requests`
-> at runtime — no manual `pip install` needed.
-
-#### Optional (skill-specific)
-
-| Tool | Used by |
-|------|---------|
-| [PostgreSQL client (`psql`)](https://www.postgresql.org/download/) | `dev10x:db-psql` — database queries |
-| [`libsecret` (`secret-tool`)](https://gitlab.gnome.org/GNOME/libsecret) | Keyring lookups for DB DSNs, Slack tokens, Linear API keys |
-| [`ffmpeg`](https://ffmpeg.org/download.html) | `dev10x:qa-self` — video evidence conversion |
-| [ImageMagick](https://imagemagick.org/script/download.php) (`convert`) | `dev10x:qa-self` — screenshot conversion |
-| [Playwright](https://playwright.dev/python/docs/intro#installing-playwright) | `dev10x:playwright` — browser QA (auto-installed via `uv`) |
-| [`bump-my-version`](https://github.com/callowayproject/bump-my-version#installation) | `bin/release.sh` — plugin releases |
-
-### Option A: Marketplace install (recommended)
-
-Add the marketplace source and install the plugin:
-
 ```
 /plugin marketplace add WooYek/Dev10x-AI
 /plugin install Dev10x@WooYek
 ```
 
-Update to the latest version:
+[Full installation guide →](docs/installation.md) — prerequisites,
+dependencies, manual clone, develop branch, and verification.
 
-```
-/plugin update Dev10x@WooYek
-```
+## Codex Skills
 
-### Option B: Manual clone
+A Codex-native pack is available in `codex-skills/` for use outside
+Claude Code.
 
-This is a private repository. You need GitHub access granted through
-the [Dev10x community](https://www.skool.com/dev10x-1892). Once you
-have access:
+[Codex skills guide →](docs/codex.md)
 
-```bash
-git clone git@github.com:wooyek/dev10x-ai.git \ 
-  ~/.claude/plugins/dev10x-ai
-```
+## Community
 
-> **Using HTTPS?** Replace the URL with
-> `https://github.com/wooyek/dev10x-ai.git` and
-> authenticate when prompted.
-
-Register the plugin so Claude Code loads it on every session:
-
-```bash
-claude plugin add --local ~/.claude/plugins/dev10x-ai
-```
-
-Update manually with:
-
-```bash
-cd ~/.claude/plugins/dev10x-ai && git pull
-```
-
-### Verify the installation
-
-Start a new Claude Code session and check that skills are loaded:
-
-```bash
-claude
-# Inside the session, type:
-/dev10x:skill-index
-```
-
-You should see a skills reference listing all available commands.
-
-### Try without installing
-
-Load the plugin for a single session:
-
-```bash
-claude --plugin-dir ~/.claude/plugins/dev10x-ai
-```
-
-## Codex Skills (Published Pack)
-
-This repository now includes a Codex-native pack in `codex-skills/`.
-Each skill is installable into `~/.codex/skills/<skill-name>`.
-
-### What was ported
-
-- All 43 Dev10x skills were ported to Codex format under `codex-skills/`
-- `SKILL.md` frontmatter normalized to Codex-compatible fields:
-  - `name`
-  - `description`
-- Claude-specific frontmatter fields were removed from the Codex pack
-
-### Install all Codex skills (local clone)
-
-```bash
-bin/install-codex-skills.sh
-```
-
-### Validate Codex pack before publishing
-
-```bash
-bin/validate-codex-skills.sh
-```
-
-### Install from GitHub with Codex skill installer
-
-Install one or more skills directly from this repository:
-
-```bash
-scripts/install-skill-from-github.py \
-  --repo wooyek/dev10x-ai \
-  --path codex-skills/dev10x-git-commit \
-  --path codex-skills/dev10x-gh-pr-create
-```
-
-To install all skills from GitHub, pass every path under `codex-skills/`.
-You can list them with:
-
-```bash
-find codex-skills -mindepth 1 -maxdepth 1 -type d | sort
-```
-
-## Getting access
-
-This plugin is available to members of the
-[Dev10x community on Skool](https://www.skool.com/dev10x-1892).
-To get access:
-
-1. Join the community at https://www.skool.com/dev10x-1892
-2. Share your GitHub username in the community
-3. You will be added as a collaborator to the private repo
-4. Clone and install using the steps above
+The [Dev10x community on Skool](https://www.skool.com/dev10x-1892)
+is where plugin users get assistance, request features, and share
+workflows. If you already have access to this repository, you do not
+need to join Skool — it is a support and discussion hub, not a
+gatekeeper for repo access.
 
 ## Development
 
-Test locally without installing:
-
-```bash
-claude --plugin-dir /path/to/dev10x-ai
-```
-
-Validate plugin structure:
-
-```bash
-claude plugin validate /path/to/dev10x-ai
-```
-
-## License
-
-MIT
+[Development guide →](docs/development.md)
