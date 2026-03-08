@@ -39,6 +39,26 @@ reply.
 **Batched decisions:** Thread resolution decisions are queued
 and presented as a batch after all responses are posted.
 
+## Decision Gates
+
+This skill has 4 **blocking decision gates** where execution
+MUST pause for user input via the `AskUserQuestion` tool.
+
+**Plain text questions are NOT acceptable** — they don't block
+execution, don't provide clickable options, and break the
+structured decision flow the user relies on.
+
+| # | Location | Purpose |
+|---|----------|---------|
+| 1 | Mode A, Step 1b | Confirm thread resolution |
+| 2 | Mode A, Step 3 | Continue / batch / stop |
+| 3 | Mode B, Step 3 | Approve / review / skip batch |
+| 4 | Mode B, Step 5 | Resolve threads confirmation |
+
+Each gate is marked with **REQUIRED: `AskUserQuestion`** in the
+step description. If you see that marker, you MUST call the
+`AskUserQuestion` tool — never substitute with inline text.
+
 ## Overview
 
 This skill handles PR review comments end-to-end in two modes:
@@ -109,9 +129,23 @@ Comment r{comment_id} on {path}:{line}:
 Resolve this thread?
 ```
 
-Use `AskUserQuestion` with options:
-- **"Resolve"** — Resolve the thread via GraphQL
-- **"Leave open"** — Keep the thread open (reply already posted)
+**REQUIRED: Call `AskUserQuestion`** (do NOT use plain text).
+This blocks execution until the user responds.
+
+```
+AskUserQuestion(questions=[{
+    question: "Resolve thread r{comment_id} on {path}:{line}?
+               Verdict: {verdict} — {reason}",
+    header: "Thread",
+    options: [
+        {label: "Resolve",
+         description: "Resolve the thread via GraphQL"},
+        {label: "Leave open",
+         description: "Keep thread open (reply already posted)"}
+    ],
+    multiSelect: false
+}])
+```
 
 ### Step 2: Check for remaining comments
 
@@ -136,10 +170,25 @@ Processed comment r{comment_id} → {verdict}
 Continue to the next one?
 ```
 
-Use `AskUserQuestion` with options:
-- **"Next comment"** — Process the next unaddressed comment (loop back to Step 1)
-- **"Switch to batch mode"** — Triage all remaining and present a plan (jump to Mode B Step 2)
-- **"Stop"** — End
+**REQUIRED: Call `AskUserQuestion`** (do NOT use plain text).
+This blocks execution until the user decides how to proceed.
+
+```
+AskUserQuestion(questions=[{
+    question: "{N} unaddressed comment(s) remaining.
+               How should we proceed?",
+    header: "Continue",
+    options: [
+        {label: "Next comment",
+         description: "Process the next unaddressed comment"},
+        {label: "Switch to batch mode",
+         description: "Triage all remaining and present a plan"},
+        {label: "Stop",
+         description: "End processing"}
+    ],
+    multiSelect: false
+}])
+```
 
 ---
 
@@ -209,10 +258,24 @@ Approve all, or specify which to modify/skip?
 
 ### Step 3: Get user approval
 
-Use `AskUserQuestion`:
-- **"Approve all"** — Execute all proposed responses
-- **"Review one-by-one"** — Present each for individual approval (like Mode A)
-- **"Skip"** — Cancel batch
+**REQUIRED: Call `AskUserQuestion`** (do NOT use plain text).
+This blocks execution until the user approves the batch plan.
+
+```
+AskUserQuestion(questions=[{
+    question: "How should I process these {N} comments?",
+    header: "Batch",
+    options: [
+        {label: "Approve all",
+         description: "Execute all proposed responses"},
+        {label: "Review one-by-one",
+         description: "Present each for individual approval"},
+        {label: "Skip",
+         description: "Cancel batch"}
+    ],
+    multiSelect: false
+}])
+```
 
 The user may also provide corrections in free text (e.g., "Comment 2 is not
 valid, we use DataclassField" or "Comment 4: make it a question to the
@@ -265,10 +328,26 @@ Present each thread with its verdict and reason:
 Resolve these threads?
 ```
 
-Use `AskUserQuestion` with options:
-- **"Resolve all"** — Resolve all listed threads
-- **"Review one-by-one"** — Confirm each thread individually
-- **"Leave all open"** — Keep all threads open (replies already posted)
+**REQUIRED: Call `AskUserQuestion`** (do NOT use plain text).
+This blocks execution until the user confirms which threads
+to resolve.
+
+```
+AskUserQuestion(questions=[{
+    question: "{N} threads replied to but not resolved.
+               How should we handle them?",
+    header: "Resolve",
+    options: [
+        {label: "Resolve all",
+         description: "Resolve all listed threads"},
+        {label: "Review one-by-one",
+         description: "Confirm each thread individually"},
+        {label: "Leave all open",
+         description: "Keep threads open (replies posted)"}
+    ],
+    multiSelect: false
+}])
+```
 
 **If "Review one-by-one":** For each thread, present:
 ```
