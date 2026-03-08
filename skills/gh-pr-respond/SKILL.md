@@ -14,22 +14,20 @@ This skill follows `references/task-orchestration.md` patterns.
 **Auto-advance:** Complete each step, immediately start the next.
 Never pause to ask "should I continue?" between steps.
 
-**Task tracking:** Create tasks so the supervisor can track
-progress through comment processing:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup based on the detected mode:
 
 **Mode A (single):**
-```
-TaskCreate(subject="Process comment r{id}", activeForm="Processing comment")
-TaskCreate(subject="Check remaining comments", activeForm="Checking remaining")
-```
+1. `TaskCreate(subject="Process comment r{id}", activeForm="Processing comment")`
+2. `TaskCreate(subject="Check remaining comments", activeForm="Checking remaining")`
 
 **Mode B (batch):**
-```
-TaskCreate(subject="Collect unaddressed comments", activeForm="Collecting comments")
-TaskCreate(subject=f"Triage {N} comments", activeForm="Triaging comments")
-TaskCreate(subject="Execute approved responses", activeForm="Executing responses")
-TaskCreate(subject="Resolve threads", activeForm="Resolving threads")
-```
+1. `TaskCreate(subject="Collect unaddressed comments", activeForm="Collecting comments")`
+2. `TaskCreate(subject=f"Triage {N} comments", activeForm="Triaging comments")`
+3. `TaskCreate(subject="Execute approved responses", activeForm="Executing responses")`
+4. `TaskCreate(subject="Resolve threads", activeForm="Resolving threads")`
+
+Set dependencies and update status as each completes.
 
 **Parallel triage (Mode B Step 2):** Dispatch up to 4 triage
 subagents concurrently to reduce processing time. Each subagent

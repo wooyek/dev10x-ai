@@ -30,20 +30,14 @@ This skill follows `references/task-orchestration.md` patterns.
 **Auto-advance:** Complete each phase, immediately start the next.
 Never pause between phases to ask "should I continue?".
 
-**Task tracking:** Create tasks for each phase at startup:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Verify staging deployment",
-    activeForm="Verifying deployment")
-TaskCreate(subject="Write Playwright test script",
-    activeForm="Writing test script")
-TaskCreate(subject="Execute tests on staging",
-    activeForm="Executing tests")
-TaskCreate(subject="Prepare evidence (screenshots + video)",
-    activeForm="Preparing evidence")
-TaskCreate(subject="Post results to Linear",
-    activeForm="Posting results")
-```
+1. `TaskCreate(subject="Verify staging deployment", activeForm="Verifying deployment")`
+2. `TaskCreate(subject="Write Playwright test script", activeForm="Writing test script")`
+3. `TaskCreate(subject="Execute tests on staging", activeForm="Executing tests")`
+4. `TaskCreate(subject="Prepare evidence (screenshots + video)", activeForm="Preparing evidence")`
+5. `TaskCreate(subject="Post results to Linear", activeForm="Posting results")`
 
 Set sequential dependencies: each phase blocked by the previous.
 

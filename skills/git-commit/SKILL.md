@@ -35,18 +35,13 @@ This skill follows `references/task-orchestration.md` patterns
 **Auto-advance:** Complete each step and immediately start the next.
 Never pause between steps to ask "should I continue?".
 
-**Task tracking:** Create tasks for each major step at startup:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Gather commit context",
-    activeForm="Gathering context")
-TaskCreate(subject="Draft commit message",
-    activeForm="Drafting message")
-TaskCreate(subject="Review and approve",
-    activeForm="Reviewing message")
-TaskCreate(subject="Create commit",
-    activeForm="Creating commit")
-```
+1. `TaskCreate(subject="Gather commit context", activeForm="Gathering context")`
+2. `TaskCreate(subject="Draft commit message", activeForm="Drafting message")`
+3. `TaskCreate(subject="Review and approve", activeForm="Reviewing message")`
+4. `TaskCreate(subject="Create commit", activeForm="Creating commit")`
 
 Set sequential dependencies: draft blocked by gather, review blocked
 by draft, create blocked by review.

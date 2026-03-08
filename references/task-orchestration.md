@@ -89,6 +89,19 @@ TaskCreate(subject="Configure git aliases",
 TaskUpdate(taskId, status="completed")
 ```
 
+### Startup Gate (Full and Standard tiers)
+
+Skills that list multiple `TaskCreate` calls in their
+Orchestration section MUST execute all of them **before any
+other work begins**. This is a blocking prerequisite, not
+an illustration. If you find yourself reading files, calling
+APIs, or analyzing data without having created the documented
+tasks first, STOP and create them now.
+
+When writing a skill's Orchestration section, use a numbered
+list of `TaskCreate` calls (not a fenced code block). Code
+blocks read as examples; numbered lists read as instructions.
+
 ### Complexity Tiers (guidance, not opt-out)
 
 Tiers guide HOW MUCH orchestration a skill adds, not WHETHER
