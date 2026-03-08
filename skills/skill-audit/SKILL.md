@@ -1,9 +1,11 @@
 ---
 name: dev10x:skill-audit
-description: Audit a session's skill usage, compliance, and extract lessons learned. Reads the session transcript directly — run from a separate terminal.
+description: Audit a session's skill usage, compliance, and extract lessons learned. Dispatches parallel subagents for analysis phases — run from a separate terminal.
 user-invocable: true
 invocation-name: dev10x:skill-audit
 allowed-tools:
+  - Agent
+  - AskUserQuestion
   - Read(~/.claude/**)
   - Read(~/.claude/skills/**)
   - Bash(/tmp/claude/bin/mktmp.sh:*)
@@ -35,26 +37,44 @@ Never pause between phases.
 
 ### Step 0: Initialize task tracking (MANDATORY)
 
-**REQUIRED: Create all 9 phase tasks before ANY other work.**
+**REQUIRED: Create all tasks before ANY other work.**
 Do NOT skip task creation or improvise an ad-hoc workflow.
 If you find yourself reading files or analyzing the transcript
 without having created tasks first, STOP and create them now.
 
 Execute these exact `TaskCreate` calls at startup:
 
+**Setup (sequential):**
+
 1. `TaskCreate(subject="Resolve session file", activeForm="Resolving session")`
 2. `TaskCreate(subject="Extract and read transcript", activeForm="Extracting transcript")`
-3. `TaskCreate(subject="Run action inventory (Phase 1)", activeForm="Inventorying actions")`
-4. `TaskCreate(subject="Run skill coverage analysis (Phase 2)", activeForm="Analyzing skill coverage")`
-5. `TaskCreate(subject="Run compliance check (Phase 3)", activeForm="Checking compliance")`
-6. `TaskCreate(subject="Run permission friction analysis (Phase 4)", activeForm="Analyzing permissions")`
-7. `TaskCreate(subject="Extract lessons learned (Phase 5)", activeForm="Extracting lessons")`
-8. `TaskCreate(subject="Propose changes (Phase 6)", activeForm="Proposing changes")`
-9. `TaskCreate(subject="Upstream reporting (Phase 7)", activeForm="Reporting upstream")`
+3. `TaskCreate(subject="Detect project context", activeForm="Detecting context")`
 
-Then set sequential dependencies: each phase blocked by the
-previous. Update each task to `in_progress` before starting it
-and `completed` when done.
+**Wave 1 — parallel analysis (independent phases):**
+
+4. `TaskCreate(subject="Phase 1: Action inventory [subagent]", activeForm="Inventorying actions")`
+5. `TaskCreate(subject="Phase 4: Permission friction [subagent]", activeForm="Analyzing permissions")`
+
+**Wave 2 — parallel analysis (depends on Phase 1 output):**
+
+6. `TaskCreate(subject="Phase 2: Skill coverage [subagent]", activeForm="Analyzing coverage")`
+7. `TaskCreate(subject="Phase 3: Compliance check [subagent]", activeForm="Checking compliance")`
+8. `TaskCreate(subject="Phase 5: Lessons learned [subagent]", activeForm="Extracting lessons")`
+
+**Synthesis (sequential, main agent):**
+
+9. `TaskCreate(subject="Phase 6: Propose changes", activeForm="Proposing changes")`
+10. `TaskCreate(subject="Phase 7: Upstream reporting", activeForm="Reporting upstream")`
+
+Set dependencies:
+- Tasks 1→2→3 sequential (setup chain)
+- Tasks 4 and 5 both blocked by task 3 (Wave 1 — run in parallel)
+- Tasks 6, 7, 8 all blocked by task 4 (Wave 2 — run in parallel after Phase 1)
+- Task 9 blocked by tasks 5, 6, 7, 8 (all analysis complete)
+- Task 10 blocked by task 9
+
+Update each task to `in_progress` before starting it and
+`completed` when done.
 
 ### Batched decision queue (Phase 6)
 
@@ -200,9 +220,136 @@ the correct memory directory:
 
 Also locate the skills directory: `~/.claude/skills/`
 
-### Step 5: Execute the 6-phase audit
+### Step 5: Create output files
 
-Run all six phases directly (no subagent):
+Create a temp file for each analysis phase's output:
+
+```bash
+/tmp/claude/bin/mktmp.sh skill-audit phase1-actions .md
+/tmp/claude/bin/mktmp.sh skill-audit phase2-coverage .md
+/tmp/claude/bin/mktmp.sh skill-audit phase3-compliance .md
+/tmp/claude/bin/mktmp.sh skill-audit phase4-permissions .md
+/tmp/claude/bin/mktmp.sh skill-audit phase5-lessons .md
+```
+
+Store the returned paths — subagents write their findings here
+and the main agent reads them in Phase 6.
+
+### Step 6: Wave 1 — dispatch parallel subagents
+
+Launch **two subagents in a single message** (they run concurrently).
+Each subagent reads the transcript independently, follows its phase
+instructions from this SKILL.md, and writes findings to its output file.
+
+```
+Agent(subagent_type="general-purpose",
+    description="Phase 1: Action inventory",
+    prompt="""You are running Phase 1 (Action Inventory) of a skill audit.
+
+Read the session transcript at: <TRANSCRIPT_PATH>
+Skills directory: <SKILLS_DIR>
+
+Follow the 'Phase 1: Action Inventory' instructions below to scan
+the transcript and catalog every significant action.
+
+[Paste Phase 1 instructions here]
+
+Write your complete findings (markdown table) to: <PHASE1_OUTPUT>
+""")
+
+Agent(subagent_type="general-purpose",
+    description="Phase 4: Permission friction",
+    prompt="""You are running Phase 4 (Permission Friction Analysis)
+of a skill audit.
+
+Read the session transcript at: <TRANSCRIPT_PATH>
+Project settings: ~/.claude/settings.local.json
+Skills directory: <SKILLS_DIR>
+
+Follow the 'Phase 4: Permission Friction Analysis' instructions
+below, including all sub-steps 4a through 4g.
+
+[Paste Phase 4 instructions here]
+
+Write your complete findings to: <PHASE4_OUTPUT>
+""")
+```
+
+Wait for both subagents to complete. Mark tasks 4 and 5 as
+`completed` as each returns.
+
+### Step 7: Wave 2 — dispatch dependent subagents
+
+After Wave 1, Phase 1's output file contains the action inventory
+that Phases 2, 3, and 5 need. Launch **three subagents in a single
+message**:
+
+```
+Agent(subagent_type="general-purpose",
+    description="Phase 2: Skill coverage",
+    prompt="""You are running Phase 2 (Skill Coverage Analysis).
+
+Phase 1 action inventory: <PHASE1_OUTPUT>
+Skills directory: <SKILLS_DIR>
+
+Read the Phase 1 output, then follow the 'Phase 2: Skill Coverage
+Analysis' instructions.
+
+[Paste Phase 2 instructions here]
+
+Write findings to: <PHASE2_OUTPUT>
+""")
+
+Agent(subagent_type="general-purpose",
+    description="Phase 3: Compliance check",
+    prompt="""You are running Phase 3 (Compliance Check).
+
+Phase 1 action inventory: <PHASE1_OUTPUT>
+Session transcript: <TRANSCRIPT_PATH>
+Skills directory: <SKILLS_DIR>
+
+Read the Phase 1 output, then follow the 'Phase 3: Compliance
+Check' instructions.
+
+[Paste Phase 3 instructions here]
+
+Write findings to: <PHASE3_OUTPUT>
+""")
+
+Agent(subagent_type="general-purpose",
+    description="Phase 5: Lessons learned",
+    prompt="""You are running Phase 5 (Lessons Learned Extraction).
+
+Phase 1 action inventory: <PHASE1_OUTPUT>
+Session transcript: <TRANSCRIPT_PATH>
+Memory directory: <MEMORY_DIR>
+
+Read the Phase 1 output, then follow the 'Phase 5: Lessons
+Learned Extraction' instructions.
+
+[Paste Phase 5 instructions here]
+
+Write findings to: <PHASE5_OUTPUT>
+""")
+```
+
+Wait for all three subagents to complete. Mark tasks 6, 7, 8
+as `completed` as each returns.
+
+### Step 8: Collect and synthesize
+
+Read all five output files. The main agent now has the complete
+findings from all analysis phases and proceeds to Phase 6
+(Propose Changes) and Phase 7 (Upstream Reporting) directly —
+these require user interaction and cannot be delegated.
+
+---
+
+## Phase Reference
+
+The following phase descriptions are used both as inline reference
+and as subagent prompt content. When dispatching a subagent, paste
+the relevant phase section into the Agent prompt.
 
 ---
 
@@ -744,6 +891,11 @@ Review user corrections and `[CORRECTION]` markers:
 
 #### Phase 6: Propose Changes (REQUIRES USER CONFIRMATION)
 
+**Runs in main agent after Step 8 (collect and synthesize).**
+
+Read all five phase output files to gather the complete findings.
+Merge them into a unified view before presenting proposals.
+
 **CRITICAL: Do NOT modify any files without user confirmation.**
 
 1. Present each proposed change clearly:
@@ -767,10 +919,12 @@ Review user corrections and `[CORRECTION]` markers:
 
 #### Phase 7: Upstream Reporting (optional delegation)
 
-After Phase 6 completes, check whether any findings warrant
-reporting to the Dev10x plugin maintainers.
+**Runs in main agent after Phase 6 completes.**
 
-**Step 7a: Collect upstream-relevant findings**
+Check whether any findings warrant reporting to the Dev10x
+plugin maintainers.
+
+**Sub-step A: Collect upstream-relevant findings**
 
 Scan all findings from Phases 2–6 and select those that relate
 to Dev10x plugin skills (under `~/.claude/plugins/`). Include:
@@ -783,7 +937,7 @@ memory files, or `settings.local.json` — those are local-only.
 
 If no upstream-relevant findings exist, mark Phase 7 completed.
 
-**Step 7b: Ask user whether to report**
+**Sub-step B: Ask user whether to report**
 
 **REQUIRED: invoke `AskUserQuestion` tool** (not a plain text
 question) to ask whether to file upstream. Present the count
@@ -793,7 +947,7 @@ of upstream-relevant findings and two options: "File issue
 
 If the user selects **Skip**, mark Phase 7 completed and end.
 
-**Step 7c: Delegate to dev10x:audit-report**
+**Sub-step C: Delegate to dev10x:audit-report**
 
 Write a findings summary to a temp file so the delegated
 skill can read it without needing the full transcript:
