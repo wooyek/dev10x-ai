@@ -13,6 +13,21 @@ Files matching: `skills/**`
 - `.claude/rules/skill-patterns.md` — skill architecture patterns (script vs orchestration)
 - `references/task-orchestration.md` — orchestration patterns and formatting
 
+## Pattern Detection (Pre-Checklist)
+
+Before applying items 4–6 (script existence, permissions, error handling),
+determine which pattern the skill uses:
+
+1. **Does `skills/<name>/scripts/` exist?** → Script-based; apply items 4, 5, 6.
+2. **Does SKILL.md reference `${CLAUDE_PLUGIN_ROOT}/skills/...` paths?** → Script-based.
+3. **Otherwise** (references only external binaries or `~/.claude/tools/`) → Orchestration-based; skip items 4, 5, 6.
+
+**Ambiguous case?** Flag as INFO for author clarification.
+
+Orchestration-based skills instead require items 8 (allowed-tools), 14a
+(orchestration format), and 19 (decision gates). See `skill-patterns.md` for
+the full detection algorithm.
+
 ## Checklist
 
 1. **SKILL.md exists** — every skill directory must contain a SKILL.md with
@@ -34,9 +49,11 @@ Files matching: `skills/**`
    directory contains NO `scripts/` subdirectory AND the SKILL.md references
    no local paths (only `~/.claude/tools/` or external binaries), it's
    orchestration-based — Item 4 does not apply.
-5. **Executable permissions** — directly-invoked scripts must be
-   executable; `git ls-files --stage <path>` mode `100644` = not executable.
-6. **Error handling** — scripts use `set -e`; handle missing dependencies
+5. **Executable permissions** — (Script-based skills only; skip for orchestration-based)
+   Directly-invoked scripts must be executable; `git ls-files --stage <path>`
+   mode `100644` = not executable.
+6. **Error handling** — (Script-based skills only; skip for orchestration-based)
+   Scripts use `set -e`; handle missing dependencies
 7. **No hardcoded paths** — scripts should use relative paths or
    environment variables, not absolute user-specific paths.
    Applies equally to shell code blocks in SKILL.md workflow

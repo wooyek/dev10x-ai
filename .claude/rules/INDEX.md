@@ -25,7 +25,7 @@ only listed reference files.
 1. Always load `CLAUDE.md`, `essentials.md`, and this `INDEX.md`.
 2. Match changed files to agent(s) above.
 3. Load only required references for matched agents.
-4. Path-scoped rules (`skill-naming.md`, `agents.md`,
+4. Path-scoped rules (`skill-naming.md`, `skill-patterns.md`, `agents.md`,
    `github-workflows.md`) load per their scope annotations.
 
 ## Cross-Cutting Checks
