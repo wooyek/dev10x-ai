@@ -3,6 +3,9 @@ name: dev10x:git-commit
 description: Create a properly formatted git commit following project conventions (gitmoji, ticket reference, 72 char limit). Extracts ticket ID from branch name, prompts for description and solution points, stages changes, and creates the commit.
 user-invocable: true
 invocation-name: dev10x:git-commit
+allowed-tools:
+  - Bash(/tmp/claude/bin/mktmp.sh:*)
+  - Write(/tmp/claude/git/**)
 ---
 
 # Create Commit

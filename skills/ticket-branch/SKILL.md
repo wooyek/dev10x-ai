@@ -3,6 +3,14 @@ name: dev10x:ticket-branch
 description: Create a properly named git branch for a ticket following project conventions (username/TICKET-ID/[worktree/]short-slug). Accepts ticket ID and title, ensures latest develop is pulled before creating the branch. Automatically detects worktrees and includes worktree name in branch.
 user-invocable: true
 invocation-name: dev10x:ticket-branch
+allowed-tools:
+  - Bash(git status:*)
+  - Bash(git fetch:*)
+  - Bash(git checkout:*)
+  - Bash(git pull:*)
+  - Bash(git worktree list:*)
+  - Bash(git rev-parse:*)
+  - Bash(git config:*)
 ---
 
 # Create Git Branch for Ticket

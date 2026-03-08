@@ -6,6 +6,9 @@ description: >
   session can pick up where this one left off.
 user-invocable: true
 invocation-name: dev10x:gh-pr-bookmark
+allowed-tools:
+  - Bash(gh:*)
+  - Skill(dev10x:park)
 ---
 
 # dev10x:gh-pr-bookmark — PR Session Bookmark

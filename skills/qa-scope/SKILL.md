@@ -3,6 +3,14 @@ name: dev10x:qa-scope
 description: Analyze a PR for QA needs, check e2e coverage gaps, and create QA sub-tickets when manual testing or new e2e tests are needed.
 user-invocable: true
 invocation-name: dev10x:qa-scope
+allowed-tools:
+  - Bash(gh pr diff:*)
+  - Bash(gh pr view:*)
+  - Bash(gh repo view:*)
+  - Bash(grep:*)
+  - mcp__claude_ai_Linear__list_issues
+  - mcp__claude_ai_Linear__get_issue
+  - mcp__claude_ai_Linear__save_issue
 ---
 
 # QA Scope - PR Quality Assurance Assessment
