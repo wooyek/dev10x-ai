@@ -54,6 +54,13 @@ MCP migration: shell scripts → MCP tools. See `.claude/rules/mcp-tools.md`.
 - **Decision Gates**: Skills with blocking user choice points MUST use
   `AskUserQuestion` tool calls (not plain text). See `.claude/rules/skill-gates.md`
 
+## Skill Implementation Patterns
+
+Two patterns: **Script-Based** (contains `scripts/` directory; examples:
+`gh-pr-create`, `git-commit`) and **Orchestration-Based** (SKILL.md only;
+examples: `gh-pr-request-review`, `park`). See `.claude/rules/skill-patterns.md`
+for pattern detection logic and reviewer expectations for each.
+
 ## Git Conventions
 
 - **Default branch**: `develop` (PR target)

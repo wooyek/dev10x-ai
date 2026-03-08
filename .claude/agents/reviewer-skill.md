@@ -46,9 +46,12 @@ Files matching: `skills/**`
    Flag bare absolute paths without this pattern.
 8. **`allowed-tools` coverage** — if SKILL.md calls external scripts,
    front matter must declare matching `Bash(...)` entries (missing entries
-   cause per-invocation approval prompts). Plugin-distributed scripts must
-   use relative paths; `~/.claude/tools/` or `~/.claude/skills/` paths
-   are accepted for user-tool delegation, not portability violations.
+   cause per-invocation approval prompts). For orchestration-based skills,
+   every tool declared in `allowed-tools` MUST appear in the workflow steps
+   with an explicit command or invocation (e.g., `yq '.key' file.yaml`).
+   Plugin-distributed scripts must use relative paths; `~/.claude/tools/`
+   or `~/.claude/skills/` paths are accepted for user-tool delegation, not
+   portability violations.
 8b. **`allowed-tools` sync** — when a PR adds `mktmp.sh <ns> ...` calls,
     verify BOTH entries are present: `Bash(/tmp/claude/bin/mktmp.sh:*)`
     (covers the mktmp call) AND `Write(/tmp/claude/<ns>/**)` (covers writing
@@ -161,9 +164,21 @@ Files matching: `skills/**`
     assertions to detect plain-text substitution, (d) evals include signals
     like `gate*-uses-tool` and `gate*-no-plain-text`. Missing the tool
     declaration causes per-invocation approval prompts.
+20. **Cross-reference validation** — when a SKILL.md file introduces a
+    new reference to `.claude/rules/*` or `.claude/agents/*` documents
+    (e.g., "See `.claude/rules/skill-patterns.md`"), verify that the
+    referenced file is listed in the Required Reading section of the
+    corresponding `.claude/agents/*.md` reviewer spec. Missing cross-references
+    create discovery gaps for downstream reviewers (WARNING).
 
 ## Output Format
 
 Apply to ALL `skills/**` files in the diff, including same-PR additions
 (new checklist items are not retroactively applied to them otherwise).
 For each issue: **File** · **Severity** (CRITICAL/WARNING/INFO) · **Issue**
+
+**False-positive prevention**: When evaluating script output, verify that
+the claimed issue reflects actual behavior (e.g., a script referenced in
+SKILL.md truly exists, or a tool truly is missing from `allowed-tools`).
+Do not report speculative issues or assume missing pieces when the
+skill's pattern (script-based vs orchestration-based) may excuse them.
