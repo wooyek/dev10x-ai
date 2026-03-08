@@ -58,8 +58,10 @@ MCP migration: shell scripts → MCP tools. See `.claude/rules/mcp-tools.md`.
 
 - **Default branch**: `develop` (PR target)
 - **Release branch**: `main` (merge from develop via release script)
-- **Branch naming**: `username/TICKET-ID/short-description`
-  (worktree: `username/TICKET-ID/worktree-name/short-description`)
+- **Branch naming**: `username/TICKET-ID/[worktree-name/]short-description`
+  - Regular: `username/TICKET-ID/short-description`
+  - Worktree: `username/TICKET-ID/worktree-name/short-description` (worktree name = basename of worktree directory)
+  - See `.claude/rules/essentials.md` and `references/git-commits.md` for examples
 - **Commit format**: `<gitmoji> <TICKET-ID> <JTBD outcome>`
 - **Commit titles**: outcome-focused — "Enable X" not "Add X"
 - **Job Story voice** (REQUIRED): First-person "**I want to**" or explicit
@@ -87,6 +89,8 @@ When porting skills to external platforms (e.g., Codex format):
   and native validation to ensure compatibility
 - **Documentation**: Include example showing skill's original and ported forms
 - **Commit**: One commit per stable skill or batch of related skills
+- **Sync**: Codex mirrors in `codex-skills/dev10x-*/` must track source
+  updates; grep for all mirrors before committing a skill's SKILL.md change
 
 ## Skill Authoring: Formatting as Semantic Signal
 

@@ -93,6 +93,12 @@ Files matching: `skills/**`
 10b. **Inline table consistency** — when SKILL.md contains a reference
      table (e.g., "Aliases Configured"), cross-check documented values
      against the script; mismatches are a reliable bug signal.
+10c. **Format variant documentation** — when a SKILL.md documents a format
+     with regular and variant forms (e.g., 3-segment vs. 4-segment branches),
+     verify: (a) both forms are shown in examples, (b) optional segments use
+     bracket notation `[segment/]`, (c) extraction logic is documented as
+     forward-compatible (if applicable). Missing examples or unclear notation
+     is INFO severity.
 11. **Embedded shell templates** — POSIX-compatible, no silent `|| true`,
     `<>` placeholder markers for user-replaceable values. Flag `{VALUE}`
     curly-brace notation — ambiguous with shell variable expansion.
