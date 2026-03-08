@@ -128,6 +128,11 @@ Files matching: `skills/**`
     config files read by the script are included in the staleness check
     alongside source files. Missing config files cause stale output
     after user edits without `--force`.
+19. **Decision gates enforcement** — when a PR adds/modifies a skill's
+    documented blocking decision point (marked `REQUIRED: AskUserQuestion`),
+    verify: (a) enforcement marker is present in SKILL.md, (b) evals.json
+    includes assertions to detect plain-text substitution, (c) evals include
+    signals like `gate*-uses-tool` and `gate*-no-plain-text`.
 
 ## Output Format
 

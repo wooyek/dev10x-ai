@@ -51,6 +51,8 @@ MCP migration: shell scripts → MCP tools. See `.claude/rules/mcp-tools.md`.
 - The `dev10x:` prefix identifies this plugin's skills at invocation time
   without cluttering the filesystem
 - See `.claude/rules/skill-naming.md` for full convention
+- **Decision Gates**: Skills with blocking user choice points MUST use
+  `AskUserQuestion` tool calls (not plain text). See `.claude/rules/skill-gates.md`
 
 ## Git Conventions
 
