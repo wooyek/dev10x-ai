@@ -25,21 +25,15 @@ This skill follows `references/task-orchestration.md` patterns.
 **Auto-advance:** Complete each step, immediately start the next.
 Never pause to ask "should I continue?" between steps.
 
-**Task tracking:** This skill already uses TaskList to discover
-open items. Enhance with explicit TaskCreate for its own phases
-so the supervisor can track wrap-up progress:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Discover open items",
-    activeForm="Scanning for open loops")
-TaskCreate(subject="Route deferred items",
-    activeForm="Routing deferred items")
-TaskCreate(subject="Post session summary",
-    activeForm="Posting summary")
-```
+1. `TaskCreate(subject="Discover open items", activeForm="Scanning for open loops")`
+2. `TaskCreate(subject="Route deferred items", activeForm="Routing deferred items")`
+3. `TaskCreate(subject="Post session summary", activeForm="Posting summary")`
 
 Set dependencies: route blocked by discover, summary blocked by
-route.
+route. Update status as each completes.
 
 ## Phase 1: Auto-Scan
 

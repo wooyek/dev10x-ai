@@ -33,19 +33,13 @@ This skill follows `references/task-orchestration.md` patterns.
 **Auto-advance:** Complete each step, immediately start the next.
 Never pause to ask "should I continue?" between steps.
 
-**Task tracking:** Create tasks for each step so the supervisor
-can track progress:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Validate review comment",
-    activeForm="Validating comment")
-TaskCreate(subject="Implement fix",
-    activeForm="Implementing fix")
-TaskCreate(subject="Create fixup commit",
-    activeForm="Creating fixup commit")
-TaskCreate(subject="Push and reply",
-    activeForm="Pushing and replying")
-```
+1. `TaskCreate(subject="Validate review comment", activeForm="Validating comment")`
+2. `TaskCreate(subject="Implement fix", activeForm="Implementing fix")`
+3. `TaskCreate(subject="Create fixup commit", activeForm="Creating fixup commit")`
+4. `TaskCreate(subject="Push and reply", activeForm="Pushing and replying")`
 
 Set dependencies: implement blocked by validate, commit blocked
 by implement, push blocked by commit.

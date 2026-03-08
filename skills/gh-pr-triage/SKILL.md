@@ -40,17 +40,12 @@ This skill follows `references/task-orchestration.md` patterns.
 **Auto-advance:** Complete each step, immediately start the next.
 Never pause to ask "should I continue?" between steps.
 
-**Task tracking:** Create tasks for each step so the supervisor
-can track progress:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Fetch comment context",
-    activeForm="Fetching comment context")
-TaskCreate(subject="Validate against codebase",
-    activeForm="Validating against codebase")
-TaskCreate(subject="Draft verdict and reply",
-    activeForm="Drafting verdict")
-```
+1. `TaskCreate(subject="Fetch comment context", activeForm="Fetching comment context")`
+2. `TaskCreate(subject="Validate against codebase", activeForm="Validating against codebase")`
+3. `TaskCreate(subject="Draft verdict and reply", activeForm="Drafting verdict")`
 
 Set dependencies: validate blocked by fetch, draft blocked by
 validate.

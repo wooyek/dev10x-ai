@@ -33,47 +33,36 @@ This skill follows `references/task-orchestration.md` patterns.
 **Auto-advance:** Complete each phase, immediately start the next.
 Never pause between phases.
 
-**Task tracking:** Create tasks for each phase at startup:
+### Step 0: Initialize task tracking (MANDATORY)
 
-```
-TaskCreate(subject="Resolve session file",
-    activeForm="Resolving session")
-TaskCreate(subject="Extract and read transcript",
-    activeForm="Extracting transcript")
-TaskCreate(subject="Run action inventory (Phase 1)",
-    activeForm="Inventorying actions")
-TaskCreate(subject="Run skill coverage analysis (Phase 2)",
-    activeForm="Analyzing skill coverage")
-TaskCreate(subject="Run compliance check (Phase 3)",
-    activeForm="Checking compliance")
-TaskCreate(subject="Run permission friction analysis (Phase 4)",
-    activeForm="Analyzing permissions")
-TaskCreate(subject="Extract lessons learned (Phase 5)",
-    activeForm="Extracting lessons")
-TaskCreate(subject="Propose changes (Phase 6)",
-    activeForm="Proposing changes")
-```
+**REQUIRED: Create all 8 phase tasks before ANY other work.**
+Do NOT skip task creation or improvise an ad-hoc workflow.
+If you find yourself reading files or analyzing the transcript
+without having created tasks first, STOP and create them now.
 
-Set sequential dependencies: each phase blocked by the previous.
+Execute these exact `TaskCreate` calls at startup:
 
-**Batched decision queue (Phase 6):** As earlier phases discover
-findings that need user decisions (skill updates, memory changes,
-allow rules), queue them in task metadata rather than interrupting:
+1. `TaskCreate(subject="Resolve session file", activeForm="Resolving session")`
+2. `TaskCreate(subject="Extract and read transcript", activeForm="Extracting transcript")`
+3. `TaskCreate(subject="Run action inventory (Phase 1)", activeForm="Inventorying actions")`
+4. `TaskCreate(subject="Run skill coverage analysis (Phase 2)", activeForm="Analyzing skill coverage")`
+5. `TaskCreate(subject="Run compliance check (Phase 3)", activeForm="Checking compliance")`
+6. `TaskCreate(subject="Run permission friction analysis (Phase 4)", activeForm="Analyzing permissions")`
+7. `TaskCreate(subject="Extract lessons learned (Phase 5)", activeForm="Extracting lessons")`
+8. `TaskCreate(subject="Propose changes (Phase 6)", activeForm="Proposing changes")`
 
-```
-TaskUpdate(taskId=phase_task, status="completed",
-    metadata={"decisions_queued": [
-        {"type": "SKILL_UPDATE", "skill": "dev10x:some-skill",
-         "change": "Add pitfall entry for X"},
-        {"type": "MEMORY_UPDATE",
-         "change": "Use wrapper Y instead of pattern Z"},
-        {"type": "ALLOW_RULE",
-         "change": "Add Bash(pytest:*) to settings"}
-    ]})
-```
+Then set sequential dependencies: each phase blocked by the
+previous. Update each task to `in_progress` before starting it
+and `completed` when done.
 
-Collect all queued decisions into a single AskUserQuestion batch
-in Phase 6, so the user approves or rejects all changes at once.
+### Batched decision queue (Phase 6)
+
+As earlier phases discover findings that need user decisions
+(skill updates, memory changes, allow rules), queue them in
+task metadata rather than interrupting. Use `TaskUpdate` with
+`metadata.decisions_queued` to record each finding, then collect
+all queued decisions into a single `AskUserQuestion` batch in
+Phase 6 so the user approves or rejects all changes at once.
 
 ## Arguments
 

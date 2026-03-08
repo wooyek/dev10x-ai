@@ -35,18 +35,13 @@ This skill follows `references/task-orchestration.md` patterns
 **Auto-advance:** Complete each step and immediately start the next.
 Never pause between steps to ask "should I continue?".
 
-**Task tracking:** Create tasks for each major step at startup:
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
 
-```
-TaskCreate(subject="Gather commit context",
-    activeForm="Gathering context")
-TaskCreate(subject="Draft commit message",
-    activeForm="Drafting message")
-TaskCreate(subject="Review and approve",
-    activeForm="Reviewing message")
-TaskCreate(subject="Create commit",
-    activeForm="Creating commit")
-```
+1. `TaskCreate(subject="Gather commit context", activeForm="Gathering context")`
+2. `TaskCreate(subject="Draft commit message", activeForm="Drafting message")`
+3. `TaskCreate(subject="Review and approve", activeForm="Reviewing message")`
+4. `TaskCreate(subject="Create commit", activeForm="Creating commit")`
 
 Set sequential dependencies: draft blocked by gather, review blocked
 by draft, create blocked by review.
@@ -454,7 +449,11 @@ git add file1 file2 file3
    ```
    Store the returned path (e.g., `/tmp/claude/git/commit-msg.7f3a9b2c1d4e.txt`).
 
-2. Write the commit message to that file using the Write tool:
+2. **Read the empty file first** — the Write tool requires a prior Read
+   on the same path. Call `Read(<unique-path>)` before writing. The file
+   will be empty (mktmp creates it); this is expected.
+
+3. Write the commit message to that file using the Write tool:
    ```
    Write <unique-path>:
    <gitmoji> <TICKET-ID> <description>
@@ -469,7 +468,7 @@ git add file1 file2 file3
    Fixes: <TICKET-ID>
    ```
 
-3. Create the commit from the file:
+4. Create the commit from the file:
    ```bash
    git commit -F <unique-path>
    ```
