@@ -31,6 +31,10 @@ The skill resolves reviewers in this order:
 
 ### Config file format
 
+The config file is optional. If it does not exist or lacks an entry
+for the current repo, the skill falls back to `default_action`
+behavior (ask or skip).
+
 ```yaml
 # ~/.claude/memory/github-reviewers-config.yaml
 default_action: ask  # "skip" or "ask" for unconfigured projects
@@ -58,8 +62,9 @@ projects:
    - **Found with `skip: true`** → print "Skipping review request
      for {repo}" and stop
    - **Found with `reviewers` list** → use those reviewers
-   - **Not found, `default_action: ask`** → ask the user who to
-     request review from (use `AskUserQuestion`)
+   - **Not found, `default_action: ask`** → **REQUIRED: Call
+     `AskUserQuestion`** to ask the user who to request review
+     from (do NOT use plain text)
    - **Not found, `default_action: skip`** → print "No reviewers
      configured for {repo}, skipping" and stop
 4. Call `gh-request-review.py` with the resolved reviewers
