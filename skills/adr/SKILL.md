@@ -3,6 +3,18 @@ name: dev10x:adr
 description: Create Architecture Decision Records (ADRs) following project conventions. Extends the base scope skill with ADR-specific format, numbering, diagram generation, and decision documentation. Use when documenting significant architectural decisions that affect the codebase.
 user-invocable: true
 invocation-name: dev10x:adr
+allowed-tools:
+  - Bash(mkdir -p:*)
+  - Bash(java -jar:*)
+  - Bash(ls:*)
+  - Skill(dev10x:ticket-branch)
+  - Skill(dev10x:git-commit)
+  - Skill(dev10x:gh-pr-create)
+  - Agent
+  - WebFetch
+  - Grep
+  - Glob
+  - Read
 ---
 
 # ADR Create - Architecture Decision Record Skill

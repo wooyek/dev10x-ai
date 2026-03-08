@@ -3,6 +3,10 @@ name: dev10x:gh-pr-respond
 description: Validate and respond to PR review comments. Handles single comment (with follow-up offer) or batch mode for all unaddressed comments on a PR/review. Orchestrates dev10x:gh-pr-triage and dev10x:gh-pr-fixup.
 user-invocable: true
 invocation-name: dev10x:gh-pr-respond
+allowed-tools:
+  - Bash(gh:*)
+  - Skill(dev10x:gh-pr-triage)
+  - Skill(dev10x:gh-pr-fixup)
 ---
 
 # Respond to PR Review Comments

@@ -4,9 +4,11 @@ description: Create an issue tracker ticket (GitHub issue, Linear, or JIRA) with
 user-invocable: true
 invocation-name: dev10x:ticket-create
 allowed-tools:
-  # TODO: gh-context moved to fundamentals plugin — cross-plugin script ref needs resolution
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
   - Bash(gh issue create:*)
+  - mcp__claude_ai_Linear__save_issue
+  - Bash(secret-tool lookup:*)
+  - Bash(curl:*atlassian.net*)
 ---
 
 # Create Issue Tracker Ticket

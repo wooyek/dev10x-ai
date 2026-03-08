@@ -3,6 +3,8 @@ name: dev10x:slack-review-request
 description: Post a Slack review request for a PR using per-project config (channel, mentions). Reads configuration from userspace YAML.
 user-invocable: true
 invocation-name: dev10x:slack-review-request
+allowed-tools:
+  - Bash(${CLAUDE_PLUGIN_ROOT}/skills/slack-review-request/scripts/*:*)
 ---
 
 # Slack Review Request

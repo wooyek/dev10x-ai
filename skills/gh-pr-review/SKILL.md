@@ -3,6 +3,10 @@ name: dev10x:gh-pr-review
 description: Review a GitHub pull request and post findings with inline comments. Fetches PR diff, reads changed files, checks for interface impact, applies project review guidelines, and posts a COMMENT review to GitHub.
 user-invocable: true
 invocation-name: dev10x:gh-pr-review
+allowed-tools:
+  - Bash(gh:*)
+  - Bash(/tmp/claude/bin/mktmp.sh:*)
+  - Write(/tmp/claude/git/**)
 ---
 
 # GitHub PR Review

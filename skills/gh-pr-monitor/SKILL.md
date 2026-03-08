@@ -4,8 +4,11 @@ description: Launch a background agent to monitor PR CI checks and review commen
 user-invocable: true
 invocation-name: dev10x:gh-pr-monitor
 allowed-tools:
-  # TODO: gh-context moved to fundamentals plugin — cross-plugin script ref needs resolution
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
+  - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-pr-monitor/scripts/*:*)
+  - Bash(gh:*)
+  - Skill(dev10x:qa-scope)
+  - Skill(dev10x:slack-review-request)
 ---
 
 # PR Review Monitor (Background Agent)

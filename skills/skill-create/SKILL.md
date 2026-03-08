@@ -8,6 +8,11 @@ description: >
   skills for examples.
 user-invocable: true
 invocation-name: dev10x:skill-create
+allowed-tools:
+  - Bash(mkdir -p:*)
+  - Bash(chmod:*)
+  - Bash(rg:*)
+  - Bash(${CLAUDE_PLUGIN_ROOT}/skills/skill-index/scripts/*:*)
 ---
 
 # dev10x Skill Create

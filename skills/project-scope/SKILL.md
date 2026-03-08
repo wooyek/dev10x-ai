@@ -12,6 +12,7 @@ allowed-tools:
   - mcp__claude_ai_Linear__list_milestones
   - mcp__claude_ai_Linear__list_issue_statuses
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/*:*)
+  - Skill(dev10x:ticket-create)
 ---
 
 # Project Scope - Multi-Ticket Project Creation

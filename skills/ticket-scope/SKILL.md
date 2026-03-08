@@ -3,6 +3,18 @@ name: dev10x:ticket-scope
 description: Scope Linear tickets with technical research and architecture design. Extends the base scope skill with Linear ticket integration, story point estimation, and acceptance criteria formatting. Use when preparing to implement a Linear ticket.
 user-invocable: true
 invocation-name: dev10x:ticket-scope
+allowed-tools:
+  - mcp__claude_ai_Linear__get_issue
+  - mcp__claude_ai_Linear__list_issues
+  - mcp__claude_ai_Linear__list_comments
+  - mcp__claude_ai_Linear__save_comment
+  - Skill(dev10x:jtbd)
+  - Agent
+  - WebFetch
+  - Grep
+  - Glob
+  - Read
+  - Bash(mkdir -p:*)
 ---
 
 # Ticket Scope - Linear Ticket Scoping Skill

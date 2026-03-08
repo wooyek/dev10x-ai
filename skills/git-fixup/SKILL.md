@@ -3,6 +3,9 @@ name: dev10x:git-fixup
 description: Create a fixup! commit for a PR review comment or standalone improvement. Enforces one fixup per comment thread when linked to a review.
 user-invocable: true
 invocation-name: dev10x:git-fixup
+allowed-tools:
+  - Bash(/tmp/claude/bin/mktmp.sh:*)
+  - Write(/tmp/claude/git/**)
 ---
 
 # Create Fixup Commit
