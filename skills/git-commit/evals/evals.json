@@ -14,7 +14,7 @@
     {
       "id": "extraction",
       "name": "Ticket Extraction",
-      "description": "Correctly extracts ticket ID from branch name convention (username/TICKET-ID/description)"
+      "description": "Correctly extracts ticket ID from branch name convention (username/TICKET-ID/[worktree/]description)"
     },
     {
       "id": "safety",

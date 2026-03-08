@@ -106,7 +106,7 @@ by draft, create blocked by review.
 1. Check if we're in a git repository
 2. Check if there are staged or unstaged changes
 3. Check current branch (should not be develop/main/master)
-4. Verify branch follows naming convention (username/TICKET-ID/description)
+4. Verify branch follows naming convention (username/TICKET-ID/[worktree/]description)
 
 ## When to Use This Skill
 
@@ -141,11 +141,12 @@ git status --porcelain
 
 ### Step 2: Extract Ticket ID from Branch
 
-**Branch naming convention:** `username/TICKET-ID/description`
+**Branch naming convention:** `username/TICKET-ID/[worktree-name/]description`
 
 **Examples:**
 - `janusz/PAY-133/fix-motor-timeout` → `PAY-133`
 - `janusz/ENG-42/add-retry-mechanism` → `ENG-42`
+- `janusz/PAY-133/tt-pos-7/fix-motor-timeout` → `PAY-133` (worktree)
 
 **Extraction:**
 ```bash
@@ -156,7 +157,7 @@ TICKET_ID=$(git branch --show-current | cut -d'/' -f2)
 if [[ ! $TICKET_ID =~ ^[A-Z]+-[0-9]+$ ]]; then
   echo "⚠️  Warning: Could not extract ticket ID from branch name"
   echo "Branch: $(git branch --show-current)"
-  echo "Expected format: username/TICKET-ID/description"
+  echo "Expected format: username/TICKET-ID/[worktree/]description"
 fi
 ```
 

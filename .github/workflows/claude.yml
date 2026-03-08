@@ -64,7 +64,7 @@ jobs:
             FOR COMMITS AND PR CREATION:
             Follow outcome-focused (JTBD) principles from `references/git-jtbd.md`:
             - Shift from implementation details ("Add X") to user outcomes ("Enable Y")
-            - Extract ticket ID from branch name (format: username/TICKET-ID/description)
+            - Extract ticket ID from branch name (format: username/TICKET-ID/[worktree/]description)
             - Use appropriate gitmoji (see `references/git-commits.md`)
 
             CODE VERIFICATION:

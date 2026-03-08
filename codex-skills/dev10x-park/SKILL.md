@@ -28,7 +28,7 @@ Run these checks to determine available targets:
 ```bash
 git branch --show-current
 ```
-Extract ticket ID from branch name (pattern: `username/TICKET-ID/desc`).
+Extract ticket ID from branch name (pattern: `username/TICKET-ID/[worktree/]desc`).
 
 **Open PR:**
 ```bash

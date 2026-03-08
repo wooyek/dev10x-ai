@@ -63,7 +63,7 @@ BRANCH=$(git branch --show-current)
 
 #### 1.2 Extract Ticket ID
 
-Parse ticket ID from branch name following `username/TICKET-ID/description` convention:
+Parse ticket ID from branch name following `username/TICKET-ID/[worktree/]description` convention:
 
 ```bash
 TICKET_ID=$(echo "$BRANCH" | grep -oP '[A-Z]+-\d+')

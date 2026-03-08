@@ -8,6 +8,7 @@ Universal rules for every session. Detailed guides live in
 - **Feature PRs** target `develop` — always pass `--base develop`
 - **Release PRs** target `main` only via merge from `develop`
 - Branch format: `username/TICKET-ID/short-description`
+- Worktree branch format: `username/TICKET-ID/worktree-name/short-description`
 - **Self-motivated work** (no ticket): Use `username/short-description` and
   set `Fixes: none — self-motivated` in PR body (see `git-pr.md`)
 

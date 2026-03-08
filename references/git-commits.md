@@ -15,10 +15,12 @@ quality gates (Claude Code Review, CI) run as expected.
 ## Branch Naming Convention
 
 Format: `username/TICKET-ID/short-description`
+Worktree: `username/TICKET-ID/worktree-name/short-description`
 
 Examples:
 - `janusz/GH-7/add-semver-releases`
 - `maria/GH-42/fix-hook-validation`
+- `janusz/PAY-133/tt-pos-7/fix-motor-timeout` (worktree)
 
 ## Commit Message Format
 
