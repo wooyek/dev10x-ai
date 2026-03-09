@@ -126,6 +126,13 @@ Files matching: `skills/**`
     "Example", "Anti-pattern", or "Output Format" subsections even if
     inside fenced code blocks — these are illustrative only. Only enforce
     the formatting rule for Orchestration and decision gate sections.
+14b. **Bundled call spec references** — when an `AskUserQuestion` gate
+    has complex parameters (multiple options, previews, metadata), verify
+    (a) a `tool-calls/ask-<purpose>.md` file exists with the full call
+    spec in a code block, (b) the REQUIRED line references it inline as
+    `(call spec: [file.md](./tool-calls/file.md))`. Do NOT require
+    bundled files for trivial one-line calls (`TaskUpdate`, simple
+    `TaskCreate`). See `.claude/rules/skill-orchestration-format.md`.
 
 15. **Config file schema** — when a skill reads or writes a structured
     config file (YAML, JSON, TOML), SKILL.md must:
