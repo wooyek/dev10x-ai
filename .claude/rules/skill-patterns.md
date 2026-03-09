@@ -50,3 +50,44 @@ Determine which pattern applies:
 3. Check if SKILL.md references external binaries or `~/.claude/tools/` only
    - Yes + no `scripts/` → Orchestration-based; Items 4, 5 do NOT apply
    - No → Ambiguous; flag as INFO for author clarification
+
+## Pattern 3: Optional Parameter Handling
+
+When multi-step orchestrations need configurable behavior, make parameters
+optional with sensible defaults:
+
+**Good practice:**
+```bash
+BASE_BRANCH="${2:-}"  # Allow override; default to auto-detection
+if [ -z "$BASE_BRANCH" ]; then
+    BASE_BRANCH=$(detect-base-branch)
+fi
+```
+
+**Benefits:**
+- Existing callers don't break when new parameters are added
+- Scripts can be invoked standalone or as part of a pipeline
+- Default behavior is clear and maintainable
+
+**Examples:** `gh-pr-create`, `git-commit` — parameters expand over time as
+features grow, but backward compatibility is preserved.
+
+## Pattern 4: Source-Based Dependency Injection
+
+For cross-script dependencies, use shell `source` to inject environment
+variables rather than shell-script composition:
+
+**Good practice:**
+```bash
+source "$SCRIPT_DIR/detect-base-branch.sh"
+# Now BASE_BRANCH is available in the calling script
+```
+
+**Benefits:**
+- Dependencies are explicit and single-sourced
+- Testable: can mock the sourced script in unit tests
+- Avoids subprocess overhead (no subshell needed)
+- Logic is shared, not duplicated across scripts
+
+**Examples:** `gh-pr-create` uses `source detect-base-branch.sh` to set
+environment variables that downstream steps depend on.

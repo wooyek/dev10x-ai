@@ -88,6 +88,19 @@ When porting skills to external platforms (e.g., Codex format):
 - **Documentation**: Include example showing skill's original and ported forms
 - **Commit**: One commit per stable skill or batch of related skills
 
+### Dual Directory Maintenance
+
+The `codex-skills/` directory maintains ported versions of stable skills. When
+modifying scripts in `skills/`, apply identical changes to the corresponding
+`codex-skills/dev10x-<skill-name>/` directory to keep implementations in sync.
+
+**Before submitting a PR that touches both directories:**
+- Verify all changes are identical (no behavioral divergence)
+- Use a single commit with a clear message listing both paths
+- Document in the PR body: "Synced across skills/ and codex-skills/"
+
+Future work: Establish a single source of truth (symlinks or shared references)
+
 ## Skill Authoring: Formatting as Semantic Signal
 
 Markdown formatting affects agent interpretation of orchestration
