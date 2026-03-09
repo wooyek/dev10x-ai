@@ -88,6 +88,8 @@ Files matching: `skills/**`
     use the `Skill()` tool (inter-skill delegation), verify named parameters:
     `Skill(skill="dev10x:target-name", args="...")`, not positional syntax
     like `Skill(dev10x:target-name, args="...")`. See `references/skill-invocation.md`.
+    (Skill() calls must also follow item 14a formatting rules: numbered lists with
+    enforcement markers in Orchestration sections.)
 10. **Reference doc consistency** — cross-check `references/` documents
     against any matching `.claude/rules/` file.
 10b. **Inline table consistency** — when SKILL.md contains a reference
@@ -121,7 +123,8 @@ Files matching: `skills/**`
     **numbered lists with enforcement markers** (`REQUIRED:`, `MANDATORY:`,
     `DO NOT SKIP`), not fenced code blocks. Agents treat code blocks as
     illustrative examples and may skip them silently.
-    See `.claude/rules/skill-orchestration-format.md`.
+    See `.claude/rules/skill-orchestration-format.md`. For `Skill()` calls,
+    verify syntax compliance with item 9a as well.
     **False-positive prevention**: Do NOT flag tool calls appearing in
     "Example", "Anti-pattern", or "Output Format" subsections even if
     inside fenced code blocks — these are illustrative only. Only enforce

@@ -104,6 +104,16 @@ directives:
 See `.claude/rules/skill-orchestration-format.md` for detailed patterns,
 marker guidance, and examples. Review checklist item 14a enforces this.
 
+### Complex Tool Calls: When to Bundle
+
+For `AskUserQuestion` gates with 3+ options or preview fields:
+1. Create `tool-calls/ask-<purpose>.md` with the full call spec
+2. Reference it inline: `(call spec: [ask-<purpose>.md](./tool-calls/ask-<purpose>.md))`
+3. List options in bullet form in SKILL.md for readability
+
+Simple `TaskCreate`/`TaskUpdate` calls don't need bundling — inline
+enforcement text suffices.
+
 ## Code Review
 
 Multi-agent architecture with domain-routed reviewers.

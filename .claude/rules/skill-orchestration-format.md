@@ -135,6 +135,22 @@ status="completed")` — the inline enforcement text is sufficient.
 - `ask-<purpose>.md` for `AskUserQuestion` gates
 - `update-<purpose>.md` for complex `TaskUpdate` calls with metadata
 
+## Real-World Example: Complex Decision Gates
+
+For a decision gate with 4+ options and detailed previews, bundling becomes
+essential for readability. The `git-groom` skill demonstrates this pattern:
+`tool-calls/ask-restructuring-strategy.md` contains 4 restructuring strategies
+with multi-line command previews. This makes the SKILL.md readable while
+preserving the full decision context in a dedicated file.
+
+When your `AskUserQuestion` has:
+- 4+ options (near the tool limit)
+- Multi-line previews showing commands or code blocks
+- Metadata fields for complex scenarios
+
+Create the bundled spec file and reference it. This keeps SKILL.md concise
+while ensuring the full decision context is preserved.
+
 ## Reference
 
 See `references/task-orchestration.md` for full orchestration patterns,
