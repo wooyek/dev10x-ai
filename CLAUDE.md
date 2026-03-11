@@ -76,34 +76,6 @@ When renaming a plugin directory (e.g., `plugins/old/ → plugins/new/`):
 3. Update all SKILL.md files that reference the old path
 4. Search codebase for hardcoded directory paths
 
-## Cross-Platform Skill Porting
-
-When porting skills to external platforms (e.g., Codex format):
-
-- **Decision**: Port only stable, well-tested skills with clear reuse cases
-- **SKILL.md changes**: Remove Claude-specific fields (contexts, memory hooks);
-  keep name, description, usage examples, and invocation specs
-- **Validation**: Test ported skills with both `bin/validate-codex-skills.sh`
-  and native validation to ensure compatibility
-- **Documentation**: Include example showing skill's original and ported forms
-- **Commit**: One commit per stable skill or batch of related skills
-
-## Skill Authoring: Formatting as Semantic Signal
-
-Markdown formatting affects agent interpretation of orchestration
-directives:
-
-- **Numbered lists** — `TaskCreate` calls in numbered lists are read
-  as mandatory instructions to execute at skill startup
-- **Code blocks** — the same calls in fenced code blocks (```) are
-  read as illustrative examples, not executable
-- **Enforcement language** — use `REQUIRED:`, `MANDATORY:`, or `DO NOT SKIP`
-  for constraints that must be preserved; pair with imperative language
-  (`MUST`, `never`) rather than advisory (`should`, `try to`)
-
-See `.claude/rules/skill-orchestration-format.md` for detailed patterns,
-marker guidance, and examples. Review checklist item 14a enforces this.
-
 ## Code Review
 
 Multi-agent architecture with domain-routed reviewers.
