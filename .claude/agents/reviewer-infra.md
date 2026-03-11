@@ -54,6 +54,10 @@ Files matching: `Makefile`, `**/*.sh`, `bin/**`, `hooks/**`,
 12c. **Hook error messages** — for PreToolUse blocks, verify the message
      clearly states the problem, provides at least one alternative, documents
      recovery action or alias, and is visible to user in systemMessage field.
+13. **Environment variable overrides** — before suggesting `$VAR`-based tool
+    location flexibility, check if CLAUDE.md documents this pattern as
+    maintained. If not found, ask: is this legacy? Is the team simplifying
+    away from variable-based paths?
 
 ## Design Intent
 

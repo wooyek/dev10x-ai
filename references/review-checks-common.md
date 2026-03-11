@@ -82,6 +82,11 @@ Before raising any of these, **verify actual code**:
     has acknowledged a RECOMMENDED suggestion but not acted on it, do
     not re-raise it in later rounds. Repeating optional feedback the
     author consciously skipped is noise. Only REQUIRED issues block merge.
+18b. **Consolidated inconsistency feedback** — when the same inconsistency
+     appears across multiple lines or files (e.g., `$VAR` usage in functions),
+     post a single comment listing all occurrences. This prevents the author
+     from addressing the same conceptual issue twice and surfaces systemic
+     design questions earlier.
 19. **PR body header position** — when a PR body contains Markdown headers
     (e.g., `## Summary`, `## Details`), verify the JTBD Job Story appears
     BEFORE all headers. A header before the JTBD breaks release notes parsing.

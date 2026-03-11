@@ -104,6 +104,14 @@ directives:
 See `.claude/rules/skill-orchestration-format.md` for detailed patterns,
 marker guidance, and examples. Review checklist item 14a enforces this.
 
+## Tool Availability and Configuration
+
+Scripts use `require_tool <name>` to check tool availability.
+Tools must be on PATH. No environment variable overrides (`$YQ`, `$JQ`)
+are supported — this simplifies maintenance and eliminates per-script
+customization friction. If a tool is missing, `require_tool` exits with
+a user-visible error and install URL.
+
 ## Code Review
 
 Multi-agent architecture with domain-routed reviewers.
