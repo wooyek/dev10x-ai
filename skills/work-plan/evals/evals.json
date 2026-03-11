@@ -1,0 +1,115 @@
+{
+  "skill_name": "dev10x:work-plan",
+  "eval_dimensions": [
+    {
+      "id": "subcommand-routing",
+      "name": "Subcommand Routing",
+      "description": "Correctly parses arguments to determine subcommand (list, view, edit, reset) and routes to the appropriate workflow"
+    },
+    {
+      "id": "plan-resolution",
+      "name": "Plan Resolution",
+      "description": "Resolves plans using the correct order: user overrides (persist: false first, then persist: true), then defaults from user file, then schema defaults"
+    },
+    {
+      "id": "guided-editing",
+      "name": "Guided Editing Flow",
+      "description": "Uses AskUserQuestion decision gates for all edit operations (add/remove/reorder/edit step), previews changes before saving, and supports continue-editing loop"
+    },
+    {
+      "id": "file-management",
+      "name": "Plan File Management",
+      "description": "Creates plan file only on first save, preserves existing overrides when adding new ones, correctly formats YAML with persist flag and date"
+    },
+    {
+      "id": "decision-gates",
+      "name": "Decision Gates",
+      "description": "All blocking choices use AskUserQuestion tool calls, not plain text questions"
+    }
+  ],
+  "evals": [
+    {
+      "id": "list-no-args",
+      "name": "List plans with no arguments",
+      "description": "User invokes /dev10x:work-plan with no arguments, expects summary table of all work types",
+      "input": "/dev10x:work-plan",
+      "assertions": [
+        {
+          "dimension": "subcommand-routing",
+          "check": "output_contains",
+          "value": "feature",
+          "signal": "Lists the feature work type"
+        },
+        {
+          "dimension": "subcommand-routing",
+          "check": "output_contains",
+          "value": "bugfix",
+          "signal": "Lists the bugfix work type"
+        },
+        {
+          "dimension": "subcommand-routing",
+          "check": "output_contains",
+          "value": "investigation",
+          "signal": "Lists the investigation work type"
+        }
+      ]
+    },
+    {
+      "id": "view-specific-type",
+      "name": "View a specific plan type",
+      "description": "User invokes /dev10x:work-plan view feature, expects full plan tree",
+      "input": "/dev10x:work-plan view feature",
+      "assertions": [
+        {
+          "dimension": "subcommand-routing",
+          "check": "output_contains",
+          "value": "Set up workspace",
+          "signal": "Shows the first step of the feature plan"
+        },
+        {
+          "dimension": "plan-resolution",
+          "check": "tool_called",
+          "tool": "Read",
+          "signal": "Reads the schema file to get plan defaults"
+        }
+      ]
+    },
+    {
+      "id": "edit-uses-decision-gate",
+      "name": "Edit subcommand uses AskUserQuestion",
+      "description": "Edit flow must use AskUserQuestion for operation selection",
+      "input": "/dev10x:work-plan edit feature",
+      "assertions": [
+        {
+          "dimension": "decision-gates",
+          "check": "tool_called",
+          "tool": "AskUserQuestion",
+          "assertion": "edit_operation_gate",
+          "signal": "AskUserQuestion is called for edit operation selection"
+        },
+        {
+          "dimension": "decision-gates",
+          "check": "tool_called",
+          "tool": "AskUserQuestion",
+          "assertion": "save_gate",
+          "signal": "AskUserQuestion is called for save/continue/discard decision"
+        }
+      ]
+    },
+    {
+      "id": "reset-confirms",
+      "name": "Reset subcommand confirms before deleting",
+      "description": "Reset must confirm with user before removing overrides",
+      "input": "/dev10x:work-plan reset feature",
+      "assertions": [
+        {
+          "dimension": "decision-gates",
+          "check": "tool_called",
+          "tool": "AskUserQuestion",
+          "assertion": "reset_confirmation",
+          "signal": "AskUserQuestion is called before resetting overrides"
+        }
+      ]
+    }
+  ]
+}
