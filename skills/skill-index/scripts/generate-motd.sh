@@ -9,14 +9,13 @@ OLD_MOTD="${HOME}/.claude/.skills-motd.txt"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAMILIES_FILE="${SCRIPT_DIR}/families.yaml"
 HIDDEN_FILE="${SCRIPT_DIR}/hidden.yaml"
-YQ="${YQ:-$(command -v yq 2>/dev/null || echo "/home/linuxbrew/.linuxbrew/bin/yq")}"
+BIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)/bin"
+# shellcheck source=../../../bin/require-tool.sh
+source "$BIN_DIR/require-tool.sh"
+require_tool yq
+require_tool jq
 LINE_WIDTH=55
 LINE_BUDGET=45
-
-if ! command -v "$YQ" &>/dev/null; then
-    echo >&2 "ERROR: yq not found — install mikefarah/yq v4"
-    exit 1
-fi
 
 # ── Resolve skill source directories ────────────────────────────
 LOCAL_DIR="${HOME}/.claude/skills"
@@ -66,68 +65,22 @@ ALL_KEYS=()
 
 parse_skill() {
     local skill_file="$1"
-    local name="" desc="" invocable="false" inv_name="" in_fm=0 grab_desc=0
+    local json name desc invocable inv_name key
 
-    while IFS= read -r line; do
-        if [[ "$line" == "---" ]]; then
-            in_fm=$((in_fm + 1))
-            [[ $in_fm -ge 2 ]] && break
-            continue
-        fi
-        [[ $in_fm -lt 1 ]] && continue
+    json=$(yq --front-matter=extract -o=json \
+        '{"n": .name, "d": .description, "i": (.["user-invocable"] // false), "k": (.["invocation-name"] // "")}' \
+        "$skill_file" 2>/dev/null) || return
 
-        if [[ $grab_desc -eq 1 ]]; then
-            if [[ "$line" =~ ^[[:space:]] ]]; then
-                desc="${line#"${line%%[![:space:]]*}"}"
-                grab_desc=0
-                continue
-            fi
-            grab_desc=0
-        fi
+    name=$(jq -r '.n // empty' <<< "$json") || return
+    [[ -z "$name" || "$name" == *"{"* || "$name" == "my-skill-name" ]] && return
 
-        case "$line" in
-            name:*)
-                name="${line#name:}"
-                name="${name# }"
-                name="${name#\"}"
-                name="${name%\"}"
-                ;;
-            description:*\>*|description:*\|*)
-                grab_desc=1
-                ;;
-            description:*)
-                desc="${line#description:}"
-                desc="${desc# }"
-                desc="${desc#\"}"
-                desc="${desc%\"}"
-                ;;
-            user-invocable:*true*)
-                invocable="true"
-                ;;
-            invocation-name:*)
-                inv_name="${line#invocation-name:}"
-                inv_name="${inv_name# }"
-                inv_name="${inv_name#\"}"
-                inv_name="${inv_name%\"}"
-                ;;
-        esac
-    done < "$skill_file"
-
-    [[ -z "$name" ]] && return
-
-    # Skip template/placeholder skills
-    [[ "$name" == *"{"* ]] && return
-    [[ "$name" == "my-skill-name" ]] && return
-
-    # Trim description
-    desc="${desc#\'}"
-    desc="${desc%\'}"
+    desc=$(jq -r '.d // "" | gsub("\n"; " ") | ltrimstr(" ") | rtrimstr(" ")' <<< "$json")
     [[ ${#desc} -gt 60 ]] && desc="${desc:0:57}..."
 
-    # Determine the display key (invocation-name preferred, else name)
-    local key="${inv_name:-$name}"
+    invocable=$(jq -r 'if .i == true then "true" else "false" end' <<< "$json")
+    inv_name=$(jq -r '.k // empty' <<< "$json")
 
-    # Remove trailing comment from invocation-name (e.g. "skill-name   # short alias")
+    key="${inv_name:-$name}"
     key="${key%%#*}"
     key="${key%"${key##*[![:space:]]}"}"
 
@@ -158,7 +111,7 @@ declare -A HIDDEN
 if [[ -f "$HIDDEN_FILE" ]]; then
     while IFS= read -r h; do
         [[ -n "$h" ]] && HIDDEN["$h"]=1
-    done < <("$YQ" '.hidden[]' "$HIDDEN_FILE")
+    done < <(yq '.hidden[]' "$HIDDEN_FILE")
 fi
 
 # ── Filter: remove hidden skills, build visible list ────────────
@@ -181,7 +134,7 @@ done
 # ── Load display_map ──────────────────────────────────────────────
 # Maps display-name → internal invocation-name key
 declare -A DISPLAY_TO_KEY KEY_TO_DISPLAY
-if "$YQ" '.display_map' "$FAMILIES_FILE" | grep -q '^[^n]'; then
+if yq '.display_map' "$FAMILIES_FILE" | grep -q '^[^n]'; then
     while IFS='=' read -r display_name internal_key; do
         display_name="${display_name## }"
         display_name="${display_name%% }"
@@ -190,20 +143,20 @@ if "$YQ" '.display_map' "$FAMILIES_FILE" | grep -q '^[^n]'; then
         [[ -n "$display_name" && -n "$internal_key" ]] || continue
         DISPLAY_TO_KEY["$display_name"]="$internal_key"
         KEY_TO_DISPLAY["$internal_key"]="$display_name"
-    done < <("$YQ" '.display_map | to_entries | .[] | .key + "=" + .value' "$FAMILIES_FILE")
+    done < <(yq '.display_map | to_entries | .[] | .key + "=" + .value' "$FAMILIES_FILE")
 fi
 
 # ── Load families ───────────────────────────────────────────────
 declare -a FAMILY_LABELS FAMILY_DESCS
 declare -A FAMILY_SKILLS
-family_count=$("$YQ" '.families | length' "$FAMILIES_FILE")
+family_count=$(yq '.families | length' "$FAMILIES_FILE")
 
 for ((i = 0; i < family_count; i++)); do
-    label=$("$YQ" ".families[$i].label" "$FAMILIES_FILE")
-    desc=$("$YQ" ".families[$i].description" "$FAMILIES_FILE")
+    label=$(yq ".families[$i].label" "$FAMILIES_FILE")
+    desc=$(yq ".families[$i].description" "$FAMILIES_FILE")
     FAMILY_LABELS+=("$label")
     FAMILY_DESCS+=("$desc")
-    skills_str=$("$YQ" ".families[$i].skills[]" "$FAMILIES_FILE" | tr '\n' '|')
+    skills_str=$(yq ".families[$i].skills[]" "$FAMILIES_FILE" | tr '\n' '|')
     FAMILY_SKILLS["$label"]="$skills_str"
 done
 

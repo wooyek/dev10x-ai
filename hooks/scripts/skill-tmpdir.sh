@@ -5,6 +5,10 @@
 
 set -euo pipefail
 
+# shellcheck source=../../bin/require-tool.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/bin/require-tool.sh"
+require_tool jq
+
 INPUT=$(cat)
 SKILL_NAME=$(echo "$INPUT" | jq -r '.tool_input.skill // empty')
 

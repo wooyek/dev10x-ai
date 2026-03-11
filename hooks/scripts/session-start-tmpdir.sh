@@ -5,6 +5,10 @@
 
 set -euo pipefail
 
+# shellcheck source=../../bin/require-tool.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/bin/require-tool.sh"
+require_tool jq
+
 session_id=$(jq -r '.session_id // empty')
 
 if [[ -z "$session_id" ]]; then

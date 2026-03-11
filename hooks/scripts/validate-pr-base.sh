@@ -9,6 +9,10 @@
 
 set -euo pipefail
 
+# shellcheck source=../../bin/require-tool.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/bin/require-tool.sh"
+require_tool jq
+
 INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""') || {
     echo "BLOCKED: Hook input parsing failed."
