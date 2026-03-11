@@ -9,7 +9,7 @@ the right pattern on the first attempt.
 | Pattern | Why blocked | Use instead |
 |---------|------------|-------------|
 | `cmd1 && cmd2` (setup + path-based script) | `&&` shifts prefix, breaks allow rules for path-based commands | Separate Bash tool calls |
-| `GIT_SEQUENCE_EDITOR=... git` | Env prefix shifts effective prefix, breaks allow rules | `git develop-rebase` alias |
+| `ENV=value git ...` (any env prefix) | Env prefix shifts effective prefix, breaks allow rules | Drop prefix or use `git develop-rebase` alias |
 | `cat <<'EOF'` / `cat >` / `echo >` | Heredocs/redirects blocked by security hook | Write tool + reference file (`git commit -F`) |
 | `python3 -c "..."` inline code | Inline execution blocked | Extract to `~/.claude/tools/script.py` with uv shebang |
 
@@ -20,9 +20,8 @@ prompts or brittle command matching.
 
 | Pattern | Why risky | Use instead |
 |---------|-----------|-------------|
-| `$(git merge-base ...)` inline | Subshell shifts effective command prefix | Git aliases: `git develop-log`, `git develop-diff`, `git develop-rebase` |
+| `$(git merge-base ...)` inline | Subshell blocked — use aliases | Git aliases: `git develop-log`, `git develop-diff`, `git develop-rebase` |
 | `# comment` as first line | Leading `#` can break prefix matching and parser expectations | Use Bash tool `description` parameter |
-| `ENV=val command` prefix | Env prefix can shift the effective prefix used for allow rules | Script sets env internally |
 | `uv run --script` on executable scripts | Redundant wrapper can miss direct path-based allow rules | Call script directly (shebang handles uv) |
 | `cd /worktree/path && command` | Redundant when CWD is already the worktree; can trigger chaining checks | Run command directly — session switched on worktree creation |
 
