@@ -6,6 +6,10 @@
 
 set -euo pipefail
 
+# shellcheck source=../../../bin/require-tool.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)/bin/require-tool.sh"
+require_tool jq
+
 WORKTREE_PATH="${1:?Usage: setup-session-end-hook.sh <worktree-path>}"
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CLEANUP_SCRIPT="$SKILL_DIR/scripts/session-end-cleanup.sh"

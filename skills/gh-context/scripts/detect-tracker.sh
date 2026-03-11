@@ -15,6 +15,10 @@
 
 set -euo pipefail
 
+# shellcheck source=../../../bin/require-tool.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)/bin/require-tool.sh"
+require_tool jq
+
 TICKET_ID="${1:?Usage: detect-tracker.sh TICKET_ID}"
 
 # Extract prefix and number from TICKET_ID
