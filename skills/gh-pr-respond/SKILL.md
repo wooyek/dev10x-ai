@@ -8,6 +8,9 @@ allowed-tools:
   - Bash(gh:*)
   - Skill(dev10x:gh-pr-triage)
   - Skill(dev10x:gh-pr-fixup)
+  - Skill(dev10x:git-groom)
+  - Skill(dev10x:gh-pr-monitor)
+  - Skill(dev10x:git)
 ---
 
 # Respond to PR Review Comments
@@ -44,7 +47,7 @@ and presented as a batch after all responses are posted.
 
 ## Decision Gates
 
-This skill has 4 **blocking decision gates** where execution
+This skill has 5 **blocking decision gates** where execution
 MUST pause for user input via the `AskUserQuestion` tool.
 
 **Plain text questions are NOT acceptable** — they don't block
@@ -57,6 +60,7 @@ structured decision flow the user relies on.
 | 2 | Mode A, Step 3 | Continue / batch / stop |
 | 3 | Mode B, Step 3 | Approve / review / skip batch |
 | 4 | Mode B, Step 5 | Resolve threads confirmation |
+| 5 | Post-Response Continuation | Groom + push + monitor / Push only / Stop |
 
 Each gate is marked with **REQUIRED: `AskUserQuestion`** in the
 step description. If you see that marker, you MUST call the
@@ -315,6 +319,29 @@ Batch complete: {N} comments processed
 - {r} threads resolved (user-confirmed)
 - {u} threads left open
 ```
+
+---
+
+## Post-Response Continuation
+
+After all comments are processed (Mode A or Mode B), if fixup commits
+were created during this session, offer to continue the shipping
+pipeline:
+
+**REQUIRED: Call `AskUserQuestion`** (do NOT use plain text).
+Options:
+- **"Groom + push + monitor" (Recommended)** — Invoke `dev10x:git-groom`
+  to squash fixups, push with `--force-with-lease`, then invoke
+  `dev10x:gh-pr-monitor` to watch CI and new comments
+- **"Push only"** — Push current commits (including fixups) without
+  grooming
+- **"Stop"** — End without pushing
+
+This eliminates the manual three-step chain (`git-groom` → push →
+`gh-pr-monitor`) that was required after every respond session.
+
+**Skip this gate** if no fixup commits were created (e.g., all
+comments were INVALID and only replies were posted).
 
 ---
 
