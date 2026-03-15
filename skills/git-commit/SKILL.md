@@ -50,6 +50,14 @@ Never pause between steps to ask "should I continue?".
 Set sequential dependencies: draft blocked by gather, review blocked
 by draft, create blocked by review.
 
+**Task creation in unattended mode:** All 4 startup tasks MUST
+be created regardless of mode. When a task's work is auto-skipped
+(e.g., "Review and approve" in unattended mode), still create
+the task via `TaskCreate` and immediately mark it `completed`
+with description "Auto-skipped: unattended mode" (or the
+appropriate reason). This preserves supervisor visibility into
+the full workflow.
+
 **Unattended mode:** When this skill is invoked by an
 orchestrating skill (e.g., `dev10x:work-on`, `test:fix-flaky`,
 `dev10x:git-promote`) and the orchestrator has already approved

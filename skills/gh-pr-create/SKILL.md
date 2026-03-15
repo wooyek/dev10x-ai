@@ -38,6 +38,14 @@ Never pause between steps to ask "should I continue?".
 Set sequential dependencies: generate blocked by verify, checks
 blocked by generate, push blocked by checks.
 
+**Task creation in unattended mode:** All 4 startup tasks MUST
+be created regardless of mode. When a task's work is auto-skipped
+(e.g., "Run pre-PR checks" on a non-Python project), still create
+the task via `TaskCreate` and immediately mark it `completed`
+with description "Auto-skipped: non-Python project" (or the
+appropriate reason). This preserves supervisor visibility into
+the full workflow.
+
 **REQUIRED: Call `AskUserQuestion`** (do NOT use plain text, call spec: [ask-pr-preview.md](./tool-calls/ask-pr-preview.md)) after
 generating the PR body. This blocks execution until the user responds.
 Options:
