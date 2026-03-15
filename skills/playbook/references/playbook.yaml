@@ -4,6 +4,7 @@
 # Managed by dev10x:playbook skill.
 #
 # Structure:
+#   fragments  — reusable step sequences (see below)
 #   defaults   — per play-type templates with parent-child steps
 #   overrides  — user customizations (persist: true = reuse)
 #
@@ -13,8 +14,8 @@
 #   steps  — ordered list of play steps
 #
 # Each step has:
-#   subject   — task title (required)
-#   type      — "detailed" or "epic" (required)
+#   subject   — task title (required, unless fragment reference)
+#   type      — "detailed" or "epic" (required, unless fragment reference)
 #   prompt    — expansion guidance for the agent executing this step;
 #               describes what to do, what to look for, or how to
 #               adapt the step based on context (optional)
@@ -22,9 +23,116 @@
 #   skills    — list of skills to delegate to (optional)
 #   steps     — child steps for pre-templated epic expansion (optional)
 #   condition — hint for conditional execution (optional)
+#   fragment  — reference to a named fragment (replaces subject/type)
+#
+# Fragments — reusable step sequences referenced via `- fragment: <name>`.
+# A fragment reference copies the fragment's steps inline at resolution
+# time. The reference may carry `condition` or `prompt` overrides that
+# apply to every expanded step.
 #
 # Play names match Phase 1 classification (for work-on):
 #   feature, bugfix, pr-continuation, local-only, investigation
+
+fragments:
+  shipping-pipeline:
+    - subject: Code review
+      type: detailed
+      prompt: >
+        Run the code-reviewer agent on the current branch to
+        catch issues before creating the PR. Fix any findings
+        before proceeding.
+      agent: code-reviewer
+    - subject: Commit outstanding changes
+      type: detailed
+      prompt: >
+        Stage and commit any uncommitted work from the review
+        fixes. Use atomic commits with gitmoji + ticket ID.
+        Auto-advance — do not pause after committing.
+      skills: [dev10x:git-commit]
+    - subject: Create draft PR
+      type: detailed
+      prompt: >
+        Create a draft PR immediately. The PR body and commit
+        history can be refined later. Auto-advance — do not
+        block on PR preview approval.
+      skills: [dev10x:gh-pr-create]
+    - subject: Monitor CI
+      type: detailed
+      prompt: >
+        Watch CI checks on the draft PR. Fix any failures
+        with fixup commits and push.
+      skills: [dev10x:gh-pr-monitor]
+    - subject: Apply fixups to review comments
+      type: epic
+      prompt: >
+        Address each review comment with a fixup commit. Validate
+        before replying. Do not auto-resolve threads.
+      skills: [dev10x:gh-pr-respond]
+    - subject: Groom commit history
+      type: detailed
+      prompt: >
+        Squash fixups, reorder for logical flow, ensure each
+        commit message follows gitmoji + JTBD conventions.
+      skills: [dev10x:git-groom]
+    - subject: Update PR description
+      type: detailed
+      prompt: >
+        Update the draft PR title and body with the final Job
+        Story, linked commit list, and checklist. Mark as ready
+        for review if all checks pass.
+      skills: [dev10x:gh-pr-create]
+    - subject: Request review
+      type: detailed
+      prompt: >
+        Assign reviewers and post Slack notification per project
+        config.
+      skills: [dev10x:gh-pr-request-review]
+    - subject: Verify acceptance criteria
+      type: detailed
+      prompt: >
+        Check resolved acceptance criteria from
+        acceptance-criteria.yaml. Confirm all items are met
+        before declaring work complete.
+
+  shipping-pipeline-continuation:
+    - subject: Code review
+      type: detailed
+      prompt: >
+        Run the code-reviewer agent on changes to catch issues
+        before pushing. Fix any findings.
+      agent: code-reviewer
+    - subject: Commit outstanding changes
+      type: detailed
+      prompt: >
+        Stage and commit any uncommitted fixup work.
+        Auto-advance — do not pause after committing.
+      skills: [dev10x:git-commit]
+    - subject: Monitor CI
+      type: detailed
+      prompt: >
+        Push changes and monitor CI. Fix any failures
+        introduced by the fixups.
+      skills: [dev10x:gh-pr-monitor]
+    - subject: Groom commit history
+      type: detailed
+      prompt: Squash fixups into their parent commits.
+      skills: [dev10x:git-groom]
+    - subject: Update PR description
+      type: detailed
+      prompt: >
+        Update the PR with final linked commits and checklist.
+      skills: [dev10x:gh-pr-create]
+    - subject: Request re-review
+      type: detailed
+      prompt: >
+        Notify reviewers that feedback has been addressed
+        and request re-review.
+      skills: [dev10x:gh-pr-request-review]
+    - subject: Verify acceptance criteria
+      type: detailed
+      prompt: >
+        Confirm all review comments are addressed, CI passes,
+        and the PR is ready for merge.
 
 defaults:
   feature:
@@ -94,64 +202,7 @@ defaults:
           - subject: Run lint
             type: detailed
             prompt: Run ruff check and black. Fix violations.
-      - subject: Code review
-        type: detailed
-        prompt: >
-          Run the code-reviewer agent on the current branch to
-          catch issues before creating the PR. Fix any findings
-          before proceeding.
-        agent: code-reviewer
-      - subject: Commit outstanding changes
-        type: detailed
-        prompt: >
-          Stage and commit any uncommitted work from the review
-          fixes. Use atomic commits with gitmoji + ticket ID.
-          Auto-advance — do not pause after committing.
-        skills: [dev10x:git-commit]
-      - subject: Create draft PR
-        type: detailed
-        prompt: >
-          Create a draft PR immediately. The PR body and commit
-          history can be refined later. Auto-advance — do not
-          block on PR preview approval.
-        skills: [dev10x:gh-pr-create]
-      - subject: Monitor CI
-        type: detailed
-        prompt: >
-          Watch CI checks on the draft PR. Fix any failures
-          with fixup commits and push.
-        skills: [dev10x:gh-pr-monitor]
-      - subject: Apply fixups to review comments
-        type: epic
-        prompt: >
-          Address each review comment with a fixup commit. Validate
-          before replying. Do not auto-resolve threads.
-        skills: [dev10x:gh-pr-respond]
-      - subject: Groom commit history
-        type: detailed
-        prompt: >
-          Squash fixups, reorder for logical flow, ensure each
-          commit message follows gitmoji + JTBD conventions.
-        skills: [dev10x:git-groom]
-      - subject: Update PR description
-        type: detailed
-        prompt: >
-          Update the draft PR title and body with the final Job
-          Story, linked commit list, and checklist. Mark as ready
-          for review if all checks pass.
-        skills: [dev10x:gh-pr-create]
-      - subject: Request review
-        type: detailed
-        prompt: >
-          Assign reviewers and post Slack notification per project
-          config.
-        skills: [dev10x:gh-pr-request-review]
-      - subject: Verify acceptance criteria
-        type: detailed
-        prompt: >
-          Check resolved acceptance criteria from
-          acceptance-criteria.yaml. Confirm all items are met
-          before declaring work complete.
+      - fragment: shipping-pipeline
 
   bugfix:
     prompt: >
@@ -215,56 +266,7 @@ defaults:
               Write a test that specifically covers the bug
               scenario. It should fail without the fix and pass
               with it.
-      - subject: Code review
-        type: detailed
-        prompt: >
-          Run the code-reviewer agent on the current branch to
-          catch issues before creating the PR. Fix any findings.
-        agent: code-reviewer
-      - subject: Commit outstanding changes
-        type: detailed
-        prompt: >
-          Stage and commit any uncommitted work from the review
-          fixes. Auto-advance — do not pause after committing.
-        skills: [dev10x:git-commit]
-      - subject: Create draft PR
-        type: detailed
-        prompt: >
-          Create a draft PR immediately. Include the bug
-          description and root cause in the PR body.
-          Auto-advance — do not block on PR preview approval.
-        skills: [dev10x:gh-pr-create]
-      - subject: Monitor CI
-        type: detailed
-        prompt: >
-          Watch CI checks on the draft PR. Fix any failures
-          with fixup commits and push.
-        skills: [dev10x:gh-pr-monitor]
-      - subject: Apply fixups to review comments
-        type: epic
-        prompt: >
-          Address each review comment with a fixup commit.
-        skills: [dev10x:gh-pr-respond]
-      - subject: Groom commit history
-        type: detailed
-        prompt: >
-          Squash fixups, ensure commit messages follow conventions.
-        skills: [dev10x:git-groom]
-      - subject: Update PR description
-        type: detailed
-        prompt: >
-          Update the draft PR with final Job Story, linked commits,
-          and checklist. Mark as ready for review.
-        skills: [dev10x:gh-pr-create]
-      - subject: Request review
-        type: detailed
-        prompt: Assign reviewers and notify via Slack.
-        skills: [dev10x:gh-pr-request-review]
-      - subject: Verify acceptance criteria
-        type: detailed
-        prompt: >
-          Confirm regression test exists, CI passes, and fix
-          addresses the original bug report.
+      - fragment: shipping-pipeline
 
   pr-continuation:
     prompt: >
@@ -290,44 +292,7 @@ defaults:
           Batch-process remaining unaddressed comments using
           the gh-pr-respond skill.
         skills: [dev10x:gh-pr-respond]
-      - subject: Code review
-        type: detailed
-        prompt: >
-          Run the code-reviewer agent on changes to catch issues
-          before pushing. Fix any findings.
-        agent: code-reviewer
-      - subject: Commit outstanding changes
-        type: detailed
-        prompt: >
-          Stage and commit any uncommitted fixup work.
-          Auto-advance — do not pause after committing.
-        skills: [dev10x:git-commit]
-      - subject: Monitor CI
-        type: detailed
-        prompt: >
-          Push changes and monitor CI. Fix any failures
-          introduced by the fixups.
-        skills: [dev10x:gh-pr-monitor]
-      - subject: Groom commit history
-        type: detailed
-        prompt: Squash fixups into their parent commits.
-        skills: [dev10x:git-groom]
-      - subject: Update PR description
-        type: detailed
-        prompt: >
-          Update the PR with final linked commits and checklist.
-        skills: [dev10x:gh-pr-create]
-      - subject: Request re-review
-        type: detailed
-        prompt: >
-          Notify reviewers that feedback has been addressed
-          and request re-review.
-        skills: [dev10x:gh-pr-request-review]
-      - subject: Verify acceptance criteria
-        type: detailed
-        prompt: >
-          Confirm all review comments are addressed, CI passes,
-          and the PR is ready for merge.
+      - fragment: shipping-pipeline-continuation
 
   local-only:
     prompt: >
@@ -365,57 +330,14 @@ defaults:
           Present the user with a decision gate. Options:
           create a ticket and PR, create just a PR, or mark
           the work as done locally.
-      - subject: Code review
-        type: detailed
+      - fragment: shipping-pipeline
         condition: if-pr-decided
-        prompt: >
-          Run the code-reviewer agent on the current branch.
-          Fix any findings before creating the PR.
-        agent: code-reviewer
-      - subject: Commit outstanding changes
-        type: detailed
-        condition: if-pr-decided
-        prompt: >
-          Stage and commit any uncommitted work.
-          Auto-advance — do not pause after committing.
-        skills: [dev10x:git-commit]
-      - subject: Create draft PR
-        type: detailed
-        skills: [dev10x:gh-pr-create]
-        condition: if-pr-decided
-        prompt: >
-          Create a draft PR immediately. Auto-advance — do not
-          block on PR preview approval.
-      - subject: Monitor CI
-        type: detailed
-        skills: [dev10x:gh-pr-monitor]
-        condition: if-pr-decided
-        prompt: Watch CI and fix any failures.
-      - subject: Apply fixups to review comments
-        type: epic
-        skills: [dev10x:gh-pr-respond]
-        condition: if-pr-decided
-        prompt: Address review feedback if PR was created.
-      - subject: Groom commit history
-        type: detailed
-        skills: [dev10x:git-groom]
-        condition: if-pr-decided
-        prompt: Clean up commits before merge.
-      - subject: Update PR description
-        type: detailed
-        skills: [dev10x:gh-pr-create]
-        condition: if-pr-decided
-        prompt: Update the PR with final Job Story and linked commits.
-      - subject: Request review
-        type: detailed
-        skills: [dev10x:gh-pr-request-review]
-        condition: if-pr-decided
-        prompt: Assign reviewers if PR was created.
       - subject: Verify acceptance criteria
         type: detailed
         prompt: >
           Confirm work is complete per the acceptance criteria
-          for the chosen outcome (local or PR).
+          for the chosen outcome. If no PR was created, verify
+          locally that all expected deliverables are done.
 
   investigation:
     prompt: >

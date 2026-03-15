@@ -30,6 +30,11 @@
       "id": "decision-gates",
       "name": "Decision Gates",
       "description": "All blocking choices use AskUserQuestion tool calls, not plain text questions"
+    },
+    {
+      "id": "fragment-resolution",
+      "name": "Fragment Resolution",
+      "description": "Fragment references are correctly expanded inline, with condition overrides propagated, circular references detected, and missing fragments producing clear errors"
     }
   ],
   "evals": [
@@ -75,8 +80,8 @@
     },
     {
       "id": "view-specific-play",
-      "name": "View a specific play",
-      "description": "User invokes /dev10x:playbook view work-on feature, expects full play tree",
+      "name": "View a specific play with fragment markers",
+      "description": "User invokes /dev10x:playbook view work-on feature, expects play tree with [FRAGMENT] markers for fragment references",
       "input": "/dev10x:playbook view work-on feature",
       "assertions": [
         {
@@ -90,6 +95,12 @@
           "check": "tool_called",
           "tool": "Read",
           "signal": "Reads the playbook file to get play defaults"
+        },
+        {
+          "dimension": "play-resolution",
+          "check": "output_contains",
+          "value": "FRAGMENT",
+          "signal": "Shows [FRAGMENT: name] marker for fragment references in the play"
         }
       ]
     },
@@ -141,6 +152,68 @@
           "check": "output_contains",
           "value": "playbooks/work-on.yaml",
           "signal": "Writes to per-skill override file, not a shared file"
+        }
+      ]
+    },
+    {
+      "id": "fragment-expansion",
+      "name": "Fragment references resolve correctly",
+      "description": "When resolving a play for execution, fragment references are expanded into their constituent steps",
+      "input": "/dev10x:playbook view work-on feature --expanded",
+      "assertions": [
+        {
+          "dimension": "fragment-resolution",
+          "check": "output_contains",
+          "value": "Code review",
+          "signal": "Fragment steps are expanded inline when requested"
+        },
+        {
+          "dimension": "fragment-resolution",
+          "check": "output_contains",
+          "value": "Groom commit history",
+          "signal": "Expanded view shows all steps from the shipping-pipeline fragment"
+        }
+      ]
+    },
+    {
+      "id": "missing-fragment-error",
+      "name": "Missing fragment produces clear error",
+      "description": "Pre-condition: the feature play references a nonexistent fragment name. Expects a clear error rather than silent skip.",
+      "input": "/dev10x:playbook view work-on feature",
+      "assertions": [
+        {
+          "dimension": "fragment-resolution",
+          "check": "output_contains",
+          "value": "error",
+          "signal": "Shows an error message for missing fragment references"
+        }
+      ]
+    },
+    {
+      "id": "fragment-condition-override",
+      "name": "Fragment condition override propagates",
+      "description": "When a fragment reference carries a condition, it is applied to all expanded steps",
+      "input": "/dev10x:playbook view work-on local-only --expanded",
+      "assertions": [
+        {
+          "dimension": "fragment-resolution",
+          "check": "output_contains",
+          "value": "if-pr-decided",
+          "signal": "Condition from fragment reference is applied to expanded steps"
+        }
+      ]
+    },
+    {
+      "id": "circular-fragment-error",
+      "name": "Circular fragment reference is detected",
+      "description": "Pre-condition: fragment A references fragment B which references fragment A. Resolution stops at depth 3 and shows a clear error.",
+      "input": "/dev10x:playbook view work-on feature",
+      "assertions": [
+        {
+          "dimension": "fragment-resolution",
+          "check": "output_contains",
+          "value": "circular",
+          "signal": "Shows a circular reference error message"
         }
       ]
     }

@@ -128,10 +128,16 @@ Show plays for a specific skill, or drill into one play.
 |   |   | ├─ Read relevant code | — | |
 |   |   | ├─ Identify affected components | — | |
 |   |   | └─ Propose approach | — | |
-| ... | | | | |
+| 4 | epic | Implement changes | — | — |
+| 5 | epic | Verify | — | 2 children |
+| — | — | [FRAGMENT: shipping-pipeline] | — | 9 steps |
 
 **Source:** defaults (no user override)
 ```
+
+When displaying a play that contains fragment references, show
+`[FRAGMENT: <name>]` with the step count. If the user asks for
+full expansion, resolve the fragment inline and display all steps.
 
 If an override exists, show both so the user can compare.
 
@@ -151,6 +157,11 @@ language rather than editing YAML.
    - **Remove step** — Remove a step by number
    - **Reorder steps** — Move a step to a different position
    - **Edit step** — Change a step's subject, type, prompt, or skills
+
+   When editing a play that uses fragment references, the user can
+   also choose to inline a fragment (replace `- fragment: <name>`
+   with the expanded steps for further editing) or replace a
+   sequence of steps with a fragment reference.
 
 3. Based on the user's choice, gather details:
 
@@ -220,6 +231,15 @@ Reset overrides to the skill's default playbook.
 Each skill's `references/playbook.yaml` follows this structure:
 
 ```yaml
+# Fragments — reusable step sequences
+fragments:
+  <fragment-name>:
+    - subject: Step title (required)
+      type: detailed | epic (required)
+      prompt: ... (optional)
+      skills: [...] (optional)
+      agent: ... (optional)
+
 # Top-level: map of play names to play definitions
 defaults:
   <play-name>:
@@ -235,9 +255,30 @@ defaults:
         skills: [skill1, skill2] (optional)
         steps: [] (optional — pre-templated epic children)
         condition: hint (optional)
+      - fragment: <fragment-name> (optional — inline reference)
+        condition: hint (optional — applied to all expanded steps)
+        prompt: ... (optional — overrides prompt on all expanded steps)
 
 overrides: []  # populated by this skill when user customizes
 ```
+
+### Fragment References
+
+A step entry with `fragment: <name>` is replaced at resolution
+time by the steps from the named fragment. The reference may
+carry a `condition` override that applies to every expanded step.
+
+**Resolution rules:**
+1. Load the `fragments` map from the playbook YAML
+2. Walk the step list; when `fragment: <name>` is found,
+   look up the name in the fragments map
+3. Copy fragment steps inline, applying `condition` from the
+   reference to each expanded step
+4. `subject`, `type`, `skills`, `agent` from fragment steps
+   are immutable — only `condition` and `prompt` can be
+   overridden at the reference site
+5. Detect circular references (max depth 3)
+6. Missing fragment → clear error, do not silently skip
 
 See `references/playbook.yaml` for the full work-on playbook
 with all 5 plays as a reference implementation.

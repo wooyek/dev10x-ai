@@ -296,9 +296,15 @@ Each step in the play has:
    `${CLAUDE_PLUGIN_ROOT}/skills/playbook/references/playbook.yaml`
 3. Resolve: overrides first (same as acceptance-criteria), then
    defaults, then schema fallback
-4. For each step, create a `TaskCreate` with the step's `subject`,
+4. **Resolve fragment references:** Walk the step list. When a
+   step has `fragment: <name>`, look up the name in the
+   `fragments` map (from the same YAML file). Replace the
+   reference with the fragment's steps, applying any `condition`
+   override from the reference to each expanded step. Error on
+   missing fragments; detect circular refs (max depth 3).
+5. For each step, create a `TaskCreate` with the step's `subject`,
    `type` in metadata, and `agent`/`skills` in metadata if present
-5. If a step has child `steps`, store them in metadata for
+6. If a step has child `steps`, store them in metadata for
    expansion when the epic is reached (Phase 4)
 
 **Work type classification:**
