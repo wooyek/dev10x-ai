@@ -27,14 +27,17 @@ Never pause to ask "should I continue?" between steps.
 
 **Mode A (single):**
 1. `TaskCreate(subject="Process comment r{id}", activeForm="Processing comment")`
-2. `TaskCreate(subject="Check remaining comments", activeForm="Checking remaining")`
+2. `TaskCreate(subject="Hide obsolete comment", activeForm="Hiding comment")`
+3. `TaskCreate(subject="Check remaining comments", activeForm="Checking remaining")`
 
 **Mode B (batch):**
 1. `TaskCreate(subject="Collect unaddressed comments", activeForm="Collecting comments")`
 2. `TaskCreate(subject=f"Triage {N} comments", activeForm="Triaging comments")`
-3. `TaskCreate(subject="Execute approved responses", activeForm="Executing responses")`
-4. `TaskCreate(subject="Resolve threads", activeForm="Resolving threads")`
-5. `TaskCreate(subject="Hide obsolete comments", activeForm="Hiding comments")`
+3. `TaskCreate(subject="Get user approval", activeForm="Awaiting approval")`
+4. `TaskCreate(subject="Execute approved responses", activeForm="Executing responses")`
+5. `TaskCreate(subject="Resolve threads", activeForm="Resolving threads")`
+6. `TaskCreate(subject="Hide obsolete comments", activeForm="Hiding comments")`
+7. `TaskCreate(subject="Summary", activeForm="Summarizing")`
 
 Set dependencies and update status as each completes.
 
@@ -66,6 +69,8 @@ MUST pause for user input via the `AskUserQuestion` tool.
 **Plain text questions are NOT acceptable** — they don't block
 execution, don't provide clickable options, and break the
 structured decision flow the user relies on.
+
+Gates numbered by insertion order; execution order differs by mode.
 
 | # | Location | Purpose |
 |---|----------|---------|
@@ -366,7 +371,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
         nodes {
           isResolved
           comments(first: 1) {
-            nodes { id databaseId }
+            nodes { id databaseId path body }
           }
         }
       }
@@ -542,4 +547,5 @@ Contains GitHub API documentation for:
 - Fetching single comments
 - Creating replies
 - Resolving review threads (GraphQL)
+- Hiding (minimizing) comments (GraphQL)
 - Filtering and querying
