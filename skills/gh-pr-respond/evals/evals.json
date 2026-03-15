@@ -4,7 +4,7 @@
     {
       "id": "decision-gates",
       "name": "Decision Gate Compliance",
-      "description": "All 4 blocking decision gates use AskUserQuestion tool calls, never plain text questions. Gates: Mode A Step 1b (thread resolve), Mode A Step 3 (continue/batch/stop), Mode B Step 3 (approve batch), Mode B Step 5 (resolve threads)"
+      "description": "All 6 blocking decision gates use AskUserQuestion tool calls, never plain text questions. Gates: Mode A Step 1b (thread resolve), Mode A Step 1c (hide obsolete), Mode A Step 3 (continue/batch/stop), Mode B Step 3 (approve batch), Mode B Step 5 (resolve threads), Mode B Step 5b (hide obsolete)"
     },
     {
       "id": "option-correctness",
@@ -17,6 +17,16 @@
       "description": "Threads are never auto-resolved — resolution requires explicit user confirmation via AskUserQuestion"
     },
     {
+      "id": "hide-comments",
+      "name": "Hide Obsolete Comments",
+      "description": "After resolving threads, offers to minimize resolved comments via minimizeComment GraphQL mutation with classifier OUTDATED. Gate 6 uses AskUserQuestion with options: Hide all resolved / Review one-by-one / Skip"
+    },
+    {
+      "id": "post-response-continuation",
+      "name": "Post-Response Continuation",
+      "description": "After all comments are processed, if fixup commits were created, offers to groom+push+monitor via AskUserQuestion (Gate 5). Skipped if no fixups were created."
+    },
+    {
       "id": "orchestration",
       "name": "Task Orchestration",
       "description": "TaskCreate/TaskUpdate calls track progress through comment processing with correct task structure per mode"
@@ -27,14 +37,14 @@
       "id": 1,
       "name": "single-comment-invalid-verdict",
       "prompt": "/dev10x:gh-pr-respond https://github.com/org/repo/pull/42#discussion_r12345",
-      "description": "Single comment mode where triage returns INVALID verdict. Tests Gate 1 (Step 1b thread resolution) and Gate 2 (Step 3 offer to continue). Both must use AskUserQuestion.",
+      "description": "Single comment mode where triage returns INVALID verdict. Tests Gate 1 (Step 1b thread resolution), Gate 6 (Step 1c hide obsolete), and Gate 2 (Step 3 offer to continue). All must use AskUserQuestion.",
       "setup": {
         "mode": "A (single)",
         "triage_verdict": "INVALID",
         "remaining_comments": 2,
         "note": "Requires PR with comment r12345 that triages as INVALID and 2 other unaddressed comments"
       },
-      "dimensions": ["decision-gates", "option-correctness", "no-auto-resolve"],
+      "dimensions": ["decision-gates", "option-correctness", "no-auto-resolve", "hide-comments"],
       "assertions": [
         {
           "id": "gate1-uses-tool",
@@ -71,6 +81,24 @@
           "text": "Thread is NOT resolved automatically after INVALID verdict — waits for user decision",
           "check": "command_absent",
           "signals": ["resolveReviewThread", "minimize"]
+        },
+        {
+          "id": "gate6-hide-after-resolve",
+          "text": "Step 1c uses AskUserQuestion to offer hiding the resolved comment (not plain text)",
+          "check": "tool_called",
+          "signals": ["AskUserQuestion", "Hide", "Skip"]
+        },
+        {
+          "id": "gate6-correct-options-single",
+          "text": "Gate 6 in single mode has exactly 2 options: 'Hide' and 'Skip'",
+          "check": "tool_parameters",
+          "signals": ["options", "Hide", "Skip", "2 options"]
+        },
+        {
+          "id": "gate6-skip-if-left-open",
+          "text": "Step 1c is skipped if the user chose 'Leave open' in Step 1b",
+          "check": "behavioral",
+          "signals": ["no AskUserQuestion about Hide when thread left open"]
         }
       ]
     },
@@ -78,14 +106,14 @@
       "id": 2,
       "name": "batch-mode-full-flow",
       "prompt": "/dev10x:gh-pr-respond https://github.com/org/repo/pull/42",
-      "description": "Batch mode with 4 comments (2 VALID, 2 INVALID). Tests Gate 3 (Step 3 batch approval) and Gate 4 (Step 5 thread resolution). Both must use AskUserQuestion.",
+      "description": "Batch mode with 4 comments (2 VALID, 2 INVALID). Tests Gate 3 (batch approval), Gate 4 (thread resolution), Gate 5 (post-response continuation), and Gate 6 (hide obsolete). All must use AskUserQuestion.",
       "setup": {
         "mode": "B (batch)",
         "comments": 4,
         "verdicts": ["VALID", "VALID", "INVALID", "INVALID"],
         "note": "Requires PR #42 with 4 unaddressed root comments"
       },
-      "dimensions": ["decision-gates", "option-correctness", "no-auto-resolve", "orchestration"],
+      "dimensions": ["decision-gates", "option-correctness", "no-auto-resolve", "orchestration", "hide-comments", "post-response-continuation"],
       "assertions": [
         {
           "id": "gate3-uses-tool",
@@ -131,9 +159,45 @@
         },
         {
           "id": "task-tracking-batch",
-          "text": "Creates batch-mode TaskCreate calls: collect, triage, execute, resolve",
+          "text": "Creates batch-mode TaskCreate calls: collect, triage, execute, resolve, hide",
           "check": "tool_called",
-          "signals": ["TaskCreate", "Collect", "Triage", "Execute", "Resolve"]
+          "signals": ["TaskCreate", "Collect", "Triage", "approval", "Execute", "Resolve", "Hide", "Summary"]
+        },
+        {
+          "id": "gate6-hide-after-resolve-batch",
+          "text": "Step 5b uses AskUserQuestion to offer hiding resolved comments (not plain text)",
+          "check": "tool_called",
+          "signals": ["AskUserQuestion", "Hide all resolved", "Review one-by-one", "Skip"]
+        },
+        {
+          "id": "gate6-correct-options-batch",
+          "text": "Gate 6 in batch mode has exactly 3 options: 'Hide all resolved', 'Review one-by-one', 'Skip'",
+          "check": "tool_parameters",
+          "signals": ["options", "Hide all resolved", "Review one-by-one", "Skip", "3 options"]
+        },
+        {
+          "id": "gate6-after-resolve-batch",
+          "text": "Gate 6 appears AFTER thread resolution (Gate 4), not before",
+          "check": "tool_sequence",
+          "signals": ["resolveReviewThread", "AskUserQuestion about Hide"]
+        },
+        {
+          "id": "gate6-skip-if-none-resolved",
+          "text": "Step 5b is skipped if no threads were resolved in Step 5",
+          "check": "behavioral",
+          "signals": ["no AskUserQuestion about Hide when no threads resolved"]
+        },
+        {
+          "id": "gate5-post-response-continuation",
+          "text": "After all comments processed, if fixup commits exist, uses AskUserQuestion for continuation (Gate 5)",
+          "check": "tool_called",
+          "signals": ["AskUserQuestion", "Groom + push + monitor", "Push only", "Stop"]
+        },
+        {
+          "id": "gate5-correct-options",
+          "text": "Gate 5 has exactly 3 options: 'Groom + push + monitor', 'Push only', 'Stop'",
+          "check": "tool_parameters",
+          "signals": ["options", "Groom + push + monitor", "Push only", "Stop", "3 options"]
         }
       ]
     },
@@ -167,6 +231,12 @@
           "text": "Delegates VALID comment to dev10x:gh-pr-fixup",
           "check": "transcript_contains",
           "signals": ["gh-pr-fixup", "fixup"]
+        },
+        {
+          "id": "no-gate6-for-valid",
+          "text": "Does NOT call AskUserQuestion for hiding when verdict is VALID (no thread resolved via Step 1b)",
+          "check": "behavioral",
+          "signals": ["no AskUserQuestion about Hide/Skip"]
         }
       ]
     }

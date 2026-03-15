@@ -33,11 +33,11 @@ defaults:
       - subject: Hide obsolete comment
         type: detailed
         prompt: >
-          After resolving a thread, offer to minimize the root
-          comment using the minimizeComment GraphQL mutation with
-          classifier OUTDATED. This hides the comment body on
-          GitHub, reducing PR conversation noise.
-          Skip if the thread was left open.
+          REQUIRED: Call AskUserQuestion (Gate 6). After resolving
+          a thread, offer to minimize the root comment using the
+          minimizeComment GraphQL mutation with classifier OUTDATED.
+          Options: "Hide" / "Skip". Skip this gate if the thread
+          was left open.
         condition: thread-resolved
       - subject: Check remaining comments
         type: detailed
