@@ -24,6 +24,7 @@ prompts or brittle command matching.
 | `# comment` as first line | Leading `#` can break prefix matching and parser expectations | Use Bash tool `description` parameter |
 | `uv run --script` on executable scripts | Redundant wrapper can miss direct path-based allow rules | Call script directly (shebang handles uv) |
 | `cd /worktree/path && command` | Redundant when CWD is already the worktree; can trigger chaining checks | Run command directly — session switched on worktree creation |
+| `--jq '"\(.x): \(.y)"'` (jq interpolation) | Escaped quotes trigger "consecutive quote characters" obfuscation check | Use jq concatenation: `-q '.x + ": " + .y'` |
 
 ## Preferred Patterns
 
