@@ -3,6 +3,63 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.29.0 — Smoother Shipping
+
+Released 2026-03-16
+
+Worktrees handle Husky v4 and Yarn Berry correctly, fish shell stops
+breaking GraphQL queries, and delegated skills skip redundant task
+tracking for faster unattended execution.
+
+### Improvements
+
+- **Unattended PR creation** — gh-pr-create supports `--unattended` flag
+  with documented detection conditions and gate bypass rules ([GH-263])
+- **Delegated skills skip TaskCreate** — skills invoked as subtasks of a
+  parent orchestrator skip internal task tracking, reducing noise ([GH-258])
+- **Body-only review handling** — gh-pr-respond Mode B handles reviews with
+  body text but no inline comments, common from CI bots ([GH-258])
+- **Non-skippable monitor output** — gh-pr-monitor Step 4 marked as
+  non-skippable so users always see background agent progress ([GH-259])
+- **Reduced work-on friction** — workspace detection extracted to script,
+  implicit plan approval when user provides a complete plan ([GH-253])
+- **Friction-free grooming** — raw GIT_SEQUENCE_EDITOR rebase replaced with
+  git autosquash-develop alias to avoid env-prefix permission friction ([GH-253])
+
+### Bug Fixes
+
+- **Husky v4 and Yarn Berry in worktrees** — detect Husky version, bootstrap
+  ~/.huskyrc for v4, use version-aware yarn install flags ([GH-222])
+- **Fish shell GraphQL compatibility** — convert GraphQL examples to
+  double-quoted with escaped `$` to prevent fish interpolation ([GH-258])
+
+## 0.28.0 — Conflict-Free PRs
+
+Released 2026-03-16
+
+PRs now auto-detect and resolve merge conflicts before they reach reviewers.
+MCP servers start reliably, and jq queries no longer trigger false-positive
+obfuscation blocks.
+
+### Improvements
+
+- **Conflict-free PRs** — PR creation and monitoring detect merge conflicts
+  via `git merge-tree` and GitHub's mergeable API, with auto-rebase +
+  force-with-lease resolution ([GH-261])
+- **Consistent skill naming** — 9 skills get proper `dev10x:` invocation
+  names with documented branding rationale ([GH-234])
+- **Friction-free issue status checks** — jq concatenation pattern replaces
+  interpolation to avoid obfuscation detection ([GH-260])
+- **Full changelog** — all 22 releases (v0.2.0–v0.27.0) documented with
+  themed headlines and linked issue references
+- **MCP server permission review checks** — reviewer-infra now explicitly
+  requires `+x` on server scripts
+
+### Bug Fixes
+
+- **MCP server startup** — 3 server scripts (db, gh, git) were missing
+  execute permissions, causing "Permission denied" on startup
+
 ## 0.27.0 — Self-Healing Code Review
 
 Released 2026-03-15
@@ -498,3 +555,9 @@ in a single plugin.
 [GH-247]: https://github.com/WooYek/Dev10x/issues/247
 [GH-251]: https://github.com/WooYek/Dev10x/issues/251
 [GH-252]: https://github.com/WooYek/Dev10x/issues/252
+[GH-253]: https://github.com/WooYek/Dev10x/issues/253
+[GH-258]: https://github.com/WooYek/Dev10x/issues/258
+[GH-259]: https://github.com/WooYek/Dev10x/issues/259
+[GH-260]: https://github.com/WooYek/Dev10x/issues/260
+[GH-261]: https://github.com/WooYek/Dev10x/issues/261
+[GH-263]: https://github.com/WooYek/Dev10x/issues/263
