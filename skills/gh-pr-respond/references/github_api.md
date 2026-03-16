@@ -13,6 +13,21 @@ gh auth status
 gh auth login  # if not authenticated
 ```
 
+## Shell Compatibility
+
+GraphQL examples use `gh api graphql -f query=`. Fish shell
+interpolates `$variable` inside both single and double quotes.
+To avoid breakage:
+
+- **Safest**: inline literal IDs in the query body:
+  ```bash
+  gh api graphql -f query="mutation { resolveReviewThread(input: { threadId: \"PRRT_abc123\" }) { ... } }"
+  ```
+- **If variables are needed**: double-quote with escaped `$`:
+  ```bash
+  gh api graphql -f query="mutation(\$threadId: ID!) { ... }" -f threadId="PRRT_..."
+  ```
+
 ## API Endpoints
 
 ### List Pull Request Comments
@@ -221,10 +236,10 @@ GraphQL API instead.
 ### Step 1: Find the Thread ID
 
 ```bash
-gh api graphql -f query='
-query($owner: String!, $repo: String!, $pr: Int!) {
-  repository(owner: $owner, name: $repo) {
-    pullRequest(number: $pr) {
+gh api graphql -f query="
+query(\$owner: String!, \$repo: String!, \$pr: Int!) {
+  repository(owner: \$owner, name: \$repo) {
+    pullRequest(number: \$pr) {
       reviewThreads(first: 100) {
         nodes {
           id
@@ -240,7 +255,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
       }
     }
   }
-}' -f owner='{owner}' -f repo='{repo}' -F pr='{pr_number}' \
+}" -f owner='{owner}' -f repo='{repo}' -F pr='{pr_number}' \
   --jq '.data.repository.pullRequest.reviewThreads.nodes[]
         | select(.comments.nodes[0].databaseId == {comment_id})'
 ```
@@ -248,24 +263,24 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 ### Step 2: Resolve the Thread
 
 ```bash
-gh api graphql -f query='
-mutation($threadId: ID!) {
-  resolveReviewThread(input: { threadId: $threadId }) {
+gh api graphql -f query="
+mutation(\$threadId: ID!) {
+  resolveReviewThread(input: { threadId: \$threadId }) {
     thread {
       id
       isResolved
     }
   }
-}' -f threadId='{thread_id}'
+}" -f threadId='{thread_id}'
 ```
 
 ### Combined: Find and Resolve by Comment ID
 
 ```bash
-THREAD_ID=$(gh api graphql -f query='
-query($owner: String!, $repo: String!, $pr: Int!) {
-  repository(owner: $owner, name: $repo) {
-    pullRequest(number: $pr) {
+THREAD_ID=$(gh api graphql -f query="
+query(\$owner: String!, \$repo: String!, \$pr: Int!) {
+  repository(owner: \$owner, name: \$repo) {
+    pullRequest(number: \$pr) {
       reviewThreads(first: 100) {
         nodes {
           id
@@ -276,17 +291,17 @@ query($owner: String!, $repo: String!, $pr: Int!) {
       }
     }
   }
-}' -f owner='{owner}' -f repo='{repo}' -F pr={pr_number} \
+}" -f owner='{owner}' -f repo='{repo}' -F pr={pr_number} \
   --jq '.data.repository.pullRequest.reviewThreads.nodes[]
         | select(.comments.nodes[0].databaseId == {comment_id})
         | .id')
 
-gh api graphql -f query='
-mutation($threadId: ID!) {
-  resolveReviewThread(input: { threadId: $threadId }) {
+gh api graphql -f query="
+mutation(\$threadId: ID!) {
+  resolveReviewThread(input: { threadId: \$threadId }) {
     thread { id isResolved }
   }
-}' -f threadId="$THREAD_ID"
+}" -f threadId="$THREAD_ID"
 ```
 
 ### Notes
@@ -306,18 +321,18 @@ resolving collapses the conversation.
 ### Minimize a Comment
 
 ```bash
-gh api graphql -f query='
-mutation($id: ID!, $classifier: ReportedContentClassifiers!) {
+gh api graphql -f query="
+mutation(\$id: ID!, \$classifier: ReportedContentClassifiers!) {
   minimizeComment(input: {
-    subjectId: $id,
-    classifier: $classifier
+    subjectId: \$id,
+    classifier: \$classifier
   }) {
     minimizedComment {
       isMinimized
       minimizedReason
     }
   }
-}' -f id='{node_id}' -f classifier='OUTDATED'
+}" -f id='{node_id}' -f classifier='OUTDATED'
 ```
 
 **Parameters:**
@@ -331,10 +346,10 @@ mutation($id: ID!, $classifier: ReportedContentClassifiers!) {
 
 ```bash
 # Step 1: Get resolved thread root comment node_ids
-COMMENT_IDS=$(gh api graphql -f query='
-query($owner: String!, $repo: String!, $pr: Int!) {
-  repository(owner: $owner, name: $repo) {
-    pullRequest(number: $pr) {
+COMMENT_IDS=$(gh api graphql -f query="
+query(\$owner: String!, \$repo: String!, \$pr: Int!) {
+  repository(owner: \$owner, name: \$repo) {
+    pullRequest(number: \$pr) {
       reviewThreads(first: 100) {
         nodes {
           isResolved
@@ -348,21 +363,21 @@ query($owner: String!, $repo: String!, $pr: Int!) {
       }
     }
   }
-}' -f owner='{owner}' -f repo='{repo}' -F pr={pr_number} \
+}" -f owner='{owner}' -f repo='{repo}' -F pr={pr_number} \
   --jq '.data.repository.pullRequest.reviewThreads.nodes[]
         | select(.isResolved)
         | .comments.nodes[0].id')
 
 # Step 2: Minimize each comment
 echo "$COMMENT_IDS" | while read -r NODE_ID; do
-  gh api graphql -f query='
-  mutation($id: ID!, $classifier: ReportedContentClassifiers!) {
+  gh api graphql -f query="
+  mutation(\$id: ID!, \$classifier: ReportedContentClassifiers!) {
     minimizeComment(input: {
-      subjectId: $id, classifier: $classifier
+      subjectId: \$id, classifier: \$classifier
     }) {
       minimizedComment { isMinimized minimizedReason }
     }
-  }' -f id="$NODE_ID" -f classifier='OUTDATED'
+  }" -f id="$NODE_ID" -f classifier='OUTDATED'
 done
 ```
 
