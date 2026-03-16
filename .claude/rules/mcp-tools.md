@@ -89,3 +89,43 @@ Each MCP server must be registered in `.claude-plugin/plugin.json`:
 - Use `${CLAUDE_PLUGIN_ROOT}` for relative paths (not hardcoded paths)
 - Server names must not conflict with existing tool or skill names
 - All referenced command paths must exist and be executable
+
+## Common Mistakes
+
+### Prefer MCP tool calls over direct script invocation
+
+When an MCP tool wraps a CLI script, **use the MCP tool call** as
+the primary invocation method. MCP calls avoid permission friction
+(no `Bash()` allow-rule needed) and provide structured responses.
+
+```
+# ✅ PREFERRED — MCP tool call (no permission prompt)
+mcp__plugin_Dev10x_utils__mktmp(namespace="git", prefix="msg", ext=".txt")
+
+# ⚠️ FALLBACK — direct script (needs Bash allow-rule)
+/tmp/claude/bin/mktmp.sh git msg .txt
+```
+
+Use the direct script only when the MCP server is unavailable
+(e.g., inside a shell script that runs outside Claude's tool-use
+protocol).
+
+### MCP tool names cannot appear in shell scripts
+
+MCP tool names (e.g., `mcp__plugin_Dev10x_utils__mktmp`) are
+Claude tool-call primitives. They cannot be used inside bash
+code blocks, shell scripts, or Makefiles — only via Claude's
+tool-use protocol.
+
+```bash
+# ❌ WRONG — MCP name in a bash block (not a shell command)
+mcp__plugin_Dev10x_utils__mktmp git commit-msg .txt
+
+# ✅ CORRECT — use the underlying CLI script in shell contexts
+/tmp/claude/bin/mktmp.sh git commit-msg .txt
+```
+
+MCP tool names belong only in:
+- `allowed-tools:` declarations in SKILL.md front matter
+- Claude tool-call invocations (the agent calls the tool directly)
+- Documentation describing which tools a skill uses
