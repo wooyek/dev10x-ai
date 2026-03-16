@@ -233,7 +233,18 @@ gh api repos/{owner}/{repo}/pulls/{pr_number}/comments \
 **For a review URL** (`#pullrequestreview-{review_id}`):
 Filter to only comments from that review (match `pull_request_review_id`).
 
-If no unaddressed comments found → report "No unaddressed comments" and stop.
+If no unaddressed inline comments found, check for a **body-only
+review** (review body text without inline comments). CI hygiene
+reviews from `claude[bot]` commonly produce these. If a review
+body exists:
+1. Extract the review body via
+   `gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews`
+   filtered by `review_id`
+2. Treat the review body as a single top-level comment to address
+3. Continue to Step 2 (triage) with this synthetic comment
+
+If neither inline comments nor review body found → report
+"No unaddressed comments" and stop.
 
 ### Step 2: Triage all comments (parallel)
 
