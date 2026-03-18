@@ -609,6 +609,18 @@ task can start. Examples:
 
 Return to the blocked task once the blocker resolves.
 
+### Plan Completion Gate
+
+**REQUIRED:** After the last task is marked completed, show the
+full task list via `TaskList` and call `AskUserQuestion` with
+options:
+- "Work complete — hand over" (Recommended)
+- "Add more tasks"
+- "Revisit a step"
+
+Never auto-complete the plan without supervisor confirmation.
+The supervisor must explicitly sign off that work is done.
+
 ### Executing Detailed Tasks
 
 Run the task directly. If the task has a `prompt` in metadata,
