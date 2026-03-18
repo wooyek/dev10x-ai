@@ -725,6 +725,13 @@ and `dev10x:defer` infrastructure.
 
 ## Important Notes
 
+- **DO NOT use `ExitPlanMode` or Claude Code's built-in plan mode.**
+  This skill has its own planning phase (Phase 3) that uses
+  `TaskCreate` + `AskUserQuestion`. Writing a plan file and calling
+  `ExitPlanMode` bypasses the playbook system and destroys the
+  session's task-tracking capability. If the user asks to "see the
+  plan" or "prepare a draft", present it via `AskUserQuestion` at
+  the Phase 3 approval gate — never via plan mode.
 - **Always create tasks via `TaskCreate`** — never skip the task
   list, even for single-step work. The supervisor uses it to add
   new tasks mid-session.
