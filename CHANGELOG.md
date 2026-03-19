@@ -3,6 +3,56 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.30.0 — Disciplined Orchestration
+
+Released 2026-03-19
+
+Work-on orchestration gets guardrails — mechanical plan generation,
+mandatory phase tasks, and supervisor sign-off prevent shortcuts.
+Git-domain skills gain MCP tool access, session skills get aligned
+names, and script-path leaks are eliminated across the tooling surface.
+
+### Features
+
+- **MCP tool access for git skills** — git-domain skills can call MCP
+  tools directly instead of shelling out via Bash wrappers ([GH-192])
+- **Permission management skill** — base permission management enables
+  structured allow/deny rule handling ([GH-274])
+- **Slack file cleanup** — cleanup Slack config files and prompt for
+  missing configuration ([GH-271])
+- **Goodbye message** — session exit shows a resume command so users can
+  pick up where they left off ([GH-272])
+- **Block `$(cat ...)` substitution** — hook blocks command substitution
+  via `cat` to prevent file content leaks in shell commands ([GH-277])
+
+### Improvements
+
+- **Aligned session skill names** — 11 session skills get consistent
+  `dev10x:` prefixed invocation names ([GH-224], [GH-102])
+- **Script-path leak elimination** — skill tooling no longer leaks
+  resolved cache paths in allowed-tools or Bash calls ([GH-280],
+  [GH-275], [GH-283])
+- **Destructive git commands ADR** — documented the decision to block
+  destructive git operations by default ([GH-269])
+- **Orchestration guardrail evals** — eval assertions enforce Phase 3
+  mechanical planning and supervisor sign-off ([GH-248], [GH-273])
+
+### Bug Fixes
+
+- **Supervisor sign-off required** — plan completion gate now requires
+  explicit supervisor confirmation instead of auto-completing ([GH-273])
+- **Natural language plan mapping** — phrases like "show me the plan"
+  route to AskUserQuestion gate, not plan mode ([GH-248])
+- **Mechanical Phase 3** — plan generation enforces 1:1 task-to-step
+  mapping from playbook, preventing step collapsing ([GH-248], [GH-273])
+- **Phase task verification** — Phase 2 blocked until all 4 phase tasks
+  are confirmed to exist ([GH-248])
+- **ExitPlanMode prohibition** — work-on sessions cannot use Claude
+  Code's built-in plan mode, preserving task tracking ([GH-248])
+- **MCP-aware subagent routing** — Phase 2 fetches requiring MCP tools
+  (Linear, Slack, Sentry) route to general-purpose agents, not Explore
+  agents which lack MCP access ([GH-155])
+
 ## 0.29.0 — Smoother Shipping
 
 Released 2026-03-16
