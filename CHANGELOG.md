@@ -3,6 +3,38 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.31.0 — MCP-Powered PRs
+
+Released UNRELEASED
+
+PR creation runs through native MCP tools instead of Bash wrappers, git
+aliases work with any default branch name, and skill authoring gets
+stricter enforcement for naming and tool declarations.
+
+### Features
+
+- **MCP tools for PR creation** — 6 gh-pr-create scripts and pr-notify
+  wrapped as 7 MCP tools in gh_server.py, enabling dual-path transition
+  with existing Bash paths ([GH-191])
+- **Universal branch aliases** — git log, diff, rebase, and autosquash
+  aliases now support main and master alongside existing develop,
+  development, and trunk variants ([GH-288])
+
+### Improvements
+
+- **Playbook pattern documentation** — reviewer guidance for validating
+  playbook-powered skills and reference file patterns ([#243])
+- **External tool declaration requirements** — skill authors must declare
+  all external tool dependencies in SKILL.md front matter ([#270])
+- **Invocation-name enforcement** — reviewer checklist enforces mandatory
+  invocation-name field with exact-match rule ([#267])
+
+### Bug Fixes
+
+- **Non-interactive autosquash** — autosquash aliases wrap
+  GIT_SEQUENCE_EDITOR=true to avoid escaping issues that broke alias
+  expansion ([GH-288])
+
 ## 0.30.0 — Disciplined Orchestration
 
 Released 2026-03-19
@@ -611,3 +643,18 @@ in a single plugin.
 [GH-260]: https://github.com/WooYek/Dev10x/issues/260
 [GH-261]: https://github.com/WooYek/Dev10x/issues/261
 [GH-263]: https://github.com/WooYek/Dev10x/issues/263
+[GH-267]: https://github.com/WooYek/Dev10x/issues/267
+[GH-269]: https://github.com/WooYek/Dev10x/issues/269
+[GH-270]: https://github.com/WooYek/Dev10x/issues/270
+[GH-271]: https://github.com/WooYek/Dev10x/issues/271
+[GH-272]: https://github.com/WooYek/Dev10x/issues/272
+[GH-273]: https://github.com/WooYek/Dev10x/issues/273
+[GH-274]: https://github.com/WooYek/Dev10x/issues/274
+[GH-275]: https://github.com/WooYek/Dev10x/issues/275
+[GH-277]: https://github.com/WooYek/Dev10x/issues/277
+[GH-280]: https://github.com/WooYek/Dev10x/issues/280
+[GH-283]: https://github.com/WooYek/Dev10x/issues/283
+[GH-288]: https://github.com/WooYek/Dev10x/issues/288
+[#243]: https://github.com/WooYek/Dev10x/pull/243
+[#267]: https://github.com/WooYek/Dev10x/pull/267
+[#270]: https://github.com/WooYek/Dev10x/pull/270
