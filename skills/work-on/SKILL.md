@@ -8,9 +8,7 @@ description: >
 user-invocable: true
 invocation-name: dev10x:work-on
 allowed-tools:
-  - mcp__plugin_Dev10x_gh__detect_tracker
-  - mcp__plugin_Dev10x_gh__issue_get
-  - mcp__plugin_Dev10x_gh__issue_comments
+  - mcp__plugin_Dev10x_gh__*
   - Read(~/.claude/projects/**/memory/playbooks/work-on.yaml)
   - Read(${CLAUDE_PLUGIN_ROOT}/skills/playbook/references/playbook.yaml)
   - Write(~/.claude/projects/**/**)
