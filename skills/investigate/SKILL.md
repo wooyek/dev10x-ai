@@ -11,8 +11,8 @@ allowed-tools:
   - AskUserQuestion
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/investigate/scripts/parse-slack-url.sh:*)
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/investigate/scripts/reply.sh:*)
-  - Skill(dev10x:ticket-create)
-  - Skill(pr:review)
+  - Skill(skill="dev10x:ticket-create")
+  - Skill(skill="pr:review")
 ---
 
 # dev10x:investigate
@@ -45,7 +45,10 @@ calls at startup based on the detected mode:
 7. `TaskCreate(subject="Create a ticket", activeForm="Creating ticket")`
 8. `TaskCreate(subject="Mention ticket in thread", activeForm="Posting ticket link")`
 
-Tasks 7–8 are conditional (only if fix warrants a ticket).
+Tasks 7–8 are conditional:
+- `fix-warrants-ticket`: true when the fix is non-trivial, affects
+  production/staging, or user explicitly requested a ticket
+- `ticket-created`: true after a ticket is successfully created in Step 7
 
 **PR review mode:**
 1. `TaskCreate(subject="Parse Slack URL", activeForm="Parsing URL")`
@@ -63,6 +66,10 @@ post a technical reply with GitHub links, and optionally create a Linear ticket.
 request is to review it or check its status, invoke the `pr:review` skill with
 the PR URL instead of following Steps 3–6. Steps 1–2 (parse URL, read thread)
 still apply to get context before delegating.
+
+**External dependency:** `pr:review` is a user-level skill (installed at
+`~/.claude/skills/pr-review/`). If unavailable, fall back to
+`dev10x:gh-pr-review` for PR review functionality.
 
 ## Workflow
 
