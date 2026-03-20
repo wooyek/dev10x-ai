@@ -98,6 +98,15 @@ Before raising any of these, **verify actual code**:
     third-party ("so [person] can") are required. Objective voice breaks
     release notes parsing and is explicitly listed as wrong in
     `references/git-jtbd.md` lines 31–45.
+22. **SKILL.md table/implementation skew** — when a PR modifies an
+    executable construct (alias, script command, option, environment variable)
+    documented in a SKILL.md reference table, cross-check that the table is
+    updated. If the table quotes the command being changed and the PR updates
+    that command, the table row is now stale. Assess **functional risk**:
+    will users copying the old example fail their own commands? Functional
+    risk (users copy stale alias → command fails) → CRITICAL/REQUIRED. Pure
+    cosmetic drift (table describes intent, example text outdated) →
+    RECOMMENDED. Confirm intent via commit message when unclear.
 
 ## Parameter Change Analysis
 
