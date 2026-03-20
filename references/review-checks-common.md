@@ -162,6 +162,26 @@ instructions, code examples):
   will miss `echo done && psql -h host mydb "DELETE ..."`.
   Use a segment splitter that handles all shell control operators.
 
+## GitHub API Polling Patterns
+
+When skills call GitHub APIs that trigger async background jobs (check
+suite registration, status computation):
+
+- **Check suite registration delay**: After `git push` or when calling
+  `gh pr checks`, verify the skill waits at least 60 seconds before
+  the first poll. GitHub needs time to register new check suites after
+  a push — polling immediately returns stale results from the previous
+  commit.
+- **Check count verification**: When checking for "all pass", verify the
+  skill compares the current check count against a baseline from the
+  first full run. A mismatch (fewer checks reported than baseline)
+  indicates incomplete suite registration — the skill should wait 30
+  seconds and re-poll.
+- **Status caching**: Document any async behavior (GitHub status
+  computation, check suite propagation) that affects polling logic.
+  Without timing guidance, agents may poll too early and receive false
+  negatives.
+
 ## Sequential Step Integrity
 
 When SKILL.md defines ordered task lists, flag:
