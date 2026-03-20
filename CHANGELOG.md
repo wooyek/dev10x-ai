@@ -3,6 +3,57 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.32.0 — Permission Friction & Review Hardening
+
+Released 2026-03-20
+
+Permission friction eliminated across skill-audit, project-scope, and
+py-uv skills. Code review agents gain stricter verification checks,
+and work-on enforces playbook verification before plan generation.
+
+### Features
+
+- **Playbook verification in work-on** — Phase 3 now requires reading
+  and verifying a playbook file before generating tasks, preventing
+  ad-hoc plan generation that skips configured steps ([GH-308])
+- **GitHub async timing checks** — code review agents detect stale
+  `gh pr checks` results after force-pushes by verifying check count
+  against expected baselines ([GH-318])
+- **Table/implementation skew detection** — code review agents flag
+  documentation tables that diverge from actual implementation
+
+### Improvements
+
+- **Reduced permission friction** — normalized `scripts/:*` to
+  `scripts/*:*` across all `allowed-tools` declarations in skill-audit,
+  py-uv, skill-create, and codex-skills equivalents ([GH-321])
+- **Smarter sensitive file hook** — `block-sensitive-file-write.py` now
+  uses basename matching instead of substring, eliminating false
+  positives on sidecar metadata files like `.vars` ([GH-322])
+- **Project-scope anti-patterns** — documented command substitution and
+  env var prefix friction patterns to avoid in `gh` commands, switched
+  sidecar files from `.env` to `.vars` ([GH-322])
+- **Autosquash alias prefix** — `env` command prefix added to
+  `GIT_SEQUENCE_EDITOR=true` in autosquash aliases for consistent
+  shell expansion ([GH-319])
+- **Skill name normalization** — Dev10x skill names normalized across
+  documentation and scripts for consistency
+- **Semicolon false positive fix** — SQL safety hook no longer blocks
+  semicolons inside string literals like `STRING_AGG(name, '; ')`
+  ([GH-320])
+
+### Bug Fixes
+
+- **Skill-audit permission prompt** — `extract-session.sh` no longer
+  triggers approval prompts on every invocation due to mismatched
+  `allowed-tools` glob pattern ([GH-321])
+
+### Documentation
+
+- **Updated skill pattern references** — all `scripts/:*` documentation
+  examples updated to `scripts/*:*` across skill-audit, skill-create,
+  and their codex-skills equivalents ([GH-309])
+
 ## 0.31.0 — MCP Consolidation & Parallel Workflows
 
 Released 2026-03-20
