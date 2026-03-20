@@ -86,6 +86,10 @@ URL format: `https://tiretutor.slack.com/archives/<CHANNEL_ID>/p<TIMESTAMP>`
 Use MCP `slack_read_thread` with the channel_id and thread_ts.
 Read all replies too — the answer may already be in the thread.
 
+**Slack MCP dependency:** Requires Slack MCP integration configured in
+your Claude environment. If unavailable, ask the user to paste the
+thread content directly.
+
 ### Step 3 — Investigate the Codebase
 
 Use a `Task` agent (`subagent_type: Explore`) with a focused prompt:
@@ -140,8 +144,12 @@ Use branch `develop` unless investigating a specific release.
 ${CLAUDE_PLUGIN_ROOT}/skills/investigate/scripts/reply.sh "$channel_id" "$thread_ts" "<message>"
 ```
 
-Show the draft to the user and wait for approval before posting unless they
-explicitly said to post immediately (e.g. "investigate and post").
+**REQUIRED: Call `AskUserQuestion`** (do NOT use plain text) unless the
+user explicitly said to post immediately (e.g. "investigate and post").
+Options:
+- Approve and post the reply (Recommended)
+- Edit the draft
+- Skip posting
 
 ### Step 7 — Create a Ticket (when warranted)
 
