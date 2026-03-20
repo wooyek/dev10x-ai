@@ -173,16 +173,14 @@ Options:
 
 **Skip this gate** if the thread was left open in Step 1b.
 
-When hiding, use the comment's `node_id` (not numeric `id`):
+When hiding, use the comment's `node_id` (not numeric `id`).
+Write the GraphQL mutation to a temp file and reference it with
+`-F query=@file` to avoid shell quoting issues with `$` variables:
 ```bash
-gh api graphql -f query='
-mutation($id: ID!, $classifier: ReportedContentClassifiers!) {
-  minimizeComment(input: {
-    subjectId: $id, classifier: $classifier
-  }) {
-    minimizedComment { isMinimized minimizedReason }
-  }
-}' -f id='{node_id}' -f classifier='OUTDATED'
+# Write mutation to temp file (use mcp__plugin_Dev10x_cli__mktmp)
+# Then invoke:
+gh api graphql -F query=@/tmp/claude/gh/minimize.graphql \
+  -f id='{node_id}' -f classifier='OUTDATED'
 ```
 
 See `references/github_api.md` § Hiding (Minimizing) Comments.

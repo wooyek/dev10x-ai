@@ -72,7 +72,14 @@ BRANCH=$(git branch --show-current)
 BRANCH=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefName -q '.headRefName')
 ```
 
-## gh-pr-detect.sh
+## Legacy Shell Scripts (Fallback)
+
+The shell scripts below are maintained for backward compatibility.
+**New skills should use the MCP tools above instead.** Use scripts
+only when the MCP server is unavailable or inside shell contexts
+where MCP tool calls are not possible.
+
+### gh-pr-detect.sh
 
 Detects PR number, repo, URL, and branch. Accepts a GitHub PR URL, a
 bare PR number, or nothing (detects from current branch).
@@ -126,7 +133,7 @@ echo "PR #$PR_NUMBER"
 
 This keeps the script path as the first token so allow rules match.
 
-## detect-tracker.sh
+### detect-tracker.sh
 
 Detects issue tracker type from a ticket ID using prefix heuristics
 and GitHub autolink references.
@@ -157,7 +164,7 @@ FIXES_URL=https://github.com/your-org/your-repo/issues/15
 Consume the output the same way as `gh-pr-detect.sh` — run directly
 and parse KEY=VALUE stdout. Do not use `source <(...)`.
 
-## gh-issue-get.sh
+### gh-issue-get.sh
 
 Fetches a GitHub issue as JSON with full details.
 
@@ -173,7 +180,7 @@ ${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/gh-issue-get.sh NUMBER [REPO]
 Output: JSON object with fields `number`, `title`, `body`, `state`,
 `labels`, `assignees`, `comments`.
 
-## gh-issue-comments.sh
+### gh-issue-comments.sh
 
 Returns comments on a GitHub issue as a JSON array.
 

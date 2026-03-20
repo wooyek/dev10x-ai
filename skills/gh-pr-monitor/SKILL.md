@@ -205,13 +205,21 @@ Repeat until all CI checks pass:
    ```
 
 3. Parse results:
-   - ALL PASSING → mark PR ready (`gh pr ready {pr_number}`) and go
-     to Phase 2
+   - ALL PASSING → verify check count (see below), then mark PR
+     ready (`gh pr ready {pr_number}`) and go to Phase 2
    - PENDING → wait 30 seconds via `sleep 30`, then re-check
    - FAILURES → analyze and fix (see CI Failure Handling below)
 
-4. After fixing CI failures, push and wait 30 seconds before
-   re-checking.
+4. After fixing CI failures or pushing new commits, wait **60
+   seconds** before the first re-check. GitHub needs time to
+   register new check suites after a push — checking too early
+   returns stale results from the previous commit.
+
+5. **Verify check count before declaring success.** Compare the
+   number of passing checks against the expected count (from the
+   first full check run). If fewer checks are reported than
+   expected, GitHub may not have registered all suites yet — wait
+   30 seconds and re-check.
 
 ### CI Failure Handling
 

@@ -150,6 +150,10 @@ cd "$(git rev-parse --show-toplevel)"
 This is the ONE exception to the "avoid `cd`" rule — it
 prevents path misinterpretation in all subsequent git commands.
 
+**Never `git -C <path>`:** `git -C` breaks allow-rule matching
+in `settings.local.json`. Always use `cd` to the repo root
+first (above), then run git commands without `-C`.
+
 **Check repository status:**
 ```bash
 # Verify in git repo
@@ -571,9 +575,7 @@ What would you like to do? (1/2/3/done)
 - **Gitmoji format:** Use emoji character, not :code:
 - **Footer:** Always include `Fixes: TICKET-ID`
 - **Spacing:** One space after gitmoji, one space after ticket ID
-- **Never `git -C <path>`**: `git -C` breaks allow-rule matching
-  in `settings.local.json`. If CWD has drifted to a subdirectory,
-  use `cd "$(git rev-parse --show-toplevel)"` first (see Step 1).
+- **Never `git -C <path>`**: See Step 1 — use `cd` to repo root instead.
 - **Never chain `git add && git commit`**: Use two separate Bash tool
   calls — one to stage, one to commit. Same rule applies to
   `git add && git rebase --continue`. Each call must stand alone.
