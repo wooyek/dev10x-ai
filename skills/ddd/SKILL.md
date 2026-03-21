@@ -35,6 +35,37 @@ Storming, Software Archetypes, and architecture stress testing.
 - Writing an ADR for an already-decided topic (use `write-adr` prompt)
 - Pure implementation tasks with no domain questions
 
+## Orchestration
+
+This skill follows `references/task-orchestration.md` patterns.
+
+**Auto-advance:** Complete each step, immediately start the next.
+Only pause when batching questions per the process rules.
+
+**REQUIRED: Create tasks before ANY work.** After determining
+the session type, execute `TaskCreate` calls for the applicable
+steps. The task set varies by mode:
+
+**Continue / Stress-Test / Archetype mode:**
+1. `TaskCreate(subject="Load context", activeForm="Loading domain context")`
+2. `TaskCreate(subject="Exploration", activeForm="Exploring domain")`
+3. `TaskCreate(subject="Stress testing", activeForm="Stress testing model")`
+4. `TaskCreate(subject="Decision capture", activeForm="Capturing decisions")`
+5. `TaskCreate(subject="Produce artifacts", activeForm="Producing artifacts")`
+6. `TaskCreate(subject="Quality checklist", activeForm="Verifying quality")`
+
+**New workshop mode:**
+1. `TaskCreate(subject="Scaffold docs structure", activeForm="Scaffolding docs")`
+2. `TaskCreate(subject="Exploration", activeForm="Exploring domain")`
+3. `TaskCreate(subject="Stress testing", activeForm="Stress testing model")`
+4. `TaskCreate(subject="Decision capture", activeForm="Capturing decisions")`
+5. `TaskCreate(subject="Produce artifacts", activeForm="Producing artifacts")`
+6. `TaskCreate(subject="Quality checklist", activeForm="Verifying quality")`
+
+Set sequential dependencies. Mark each step `in_progress` when
+starting and `completed` when done. The quality checklist task
+serves as the final verification gate.
+
 ## Determine Session Type
 
 Before starting, determine which mode applies:
