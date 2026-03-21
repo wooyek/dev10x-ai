@@ -4,6 +4,9 @@ description: >
   Safe read-only psql wrapper for Claude Code. Provides db.sh with
   SQL validation hook so database queries are safe and auditable.
   Configure databases in databases.yaml with env var or keyring backends.
+  TRIGGER when: executing SQL against configured databases.
+  DO NOT TRIGGER when: planning queries (use Dev10x:db), or working
+  with non-database tasks.
 user-invocable: true
 invocation-name: Dev10x:db-psql
 allowed-tools:

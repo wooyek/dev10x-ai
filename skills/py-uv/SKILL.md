@@ -1,6 +1,12 @@
 ---
 name: Dev10x:py-uv
-description: Guide UV installation and migrate Python scripts from legacy shebangs to UV inline metadata (PEP 723).
+description: >
+  Guide UV installation and migrate Python scripts from legacy shebangs
+  to UV inline metadata (PEP 723).
+  TRIGGER when: migrating scripts to uv, setting up uv for the first
+  time, or converting shebangs to PEP 723 format.
+  DO NOT TRIGGER when: uv is already configured, or user is writing
+  standard Python packages (not standalone scripts).
 user-invocable: true
 invocation-name: Dev10x:py-uv
 allowed-tools:

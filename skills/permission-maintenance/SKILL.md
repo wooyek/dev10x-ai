@@ -1,6 +1,13 @@
 ---
 name: Dev10x:permission-maintenance
-description: Maintain Claude Code permissions — update plugin version paths, ensure base permissions, merge worktree rules, generalize session-specific args, and audit for friction-causing patterns via the permission-auditor agent
+description: >
+  Maintain Claude Code permissions — update plugin version paths, ensure
+  base permissions, merge worktree rules, generalize session-specific args,
+  and audit for friction-causing patterns via the permission-auditor agent.
+  TRIGGER when: plugin version changes, permission prompts keep appearing,
+  or user asks to fix permission friction.
+  DO NOT TRIGGER when: permissions are working correctly, or user is
+  asking about non-permission configuration.
 user-invocable: true
 invocation-name: Dev10x:permission-maintenance
 allowed-tools:

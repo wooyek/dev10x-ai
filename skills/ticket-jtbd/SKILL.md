@@ -1,6 +1,12 @@
 ---
 name: Dev10x:ticket-jtbd
-description: Write a JTBD Job Story and apply it to a target (PR description, GitHub issue, Linear ticket, or JIRA ticket). Delegates drafting to the Dev10x:jtbd base skill, then handles the side-effecting write. Replaces the former /job-story skill.
+description: >
+  Write a JTBD Job Story and apply it to a target (PR description,
+  GitHub issue, Linear ticket, or JIRA ticket). Delegates drafting to
+  the Dev10x:jtbd base skill, then handles the side-effecting write.
+  TRIGGER when: a ticket or PR needs a Job Story written or updated.
+  DO NOT TRIGGER when: JTBD is already present in the target, or user
+  is writing commit messages (use Dev10x:git-commit for that).
 user-invocable: true
 invocation-name: Dev10x:ticket-jtbd
 allowed-tools:

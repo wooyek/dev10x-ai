@@ -6,12 +6,18 @@ description: >
   or it's unclear which frontmatter fields wire up invocability — so you
   get the Dev10x-specific setup right without hunting through existing
   skills for examples.
+  TRIGGER when: creating a new skill, fixing skill registration, or
+  scaffolding skill directory structure.
+  DO NOT TRIGGER when: editing skill content without structural issues,
+  or writing non-skill code.
 user-invocable: true
 invocation-name: Dev10x:skill-create
 allowed-tools:
+  - AskUserQuestion
   - Bash(mkdir -p:*)
   - Bash(chmod:*)
   - Bash(rg:*)
+  - Bash(${CLAUDE_PLUGIN_ROOT}/skills/skill-create/scripts/*:*)
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/skill-index/scripts/*:*)
 ---
 
@@ -107,6 +113,25 @@ which skill is running:
 ## Workflow
 
 ### 1. Scaffold
+
+**Automated scaffold** (recommended):
+
+**REQUIRED: Call `AskUserQuestion`** (do NOT use plain text).
+Options:
+- Script-based — Skill with executable scripts in scripts/
+- Orchestration — SKILL.md-only workflow executed by Claude
+- Reference-based — Orchestration with references/ docs
+
+Then run the scaffold:
+
+```bash
+${CLAUDE_PLUGIN_ROOT}/skills/skill-create/scripts/scaffold.sh <skill-name> <pattern>
+```
+
+This generates SKILL.md with correct frontmatter, evals/evals.json skeleton,
+and pattern-specific directories (scripts/ or references/).
+
+**Manual scaffold** (for edge cases):
 
 ```bash
 mkdir -p ~/.claude/skills/<namespace>-<skill-name>

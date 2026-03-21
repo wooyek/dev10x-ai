@@ -4,6 +4,10 @@ description: >
   Create git worktrees for clean workspace isolation.
   Offers two modes: native EnterWorktree (switches CWD in current session)
   or external worktree (IDE-isolated, requires restarting claude in new dir).
+  TRIGGER when: starting feature work needing isolation, or executing
+  implementation plans with independent tasks.
+  DO NOT TRIGGER when: work can be done on the current branch without
+  isolation, or user explicitly wants to stay in the current worktree.
 user-invocable: true
 invocation-name: Dev10x:git-worktree
 allowed-tools:

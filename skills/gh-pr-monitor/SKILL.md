@@ -1,6 +1,12 @@
 ---
 name: Dev10x:gh-pr-monitor
-description: Launch a background agent to monitor PR CI checks and review comments, automatically address issues with fixup commits, and notify team when ready. Use after creating a PR to automate the entire review cycle.
+description: >
+  Launch a background agent to monitor PR CI checks and review comments,
+  automatically address issues with fixup commits, and notify team when
+  ready. Use after creating a PR to automate the entire review cycle.
+  TRIGGER when: PR has been created and needs CI/review monitoring.
+  DO NOT TRIGGER when: PR does not exist yet (use Dev10x:gh-pr-create
+  first), or user wants to manually handle review comments.
 user-invocable: true
 invocation-name: Dev10x:gh-pr-monitor
 allowed-tools:
