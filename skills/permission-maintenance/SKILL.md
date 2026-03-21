@@ -20,6 +20,27 @@ allowed-tools:
 **Announce:** "Using permission-maintenance to maintain Claude Code
 permission settings across all projects."
 
+## Orchestration
+
+This skill follows `references/task-orchestration.md` patterns.
+
+**Auto-advance:** Complete each step, immediately start the next.
+Run dry-run first, then apply — no pause between steps.
+
+**REQUIRED: Create tasks before ANY work.** Execute these
+`TaskCreate` calls at startup:
+
+1. `TaskCreate(subject="Update version paths", activeForm="Updating paths")`
+2. `TaskCreate(subject="Ensure base permissions", activeForm="Ensuring base perms")`
+3. `TaskCreate(subject="Generalize session-specific permissions", activeForm="Generalizing perms")`
+4. `TaskCreate(subject="Merge worktree permissions", activeForm="Merging worktree perms")`
+5. `TaskCreate(subject="Audit permissions for friction", activeForm="Auditing permissions")`
+
+Set sequential dependencies. Mark each step `in_progress` when
+starting and `completed` when done. Steps that produce no
+changes (dry-run shows no diff) should still be marked
+`completed` with a note in the description.
+
 ## When to Use
 
 - After installing a new Dev10x plugin version
