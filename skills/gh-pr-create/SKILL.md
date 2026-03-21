@@ -1,6 +1,14 @@
 ---
 name: Dev10x:gh-pr-create
-description: Create a GitHub pull request for the current branch with issue tracker integration (GitHub Issues, Linear, or JIRA). Sources or generates a JTBD Job Story for the PR description, extracts ticket info from branch name, pushes the branch, creates a draft PR with Job Story, commit list, and issue tracker link, posts summary comment, and opens in browser.
+description: >
+  Create a GitHub pull request for the current branch with issue tracker
+  integration (GitHub Issues, Linear, or JIRA). Sources or generates a JTBD
+  Job Story for the PR description, extracts ticket info from branch name,
+  pushes the branch, creates a draft PR with Job Story, commit list, and
+  issue tracker link, posts summary comment, and opens in browser.
+  TRIGGER when: branch is ready for PR creation, user says "create PR".
+  DO NOT TRIGGER when: PR already exists (use Dev10x:gh-pr-respond or
+  Dev10x:gh-pr-monitor instead), or user just wants to push changes.
 user-invocable: true
 invocation-name: Dev10x:gh-pr-create
 allowed-tools:

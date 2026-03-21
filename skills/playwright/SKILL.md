@@ -7,6 +7,9 @@ description: >
   or browser testing on staging-dealers.tiretutor.com. Handles CF Access
   headers, credential injection, syntax validation before execution, and
   uv run wrapping — so secrets are never hardcoded in scripts.
+  TRIGGER when: running browser automation against TireTutor staging.
+  DO NOT TRIGGER when: testing non-TireTutor sites, running unit tests,
+  or writing Playwright scripts for other projects.
 allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/playwright/scripts/*:*)
 ---

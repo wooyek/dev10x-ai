@@ -1,6 +1,12 @@
 ---
 name: Dev10x:gh-pr-respond
-description: Validate and respond to PR review comments. Handles single comment (with follow-up offer) or batch mode for all unaddressed comments on a PR/review. Orchestrates Dev10x:gh-pr-triage and Dev10x:gh-pr-fixup.
+description: >
+  Validate and respond to PR review comments. Handles single comment
+  (with follow-up offer) or batch mode for all unaddressed comments on
+  a PR/review. Orchestrates Dev10x:gh-pr-triage and Dev10x:gh-pr-fixup.
+  TRIGGER when: PR has review comments that need responses or fixes.
+  DO NOT TRIGGER when: no review comments exist, or user wants to
+  create a new PR (use Dev10x:gh-pr-create).
 user-invocable: true
 invocation-name: Dev10x:gh-pr-respond
 allowed-tools:

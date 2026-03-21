@@ -6,6 +6,10 @@ description: >
   or it's unclear which frontmatter fields wire up invocability — so you
   get the Dev10x-specific setup right without hunting through existing
   skills for examples.
+  TRIGGER when: creating a new skill, fixing skill registration, or
+  scaffolding skill directory structure.
+  DO NOT TRIGGER when: editing skill content without structural issues,
+  or writing non-skill code.
 user-invocable: true
 invocation-name: Dev10x:skill-create
 allowed-tools:

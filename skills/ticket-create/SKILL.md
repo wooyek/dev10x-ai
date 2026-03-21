@@ -1,6 +1,14 @@
 ---
 name: Dev10x:ticket-create
-description: Create an issue tracker ticket (GitHub issue, Linear, or JIRA) with proper formatting, description structure, and labels. Accepts title, description content, and optional labels. Automatically formats the description with Root Cause, Solution, and Files Changed sections. Returns the created ticket ID.
+description: >
+  Create an issue tracker ticket (GitHub issue, Linear, or JIRA) with
+  proper formatting, description structure, and labels. Accepts title,
+  description content, and optional labels. Automatically formats the
+  description with Root Cause, Solution, and Files Changed sections.
+  Returns the created ticket ID.
+  TRIGGER when: a new ticket needs to be created for tracking work.
+  DO NOT TRIGGER when: ticket already exists (use Dev10x:ticket-scope
+  to enrich it), or user wants to update an existing ticket.
 user-invocable: true
 invocation-name: Dev10x:ticket-create
 allowed-tools:

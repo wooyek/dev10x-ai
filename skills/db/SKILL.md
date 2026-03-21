@@ -5,6 +5,10 @@ description: >
   Safe database query planning for Claude Code. When querying any
   database, ensures schema-first construction and read-only safety
   so queries are accurate and never modify production data.
+  TRIGGER when: code needs database queries, schema discovery, or
+  SQL construction.
+  DO NOT TRIGGER when: no database interaction needed, or user is
+  writing application code that happens to mention SQL in comments.
 user-invocable: false
 ---
 

@@ -1,6 +1,13 @@
 ---
 name: Dev10x:release-notes
-description: Generate JTBD-driven release notes from git commits between releases. Playbook-powered workflow with configurable ticket patterns, output targets, and categories.
+description: >
+  Generate JTBD-driven release notes from git commits between releases.
+  Playbook-powered workflow with configurable ticket patterns, output
+  targets, and categories.
+  TRIGGER when: preparing a release and need to generate changelog or
+  release notes from commit history.
+  DO NOT TRIGGER when: writing individual commit messages, or updating
+  documentation unrelated to releases.
 user-invocable: true
 invocation-name: Dev10x:release-notes
 allowed-tools:

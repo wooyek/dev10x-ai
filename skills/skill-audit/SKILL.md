@@ -1,6 +1,13 @@
 ---
 name: Dev10x:skill-audit
-description: Audit a session's skill usage, compliance, and extract lessons learned. Dispatches parallel subagents for analysis phases — run from a separate terminal.
+description: >
+  Audit a session's skill usage, compliance, and extract lessons learned.
+  Dispatches parallel subagents for analysis phases — run from a
+  separate terminal.
+  TRIGGER when: session is complete and user wants usage review, or
+  a skill didn't behave as expected.
+  DO NOT TRIGGER when: mid-session during active work, or user is
+  asking about a specific skill's documentation.
 user-invocable: true
 invocation-name: Dev10x:skill-audit
 allowed-tools:

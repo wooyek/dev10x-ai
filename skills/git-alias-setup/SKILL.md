@@ -1,7 +1,11 @@
 ---
 name: Dev10x:git-alias-setup
-description: Set up git aliases that reduce permission friction by wrapping
+description: >
+  Set up git aliases that reduce permission friction by wrapping
   $(git merge-base ...) subshells into stable command prefixes.
+  TRIGGER when: SessionStart reports missing aliases, or user hits
+  permission friction from subshell-based git commands.
+  DO NOT TRIGGER when: aliases already configured (check git config).
 user-invocable: true
 invocation-name: Dev10x:git-alias-setup
 allowed-tools:

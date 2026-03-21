@@ -1,6 +1,10 @@
 ---
 name: Dev10x:gh-pr-request-review
-description: Request review on a GitHub PR from teams or users
+description: >
+  Request review on a GitHub PR from teams or users.
+  TRIGGER when: PR is ready for review and needs reviewer assignment.
+  DO NOT TRIGGER when: PR is still draft or WIP, or review was already
+  requested.
 user-invocable: true
 invocation-name: Dev10x:gh-pr-request-review
 allowed-tools:
