@@ -3,6 +3,26 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.34.0 — Fanout Safety & Skill Consistency
+
+Released 2026-03-21
+
+Fanout delegation is hardened against bypass and wrong-branch
+commits, and trigger/skip documentation is standardized across
+all skills.
+
+### Bug Fixes
+
+- **Fanout delegation safety** — prevent delegation bypass and
+  wrong-branch commits with stricter orchestration guards
+  ([GH-345])
+
+### Improvements
+
+- **Trigger/skip standardization** — consistent trigger and skip
+  documentation across all skills, completing the effort started
+  in v0.33.0 ([GH-313])
+
 ## 0.33.0 — Orchestration Discipline & Session Resilience
 
 Released 2026-03-21
