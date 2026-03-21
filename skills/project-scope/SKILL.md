@@ -1,6 +1,14 @@
 ---
 name: Dev10x:project-scope
-description: Scope a multi-ticket project with milestones, blocking relationships, and tracker integration. Accepts a parent ticket URL/ID or free-text description and creates the full project structure in Linear, JIRA, or GitHub Issues.
+description: >
+  Scope a multi-ticket project with milestones, blocking relationships,
+  and tracker integration. Accepts a parent ticket URL/ID or free-text
+  description and creates the full project structure in Linear, JIRA,
+  or GitHub Issues.
+  TRIGGER when: scoping a multi-ticket project with milestones and
+  blocking relationships.
+  DO NOT TRIGGER when: scoping a single ticket (use Dev10x:ticket-scope),
+  or creating individual tickets (use Dev10x:ticket-create).
 user-invocable: true
 invocation-name: Dev10x:project-scope
 allowed-tools:

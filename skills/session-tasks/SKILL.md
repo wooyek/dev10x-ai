@@ -1,8 +1,12 @@
 ---
 name: Dev10x:session-tasks
 description: >
-  Use when tracking in-session work items — so open loops are visible
-  and triageable before session end without losing track of parallel work.
+  Track in-session work items — so open loops are visible and triageable
+  before session end without losing track of parallel work.
+  TRIGGER when: managing in-session task tracking, viewing open loops,
+  or adding work items mid-session.
+  DO NOT TRIGGER when: starting structured work from inputs (use
+  Dev10x:work-on), or wrapping up a session (use Dev10x:session-wrap-up).
 user-invocable: true
 invocation-name: Dev10x:session-tasks
 ---

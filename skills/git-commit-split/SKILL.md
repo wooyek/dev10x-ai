@@ -1,6 +1,15 @@
 ---
 name: Dev10x:git-commit-split
-description: Split monolithic git commits into atomic, cohesive commits following Clean Architecture principles. Uses interactive rebase to separate changes by feature dependency order (utilities → data → DTOs → refactoring → features → API), ensuring each commit is self-contained, passes tests, and maintains proper cohesion. Handles complex scenarios like separating refactoring from new features, and moving DTOs to where they're actually used.
+description: >
+  Split monolithic git commits into atomic, cohesive commits following
+  Clean Architecture principles. Uses interactive rebase to separate
+  changes by feature dependency order (utilities → data → DTOs →
+  refactoring → features → API), ensuring each commit is self-contained,
+  passes tests, and maintains proper cohesion.
+  TRIGGER when: a commit contains mixed concerns that should be separate
+  atomic commits.
+  DO NOT TRIGGER when: commits are already atomic, or grooming history
+  without splitting (use Dev10x:git-groom).
 user-invocable: true
 invocation-name: Dev10x:git-commit-split
 allowed-tools:

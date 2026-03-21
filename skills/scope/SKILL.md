@@ -1,7 +1,15 @@
 ---
 name: Dev10x:scope
 invocation-name: Dev10x:scope
-description: Base scoping skill for technical research and architecture design. Provides reusable scoping workflow for investigating codebases, designing solutions, and documenting decisions. Used as foundation by Dev10x:ticket-scope (Linear tickets) and Dev10x:adr (Architecture Decision Records).
+description: >
+  Base scoping skill for technical research and architecture design.
+  Provides reusable scoping workflow for investigating codebases,
+  designing solutions, and documenting decisions.
+  TRIGGER when: performing technical research or architecture design
+  without a specific tracker integration.
+  DO NOT TRIGGER when: scoping a Linear ticket (use Dev10x:ticket-scope),
+  documenting an ADR (use Dev10x:adr), or scoping a project (use
+  Dev10x:project-scope).
 user-invocable: false
 allowed-tools:
   - Agent

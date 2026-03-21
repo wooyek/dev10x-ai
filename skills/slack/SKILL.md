@@ -3,6 +3,11 @@ name: Dev10x:slack
 description: >
   Send notifications to Slack channels with support for threads,
   file uploads, message updates, and user group mentions.
+  TRIGGER when: sending messages, uploading files, or updating
+  messages in Slack channels.
+  DO NOT TRIGGER when: setting up Slack integration (use
+  Dev10x:slack-setup), or posting review requests (use
+  Dev10x:slack-review-request).
 user-invocable: true
 invocation-name: Dev10x:slack
 allowed-tools:

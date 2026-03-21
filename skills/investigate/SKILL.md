@@ -1,10 +1,13 @@
 ---
 name: Dev10x:investigate
 description: >
-  Use when given a Slack URL pointing to a bug report, question, or
-  unexpected behaviour — so the issue gets root-caused in the codebase,
-  a technical reply with GitHub links is posted back to the thread,
-  and a Linear ticket is created when warranted.
+  Root-cause a bug report, question, or unexpected behaviour from a
+  Slack thread — posts a technical reply with GitHub links and creates
+  a Linear ticket when warranted.
+  TRIGGER when: given a Slack URL pointing to a bug report, question,
+  or unexpected behaviour that needs investigation.
+  DO NOT TRIGGER when: no Slack URL provided, issue already root-caused,
+  or user wants to investigate without posting a reply.
 user-invocable: true
 invocation-name: Dev10x:investigate
 allowed-tools:

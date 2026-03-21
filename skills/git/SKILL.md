@@ -1,8 +1,12 @@
 ---
 name: Dev10x:git
-description: Use before running git push or git rebase — so force-pushes to
+description: >
+  Use before running git push or git rebase — so force-pushes to
   protected branches are blocked and non-interactive rebases run unattended
   without manual editor approval prompts.
+  TRIGGER when: running git push or git rebase operations.
+  DO NOT TRIGGER when: other git operations (commit, status, log, diff)
+  that don't need push/rebase safety.
 user-invocable: true
 invocation-name: Dev10x:git
 allowed-tools:

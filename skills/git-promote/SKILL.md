@@ -1,6 +1,14 @@
 ---
 name: Dev10x:git-promote
-description: Convert existing git commits into issue tracker tickets with proper branch management and commit message formatting. Use this skill when a commit needs to be retroactively tracked, typically for tech debt fixes, bug fixes, or improvements that were committed without a ticket reference. This skill automates the workflow of creating the ticket, branching, cherry-picking, and updating the commit message.
+description: >
+  Convert existing git commits into issue tracker tickets with proper
+  branch management and commit message formatting. Automates creating
+  the ticket, branching, cherry-picking, and updating the commit message.
+  TRIGGER when: a commit needs to be retroactively tracked with a ticket,
+  typically for tech debt fixes, bug fixes, or improvements committed
+  without a ticket reference.
+  DO NOT TRIGGER when: commit already has a ticket reference, or creating
+  a new ticket before committing (use Dev10x:ticket-create).
 user-invocable: true
 invocation-name: Dev10x:git-promote
 allowed-tools:

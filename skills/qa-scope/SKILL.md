@@ -1,6 +1,12 @@
 ---
 name: Dev10x:qa-scope
-description: Analyze a PR for QA needs, check e2e coverage gaps, and create QA sub-tickets when manual testing or new e2e tests are needed.
+description: >
+  Analyze a PR for QA needs, check e2e coverage gaps, and create QA
+  sub-tickets when manual testing or new e2e tests are needed.
+  TRIGGER when: PR needs QA analysis for coverage gaps or manual test
+  requirements.
+  DO NOT TRIGGER when: executing QA test cases (use Dev10x:qa-self),
+  or PR has no user-facing changes.
 user-invocable: true
 invocation-name: Dev10x:qa-scope
 allowed-tools:

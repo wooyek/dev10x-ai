@@ -1,9 +1,12 @@
 ---
 name: Dev10x:session-wrap-up
 description: >
-  Use at session end or when too many open loops pile up — so
-  unfinished work is captured and routed to the right place instead
-  of being lost when the session closes.
+  Capture and route unfinished work at session end — so nothing is
+  lost when the session closes.
+  TRIGGER when: session ending, user says "wrap up" / "pause" / "done
+  for today", or too many open loops pile up.
+  DO NOT TRIGGER when: mid-session active work with manageable task
+  list, or starting new work (use Dev10x:work-on).
 user-invocable: true
 invocation-name: Dev10x:session-wrap-up
 ---

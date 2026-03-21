@@ -1,7 +1,13 @@
 ---
 name: Dev10x:linear
 invocation-name: Dev10x:linear
-description: Linear issue tracker operations via MCP tools. Get, create, update issues and list comments. Documentation-only skill — no scripts.
+description: >
+  Linear issue tracker operations via MCP tools. Get, create, update
+  issues and list comments. Documentation-only skill — no scripts.
+  TRIGGER when: performing CRUD operations on Linear issues, comments,
+  or statuses.
+  DO NOT TRIGGER when: using GitHub Issues or JIRA (use Dev10x:jira),
+  or creating tickets across trackers (use Dev10x:ticket-create).
 user-invocable: false
 allowed-tools:
   - mcp__claude_ai_Linear__get_issue

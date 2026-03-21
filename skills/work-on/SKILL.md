@@ -5,6 +5,10 @@ description: >
   Sentry issue, or free text. Classifies inputs, gathers context
   in parallel, builds a supervisor-approved task list, and executes
   adaptively with pause/resume support.
+  TRIGGER when: user provides ticket URLs, PR links, Slack threads,
+  Sentry issues, or free text to start structured work.
+  DO NOT TRIGGER when: simple one-off tasks that don't need structured
+  planning, or parallel fanout of independent items (use Dev10x:fanout).
 user-invocable: true
 invocation-name: Dev10x:work-on
 allowed-tools:
