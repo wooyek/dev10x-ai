@@ -1,9 +1,13 @@
 ---
 name: Dev10x:park-remind
 description: >
-  Use when you need a reminder to surface in Slack later — so deferred
-  items appear when you are clearing messages, not buried in a file
-  you might not open.
+  Schedule a Slack reminder — so deferred items appear when you are
+  clearing messages, not buried in a file you might not open.
+  TRIGGER when: deferring work that should resurface via Slack
+  notification later.
+  DO NOT TRIGGER when: deferring to code or project storage (use
+  Dev10x:park-todo), or routing to the best destination automatically
+  (use Dev10x:park).
 user-invocable: true
 invocation-name: Dev10x:park-remind
 allowed-tools:

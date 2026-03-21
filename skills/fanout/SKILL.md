@@ -4,6 +4,10 @@ description: >
   Close multiple open loops in parallel — PRs waiting for review,
   issues ready for implementation, tickets needing attention. Honors
   dependencies, minimizes conflict risk, auto-advances by default.
+  TRIGGER when: 2+ independent work items need parallel processing
+  (PRs, issues, tickets).
+  DO NOT TRIGGER when: single task or sequential dependency chain
+  (use Dev10x:work-on).
 user-invocable: true
 invocation-name: Dev10x:fanout
 allowed-tools:

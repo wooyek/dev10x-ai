@@ -1,8 +1,12 @@
 ---
 name: Dev10x:park-discover
 description: >
-  Use when checking for deferred items across all sources — so nothing
-  is missed when starting a session or picking up where you left off.
+  Gather deferred items across all sources — so nothing is missed
+  when starting a session or picking up where you left off.
+  TRIGGER when: starting a session, picking up prior work, or checking
+  for deferred items.
+  DO NOT TRIGGER when: mid-session active work with no need to check
+  deferred items.
 user-invocable: true
 invocation-name: Dev10x:park-discover
 ---

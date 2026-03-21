@@ -1,7 +1,13 @@
 ---
 name: Dev10x:gh-context
 invocation-name: Dev10x:gh-context
-description: Use when detecting PR context (number, repo, URL, branch) from a URL, PR number, or current branch — so skills like Dev10x:gh-pr-monitor always get the correct target PR even in multi-worktree setups
+description: >
+  Detect PR context (number, repo, URL, branch) from a URL, PR number,
+  or current branch — so skills like Dev10x:gh-pr-monitor always get the
+  correct target PR even in multi-worktree setups.
+  TRIGGER when: resolving PR context from URL, number, or branch for
+  downstream skills.
+  DO NOT TRIGGER when: PR context is already known and passed explicitly.
 user-invocable: false
 allowed-tools:
   - mcp__plugin_Dev10x_cli__*

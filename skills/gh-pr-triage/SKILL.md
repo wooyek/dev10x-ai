@@ -1,6 +1,13 @@
 ---
 name: Dev10x:gh-pr-triage
-description: Validate a PR review comment against the codebase. If invalid, reply with evidence. Never auto-resolves threads — resolution requires explicit user confirmation. Returns a verdict (VALID, INVALID, QUESTION, OUT_OF_SCOPE) so the caller knows whether a code fix is needed.
+description: >
+  Validate a PR review comment against the codebase. If invalid, reply
+  with evidence. Never auto-resolves threads — resolution requires
+  explicit user confirmation. Returns a verdict (VALID, INVALID, QUESTION,
+  OUT_OF_SCOPE) so the caller knows whether a code fix is needed.
+  TRIGGER when: PR review comment needs validation before implementing fix.
+  DO NOT TRIGGER when: comment is clearly valid and needs immediate fix
+  (use Dev10x:gh-pr-fixup directly).
 user-invocable: true
 invocation-name: Dev10x:gh-pr-triage
 allowed-tools:

@@ -1,6 +1,12 @@
 ---
 name: Dev10x:slack-review-request
-description: Post a Slack review request for a PR using per-project config (channel, mentions). Reads configuration from userspace YAML.
+description: >
+  Post a Slack review request for a PR using per-project config
+  (channel, mentions). Reads configuration from userspace YAML.
+  TRIGGER when: PR needs a Slack review notification posted to the
+  team channel.
+  DO NOT TRIGGER when: Slack not configured, or using the combined
+  Dev10x:request-review skill (which delegates here automatically).
 user-invocable: true
 invocation-name: Dev10x:slack-review-request
 allowed-tools:

@@ -4,6 +4,10 @@ description: >
   Guide the user through setting up their Slack integration —
   create a Slack app, configure scopes, store the token in the
   system keyring, and generate slack-config.yaml.
+  TRIGGER when: setting up Slack integration for the first time, or
+  reconfiguring Slack credentials.
+  DO NOT TRIGGER when: Slack already configured and working, or
+  sending messages (use Dev10x:slack).
 user-invocable: true
 invocation-name: Dev10x:slack-setup
 allowed-tools:

@@ -4,6 +4,10 @@ description: >
   Post a rich session bookmark comment on a PR — captures session ID,
   review thread status, current state, and next steps so the next
   session can pick up where this one left off.
+  TRIGGER when: pausing or ending session with an open PR that has
+  in-progress work.
+  DO NOT TRIGGER when: no PR exists, or session-wrap-up handles
+  bookmarking automatically.
 user-invocable: true
 invocation-name: Dev10x:gh-pr-bookmark
 allowed-tools:

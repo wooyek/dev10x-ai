@@ -1,6 +1,13 @@
 ---
 name: Dev10x:qa-self
-description: Execute QA test cases on staging using headless Playwright, capture screenshot and video evidence, upload to Linear, and post structured results. Use when a QA ticket has test cases to execute against staging and you need to produce evidence.
+description: >
+  Execute QA test cases on staging using headless Playwright, capture
+  screenshot and video evidence, upload to Linear, and post structured
+  results.
+  TRIGGER when: QA ticket has test cases to execute against staging
+  and evidence is needed.
+  DO NOT TRIGGER when: analyzing PR for QA needs (use Dev10x:qa-scope),
+  or running unit/integration tests (use test skill).
 user-invocable: true
 invocation-name: Dev10x:qa-self
 allowed-tools:

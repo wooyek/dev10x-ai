@@ -1,9 +1,13 @@
 ---
 name: Dev10x:park
 description: >
-  Use when a task should be saved for later — so deferred items land
-  where they will actually be rediscovered (PR, ticket, code, Slack,
-  or project TODO) instead of being forgotten.
+  Smart deferral router — saves tasks for later to the right place
+  (PR, ticket, code, Slack, or project TODO) so they are actually
+  rediscovered instead of being forgotten.
+  TRIGGER when: a task should be saved for later instead of done now.
+  DO NOT TRIGGER when: task should be done now, or specifically
+  deferring to code (use Dev10x:park-todo) or Slack (use
+  Dev10x:park-remind).
 user-invocable: true
 invocation-name: Dev10x:park
 ---

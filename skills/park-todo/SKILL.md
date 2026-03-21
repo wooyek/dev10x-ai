@@ -1,9 +1,13 @@
 ---
 name: Dev10x:park-todo
 description: >
-  Use when deferring work to code or project-level storage — so items
-  resurface when editing nearby code or starting a new session in the
-  same project, instead of being forgotten.
+  Defer work to code or project-level storage — so items resurface
+  when editing nearby code or starting a new session in the same
+  project, instead of being forgotten.
+  TRIGGER when: deferring work to code comments, TODO.md, or project
+  memory files.
+  DO NOT TRIGGER when: deferring to Slack (use Dev10x:park-remind),
+  or routing to the best destination automatically (use Dev10x:park).
 user-invocable: true
 invocation-name: Dev10x:park-todo
 ---

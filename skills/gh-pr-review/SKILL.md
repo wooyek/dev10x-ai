@@ -1,6 +1,12 @@
 ---
 name: Dev10x:gh-pr-review
-description: Review a GitHub pull request and post findings with inline comments. Fetches PR diff, reads changed files, checks for interface impact, applies project review guidelines, and posts a COMMENT review to GitHub.
+description: >
+  Review a GitHub pull request and post findings with inline comments.
+  Fetches PR diff, reads changed files, checks for interface impact,
+  applies project review guidelines, and posts a COMMENT review to GitHub.
+  TRIGGER when: reviewing an external PR and posting review comments.
+  DO NOT TRIGGER when: reviewing own branch changes before PR creation
+  (use Dev10x:review), or PR does not exist yet.
 user-invocable: true
 invocation-name: Dev10x:gh-pr-review
 allowed-tools:

@@ -1,7 +1,13 @@
 ---
 name: Dev10x:review-fix
 invocation-name: Dev10x:review-fix
-description: Use when Dev10x:review has produced structured findings that need fixup commits. Consumes a findings JSON file and creates one standalone fixup! commit per finding via Dev10x:git-fixup.
+description: >
+  Consume structured findings from Dev10x:review and create one
+  standalone fixup! commit per finding via Dev10x:git-fixup.
+  TRIGGER when: Dev10x:review has produced a findings JSON file that
+  needs fixup commits.
+  DO NOT TRIGGER when: no findings file exists, or addressing PR review
+  comments from external reviewers (use Dev10x:gh-pr-fixup).
 user-invocable: false
 allowed-tools:
   - Bash(git log:*)

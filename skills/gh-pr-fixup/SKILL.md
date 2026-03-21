@@ -1,6 +1,12 @@
 ---
 name: Dev10x:gh-pr-fixup
-description: Implement a fix for a validated PR review comment, create a fixup! commit, push, and reply with the commit reference. Creates ONE fixup commit per comment.
+description: >
+  Implement a fix for a validated PR review comment, create a fixup!
+  commit, push, and reply with the commit reference. Creates ONE fixup
+  commit per comment.
+  TRIGGER when: PR review comment has been validated as needing a code fix.
+  DO NOT TRIGGER when: comment is invalid/question (use Dev10x:gh-pr-triage
+  first), or creating standalone fixup without PR context (use Dev10x:git-fixup).
 user-invocable: true
 invocation-name: Dev10x:gh-pr-fixup
 allowed-tools:

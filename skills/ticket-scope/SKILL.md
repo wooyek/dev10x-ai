@@ -1,6 +1,15 @@
 ---
 name: Dev10x:ticket-scope
-description: Scope Linear tickets with technical research and architecture design. Extends the base scope skill with Linear ticket integration, story point estimation, and acceptance criteria formatting. Use when preparing to implement a Linear ticket.
+description: >
+  Scope Linear tickets with technical research and architecture design.
+  Extends the base scope skill with Linear ticket integration, story
+  point estimation, and acceptance criteria formatting.
+  TRIGGER when: preparing to implement a Linear ticket — scoping
+  technical approach, estimating story points, or writing acceptance
+  criteria.
+  DO NOT TRIGGER when: scoping non-Linear tickets, multi-ticket
+  projects (use Dev10x:project-scope), or new domain areas (use
+  Dev10x:ddd first).
 user-invocable: true
 invocation-name: Dev10x:ticket-scope
 allowed-tools:

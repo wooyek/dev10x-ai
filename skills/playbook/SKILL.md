@@ -4,6 +4,10 @@ description: >
   View and customize playbooks (step-by-step procedures) for any
   orchestration skill. List playbook-powered skills, inspect plays,
   edit steps through a guided flow, or reset to defaults.
+  TRIGGER when: user wants to view, edit, or customize playbook
+  workflows for skills.
+  DO NOT TRIGGER when: executing a playbook-powered skill (handled
+  automatically by Dev10x:work-on or other orchestrators).
 user-invocable: true
 invocation-name: Dev10x:playbook
 allowed-tools:

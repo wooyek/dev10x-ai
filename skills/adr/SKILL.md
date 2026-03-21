@@ -1,6 +1,13 @@
 ---
 name: Dev10x:adr
-description: Create Architecture Decision Records (ADRs) following project conventions. Extends the base scope skill with ADR-specific format, numbering, diagram generation, and decision documentation. Use when documenting significant architectural decisions that affect the codebase.
+description: >
+  Create Architecture Decision Records (ADRs) following project conventions.
+  Extends the base scope skill with ADR-specific format, numbering, diagram
+  generation, and decision documentation.
+  TRIGGER when: documenting significant architectural decisions, design
+  trade-offs, or technology choices that affect the codebase.
+  DO NOT TRIGGER when: making code changes without architecture impact,
+  or writing commit messages (use Dev10x:git-commit).
 user-invocable: true
 invocation-name: Dev10x:adr
 allowed-tools:

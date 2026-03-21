@@ -1,6 +1,13 @@
 ---
 name: Dev10x:request-review
-description: Request PR review — assigns GitHub reviewers and posts Slack notification in one command. Delegates to Dev10x:gh-pr-request-review and Dev10x:slack-review-request.
+description: >
+  Request PR review — assigns GitHub reviewers and posts Slack
+  notification in one command. Delegates to Dev10x:gh-pr-request-review
+  and Dev10x:slack-review-request.
+  TRIGGER when: PR is ready for review and needs both GitHub reviewer
+  assignment and Slack notification.
+  DO NOT TRIGGER when: PR is draft/WIP, or only need GitHub assignment
+  without Slack (use Dev10x:gh-pr-request-review directly).
 user-invocable: true
 invocation-name: Dev10x:request-review
 allowed-tools:

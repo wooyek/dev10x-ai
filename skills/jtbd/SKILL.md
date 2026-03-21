@@ -1,7 +1,14 @@
 ---
 name: Dev10x:jtbd
 invocation-name: Dev10x:jtbd
-description: Pure JTBD story drafting skill. Gathers context from issue tracker tickets, parent tickets, and PR diffs to craft a situation-driven Job Story with explicit actor and beneficiary. Returns the draft string with no side effects. Used as a foundation by ticket write layers, PR creation, release notes, and commit title derivation skills.
+description: >
+  Pure JTBD story drafting skill. Gathers context from issue tracker
+  tickets, parent tickets, and PR diffs to craft a situation-driven Job
+  Story with explicit actor and beneficiary. Returns the draft string
+  with no side effects.
+  TRIGGER when: drafting a JTBD Job Story for a ticket, PR, or release.
+  DO NOT TRIGGER when: Job Story already exists on the target, or writing
+  commit messages (use Dev10x:git-commit).
 user-invocable: false
 allowed-tools:
   - AskUserQuestion

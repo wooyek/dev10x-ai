@@ -4,8 +4,11 @@ description: >
   Verify that definition-of-done / acceptance criteria are met before
   closing a task list. Reads playbook-specific criteria from YAML,
   checks actual state (CI, PR, working copy), and prompts the user
-  to confirm completion. Use when an agent completes its task list
-  and needs to verify the work is shippable.
+  to confirm completion.
+  TRIGGER when: task list is complete and work needs shippability
+  verification before handover.
+  DO NOT TRIGGER when: mid-implementation, or task list has incomplete
+  items.
 user-invocable: true
 invocation-name: Dev10x:verify-acc-dod
 allowed-tools:

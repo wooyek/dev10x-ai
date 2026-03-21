@@ -3,15 +3,15 @@ name: Dev10x:ddd-workshop
 invocation-name: Dev10x:ddd-workshop
 description: >
   Run or continue a DDD Event Storming workshop to explore, model, and
-  stress-test domain architecture. Use when the user mentions DDD,
-  domain modeling, event storming, bounded contexts, domain events,
-  aggregates, or wants to explore/scope a new feature area against an
-  existing domain model. Also triggers on "workshop", "domain session",
-  "stress test the architecture", "apply archetype", or "scope the domain".
-  Use this skill even for tasks like "add tax support" or "what breaks if
-  we add goods pricing" — those are domain exploration questions that need
-  the workshop methodology. Always use this skill before ticket-scope
-  when the feature area is new or crosses bounded context boundaries.
+  stress-test domain architecture.
+  TRIGGER when: user mentions DDD, domain modeling, event storming, bounded
+  contexts, domain events, aggregates, "workshop", "domain session", "stress
+  test the architecture", "apply archetype", "scope the domain", or asks
+  domain exploration questions like "add tax support" or "what breaks if we
+  add goods pricing". Always use before ticket-scope when the feature area
+  is new or crosses bounded context boundaries.
+  DO NOT TRIGGER when: implementing code within a well-understood domain, or
+  scoping a ticket in a known bounded context (use Dev10x:ticket-scope).
 ---
 
 # DDD Event Storming Workshop

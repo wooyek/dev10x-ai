@@ -1,6 +1,13 @@
 ---
 name: Dev10x:git-groom
-description: Restructure, polish, and clean up git commit history in the current branch before merging. Creates atomic, well-organized commits that tell a clear story.
+description: >
+  Restructure, polish, and clean up git commit history in the current
+  branch before merging. Creates atomic, well-organized commits that
+  tell a clear story.
+  TRIGGER when: branch is ready for merge and commit history needs
+  cleanup (squash fixups, reorder, reword).
+  DO NOT TRIGGER when: branch has clean history already, or splitting
+  individual commits (use Dev10x:git-commit-split).
 user-invocable: true
 invocation-name: Dev10x:git-groom
 allowed-tools:

@@ -1,6 +1,13 @@
 ---
 name: Dev10x:git-fixup
-description: Create a fixup! commit for a PR review comment or standalone improvement. Enforces one fixup per comment thread when linked to a review.
+description: >
+  Create a fixup! commit for a PR review comment or standalone
+  improvement. Enforces one fixup per comment thread when linked to
+  a review.
+  TRIGGER when: creating a fixup! commit for a review finding or
+  standalone improvement.
+  DO NOT TRIGGER when: creating a regular commit (use Dev10x:git-commit),
+  or implementing PR fixes with push and reply (use Dev10x:gh-pr-fixup).
 user-invocable: true
 invocation-name: Dev10x:git-fixup
 allowed-tools:

@@ -1,6 +1,13 @@
 ---
 name: Dev10x:git-commit
-description: Create a properly formatted git commit following project conventions (gitmoji, ticket reference, 72 char limit). Extracts ticket ID from branch name, prompts for description and solution points, stages changes, and creates the commit.
+description: >
+  Create a properly formatted git commit following project conventions
+  (gitmoji, ticket reference, 72 char limit). Extracts ticket ID from
+  branch name, prompts for description and solution points, stages
+  changes, and creates the commit.
+  TRIGGER when: creating a git commit with proper formatting.
+  DO NOT TRIGGER when: amending commits, creating fixup! commits (use
+  Dev10x:git-fixup), or splitting commits (use Dev10x:git-commit-split).
 user-invocable: true
 invocation-name: Dev10x:git-commit
 allowed-tools:

@@ -5,6 +5,10 @@ description: >
   Scans local skills and all installed plugins, groups by
   families.yaml, hides orchestration deps via hidden.yaml,
   and writes ~/.claude/SKILLS.md (≤45 lines, ≤300 chars/line).
+  TRIGGER when: regenerating SKILLS.md after adding, removing, or
+  renaming skills.
+  DO NOT TRIGGER when: viewing the existing skill index, or editing
+  individual skills.
 user-invocable: true
 invocation-name: Dev10x:skill-index
 allowed-tools:
