@@ -19,6 +19,8 @@ allowed-tools:
   - Bash(git worktree list:*)
   - Bash(git rev-parse:*)
   - Bash(git config:*)
+  - Bash(pwd:*)
+  - Bash(grep:*)
 ---
 
 # Create Git Branch for Ticket
@@ -129,30 +131,30 @@ slug = '-'.join(slug_words).replace('[^a-z0-9-]', '')
 
 ### Step 4: Detect Worktree (if applicable)
 
-Check if we're running in a git worktree:
+Detect whether we're in a worktree and extract its name.
+
+**Primary: CWD-based detection** (no subshell, no permission friction):
+
+Split the current working directory on `.worktrees/` and take the
+first path segment after it. Example: `/work/tt/.worktrees/tt-pos-7/`
+yields `tt-pos-7`.
 
 ```bash
-# Check if .git is a file (indicates worktree) rather than a directory
-if [ -f .git ]; then
-  # We're in a worktree - extract the worktree name from the directory
-  worktree_name=$(basename "$(git rev-parse --show-toplevel)")
-  echo "Detected worktree: $worktree_name"
-fi
-```
-
-**Alternative detection methods:**
-```bash
-# Method 2: Check git worktree list
-git worktree list --porcelain | grep -A1 "$(pwd)"
-
-# Method 3: Check for .worktrees in path
 pwd | grep -oP '\.worktrees/\K[^/]+'
 ```
 
-**Worktree detection rules:**
-- If `.git` is a **file** (not directory) → we're in a worktree
-- Extract worktree name from the current directory basename (e.g., `tt-pos-7` from `/work/tt/.worktrees/tt-pos-7`)
-- If `.git` is a **directory** → we're in the main repo, no worktree prefix needed
+**Fallback: git subshell** (only when CWD is not under `.worktrees/`):
+
+```bash
+if [ -f .git ]; then
+  worktree_name=$(basename "$(git rev-parse --show-toplevel)")
+fi
+```
+
+**Detection rules:**
+1. If CWD contains `.worktrees/` → extract name from path (primary)
+2. Else if `.git` is a **file** → use git subshell fallback
+3. Else (`.git` is a directory) → main repo, no worktree prefix
 
 ### Step 5: Generate Branch Name
 
