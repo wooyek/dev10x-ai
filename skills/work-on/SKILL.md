@@ -342,6 +342,14 @@ play definitions. If you cannot confirm this, STOP.
    the error to the user. Do NOT fall back to generating an ad-hoc
    plan. The playbook IS the plan — without it, Phase 3 cannot
    produce a correct task list.
+   **Unmatched play fallback:** If the playbook loaded successfully
+   but no play matches the detected `work_type`, fall back to the
+   `feature` play (which has the most complete shipping pipeline).
+   Do NOT generate an ad-hoc plan — ad-hoc plans lack `skills:`
+   fields on steps, causing agents to bypass skill wrappers and
+   miss guardrails (gitmoji, JTBD, Fixes links, CI monitoring).
+   Log the mismatch: "No play for work_type='{type}', falling
+   back to 'feature' play."
 4. Resolve: overrides first (same as acceptance-criteria), then
    defaults, then schema fallback
 5. **Resolve fragment references:** Walk the step list. When a
@@ -528,6 +536,24 @@ all implementation subtasks), compact completed tasks into a brief
 summary via `TaskUpdate` metadata. This frees context window for
 remaining work. See `references/task-orchestration.md` Pattern 8
 for the full compaction protocol.
+
+### Skill Routing Enforcement
+
+**Hard rule — applies to ALL plans (playbook or ad-hoc):**
+
+| Action | MUST delegate to | Never use directly |
+|--------|-----------------|-------------------|
+| Create a commit | `Skill(Dev10x:git-commit)` | `git commit` |
+| Create a PR | `Skill(Dev10x:gh-pr-create)` | `gh pr create` |
+| Monitor CI | `Skill(Dev10x:gh-pr-monitor)` | `gh pr checks --watch` |
+| Push to remote | `Skill(Dev10x:git)` | `git push` |
+| Groom history | `Skill(Dev10x:git-groom)` | `git rebase -i` |
+| Create branch | `Skill(Dev10x:ticket-branch)` | `git checkout -b` |
+
+This table survives context compaction — it is the canonical
+routing for shipping actions. If you are about to run a raw
+git/gh command that appears in the "Never use directly" column,
+STOP and invoke the corresponding skill instead.
 
 ### Auto-Advance Rule
 

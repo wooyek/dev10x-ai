@@ -115,11 +115,16 @@ Use the **Task tool** with these parameters:
 
 ```
 subagent_type: "general-purpose"
+model: "haiku"
 run_in_background: true
 max_turns: 200
 description: "Monitor PR #{pr_number}"
 prompt: <see "Agent Prompt Template" below, with variables filled in>
 ```
+
+**Why haiku?** Monitoring agents run `gh pr checks --watch` and
+report pass/fail — they do not need Opus-level reasoning. Using
+haiku reduces cost without affecting monitoring quality.
 
 ### Step 4: Report to user
 
@@ -446,6 +451,11 @@ reviewers assigned, Slack notification posted.
   monitor through to merge. After Phase 3 completes, the agent
   exits. To monitor post-approval activity or wait for merge,
   re-invoke the skill or check manually.
+- **Do NOT merge PRs.** The monitoring agent must never run
+  `gh pr merge`, `git merge`, or any merge operation. Merging
+  is the supervisor's responsibility. If the agent merges
+  autonomously, the main session may attempt a duplicate merge
+  and hit "already merged" errors.
 - **Autonomous execution**: Phase 1 and Phase 2 run without asking the
   user. Phase 2.5 (QA) and Phase 3 (notification) need confirmation.
 - **One fixup per comment**: Each review comment gets exactly one fixup
