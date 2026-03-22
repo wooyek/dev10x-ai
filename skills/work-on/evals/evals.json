@@ -477,6 +477,12 @@
           "signals": ["Skill", "Dev10x:gh-pr-request-review"]
         },
         {
+          "id": "post-step-skill-verification",
+          "text": "After completing a playbook step with skills:, verifies Skill() was called — not raw CLI commands",
+          "check": "behavioral",
+          "signals": ["Skill()", "verify", "delegation"]
+        },
+        {
           "id": "auto-advances-through-subtasks",
           "text": "Auto-advances between subtasks without pausing to ask 'should I continue?'",
           "check": "behavioral",
@@ -625,9 +631,15 @@
         },
         {
           "id": "completion-gate-at-end",
-          "text": "After last task completes, AskUserQuestion is called with hand-over options",
+          "text": "After last task completes, AskUserQuestion is called with hand-over options — plain text (e.g., 'Ready to merge?') is NOT acceptable",
           "check": "tool_called",
           "signals": ["AskUserQuestion", "hand over", "Add more tasks"]
+        },
+        {
+          "id": "completion-gate-not-plain-text",
+          "text": "Completion gate uses AskUserQuestion tool call, never plain text questions — plain text allows auto-proceed without structured confirmation",
+          "check": "tool_called",
+          "signals": ["AskUserQuestion", "Work complete"]
         }
       ]
     }

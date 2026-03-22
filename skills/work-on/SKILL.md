@@ -645,14 +645,18 @@ are unmet.
 them `completed` on dispatch — only mark `completed` when the
 agent's result notification arrives and confirms success.
 
-**After all checks pass**, show the full task list via `TaskList`
-and call `AskUserQuestion` with options:
-- "Work complete — hand over" (Recommended)
-- "Add more tasks"
-- "Revisit a step"
+**After all checks pass:**
+
+**REQUIRED: Call `AskUserQuestion`** (do NOT use plain text).
+Show the full task list via `TaskList`, then call:
+
+1. `AskUserQuestion(questions=[{question: "All tasks completed. How would you like to proceed?", header: "Done", options: [{label: "Work complete — hand over (Recommended)", description: "All checks pass, ready to close"}, {label: "Add more tasks", description: "Continue with additional work"}, {label: "Revisit a step", description: "Re-examine a completed task"}], multiSelect: false}])`
 
 Never auto-complete the plan without supervisor confirmation.
 The supervisor must explicitly sign off that work is done.
+Plain text questions (e.g., "Ready to merge?") are NOT
+acceptable — they allow the session to auto-proceed without
+structured confirmation.
 
 ### Executing Detailed Tasks
 
@@ -676,6 +680,13 @@ invoke the skill. Refer to the **Skill Routing Enforcement**
 table above — it lists every action that MUST use a skill
 wrapper regardless of execution mode.
 
+**Mandatory delegation flag:** When a playbook step has
+`skills:` entries, delegation is mandatory — not advisory.
+The `skills:` field means "invoke these via `Skill()`", not
+"consider using these". Zero of 15 expected delegations in
+session 05d49f11 were made because the enforcement was
+treated as optional. It is not optional.
+
 Common skill delegations:
 
 | Task | Delegated to |
@@ -694,7 +705,25 @@ Common skill delegations:
 | Update PR description | `Dev10x:gh-pr-create` skill (update mode) |
 | Request review | `Dev10x:gh-pr-request-review` skill |
 
-After completing a detailed task, mark it `completed` via
+### Post-Step Skill Delegation Verification
+
+**REQUIRED: After completing ANY playbook step that lists
+`skills:`, verify the delegation occurred.** Before marking
+the task `completed`, confirm:
+
+1. The `Skill()` tool was called for each listed skill
+2. Raw CLI commands were NOT used as substitutes (e.g.,
+   `git commit` instead of `Skill(Dev10x:git-commit)`)
+3. If you used raw commands instead of `Skill()`, STOP —
+   re-do the step with proper delegation before proceeding
+
+This check exists because under auto-advance pressure, the
+agent rationalizes raw commands as "equivalent" to skill
+invocations. They are not — skills enforce gitmoji, JTBD,
+Fixes links, CI monitoring, and other guardrails that raw
+commands skip.
+
+After verification, mark the task `completed` via
 `TaskUpdate` and move to the next task.
 
 ### Expanding Epic Tasks
@@ -730,6 +759,32 @@ When reaching an epic task:
 7. **Execute sub-tasks**, marking each completed as they finish.
    Auto-advance between sub-tasks (same rule as top-level).
 8. **Mark the epic completed** when all sub-tasks are done
+
+### Fanout Execution (Multiple Issues)
+
+When executing a plan with multiple issues (fanout), each
+issue MUST execute the **full playbook play** — not a
+collapsed subset. Fanout does NOT exempt individual issues
+from the shipping pipeline.
+
+**Anti-pattern (PROHIBITED):**
+```
+for each issue:
+  branch → edit → commit → push → PR   # 5 steps
+```
+
+**Required pattern:**
+```
+for each issue:
+  full play (branch → design → implement → verify →
+  review → commit → PR → CI → groom → update → ready →
+  verify-acc)                           # 12+ steps
+```
+
+Each issue gets its own task subtree under Phase 4. When
+worktree agents fail or fall back to sequential execution,
+the playbook steps remain mandatory — fallback changes the
+*executor*, not the *steps*.
 
 ### Parallelism Policy
 
