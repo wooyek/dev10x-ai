@@ -118,6 +118,32 @@ Dev10x:gh-pr-respond (this skill)
          └── commit:fixup → create the fixup! commit
 ```
 
+## Preamble: Branch Location Check
+
+Before processing comments, verify the PR branch is accessible
+from the current working directory. In multi-worktree setups, the
+PR branch may live in a different worktree than the active CWD.
+
+1. Extract the PR branch name:
+   ```bash
+   gh pr view {pr_number} --repo {owner}/{repo} --json headRefName -q .headRefName
+   ```
+2. Check if the branch is checked out in the current worktree:
+   ```bash
+   git symbolic-ref --short HEAD
+   ```
+3. If the current branch does NOT match the PR branch:
+   - Check `git worktree list` for the PR branch
+   - If found in another worktree, warn: "PR branch
+     `{branch}` is checked out in `{worktree_path}`, not
+     the current directory. Switch to that worktree or use
+     `EnterWorktree` before proceeding."
+   - If not found anywhere, check it out:
+     `git checkout {branch}`
+
+This prevents wasted turns from file-not-found errors when
+the agent reads files that exist only on the PR branch.
+
 ## Input Detection
 
 Parse the input URL to determine the mode:
@@ -144,11 +170,14 @@ or `{review_id}` from the URL.
 
 ### Step 1: Process the comment
 
-Delegate to `Dev10x:gh-pr-triage` with the comment URL (and any additional context).
+**REQUIRED: Call `Skill(Dev10x:gh-pr-triage)`** — never triage
+inline. Pass the comment URL (and any additional context).
 
 `Dev10x:gh-pr-triage` returns a verdict: `VALID`, `INVALID`, `QUESTION`, or `OUT_OF_SCOPE`.
 
-- If **VALID** → delegate to `Dev10x:gh-pr-fixup` to implement fix, commit, push,
+- If **VALID** → **REQUIRED: Call `Skill(Dev10x:gh-pr-fixup)`** —
+  never implement fixes manually or post replies via raw `gh api`.
+  The fixup skill handles the entire lifecycle: fix, commit, push,
   and reply.
 - If **not VALID** → `Dev10x:gh-pr-triage` has posted a reply but has NOT resolved the
   thread. Ask the user whether to resolve it (see Step 1b).
@@ -317,12 +346,17 @@ Mark phase transition: `TaskUpdate(taskId=execute_task, status="in_progress")`
 
 For each approved comment:
 
-- **VALID** → delegate to `Dev10x:gh-pr-fixup` (one fixup commit per comment)
-- **INVALID / QUESTION / OUT_OF_SCOPE** → post reply using `gh api`:
-  ```bash
-  gh api --method POST \
-    repos/{owner}/{repo}/pulls/{pr_number}/comments/{id}/replies \
-    -f body="{reply}"
+- **VALID** → **REQUIRED: Call `Skill(Dev10x:gh-pr-fixup)`** —
+  never manually implement fixes or post replies via raw commands.
+  The fixup skill handles the entire lifecycle (one fixup commit
+  per comment).
+- **INVALID / QUESTION / OUT_OF_SCOPE** → post reply using MCP tool:
+  ```
+  mcp__plugin_Dev10x_cli__pr_comment_reply(
+      pr_number={pr_number},
+      comment_id={id},
+      body="{reply}"
+  )
   ```
   Do **NOT** resolve the thread automatically.
 
@@ -491,11 +525,12 @@ with the gate below.
 **REQUIRED: Call `AskUserQuestion`** (do NOT use plain text).
 Options:
 - **"Full shipping pipeline" (Recommended)** — Execute the complete
-  post-response shipping sequence:
-  1. `Dev10x:git-groom` — squash fixup commits into clean history
-  2. `Dev10x:git` — push with `--force-with-lease`
+  post-response shipping sequence. **REQUIRED: Use `Skill()` for
+  each step** — never run raw git/gh commands directly:
+  1. `Skill(Dev10x:git-groom)` — squash fixup commits
+  2. `Skill(Dev10x:git)` — push with `--force-with-lease`
   3. `gh pr ready` — mark PR ready for review (if still draft)
-  4. `Dev10x:gh-pr-monitor` — watch CI and new review comments
+  4. `Skill(Dev10x:gh-pr-monitor)` — watch CI and comments
   5. If CI passes and no new comments → merge via
      `gh pr merge --squash --delete-branch`
 - **"Groom + push only"** — Groom and push, but stop before

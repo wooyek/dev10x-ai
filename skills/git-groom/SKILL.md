@@ -100,6 +100,23 @@ Options:
 After selection, update the execute task description with the
 chosen strategy and auto-advance into Phase 3.
 
+### Phase 3 Precondition: Stash Guard
+
+Before any rebase operation, check for unstaged changes that
+would cause `git rebase` to fail:
+
+```bash
+git status --porcelain
+```
+
+If unstaged changes exist (e.g., lock files, generated files):
+1. Stash them: `git stash --include-untracked`
+2. Run the rebase strategy
+3. Pop the stash: `git stash pop`
+
+This prevents the common failure: `error: cannot rebase: You
+have unstaged changes.` — which halts the entire groom pipeline.
+
 #### Strategy A: Fixup Commits (for small targeted changes)
 
 Use when making small fixes to specific commits:
