@@ -17,6 +17,7 @@ from bash_validators.execution_safety import ExecutionSafetyValidator
 from bash_validators.pr_base import PrBaseValidator
 from bash_validators.prefix_friction import PrefixFrictionValidator
 from bash_validators.safe_subshell import SafeSubshellValidator
+from bash_validators.skill_redirect import SkillRedirectValidator
 from bash_validators.sql_safety import SqlSafetyValidator
 
 VALIDATORS: list[Validator] = [
@@ -24,6 +25,7 @@ VALIDATORS: list[Validator] = [
     CommandSubstitutionValidator(),
     PrefixFrictionValidator(),
     ExecutionSafetyValidator(),
+    SkillRedirectValidator(),
     CommitJtbdValidator(),
     SqlSafetyValidator(),
     PrBaseValidator(),

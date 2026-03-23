@@ -7,7 +7,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 DISPATCHER = Path(__file__).resolve().parent.parent.parent / "validate-bash-command.py"
 
 
@@ -65,9 +64,17 @@ class TestDispatcherBlocking:
         )
         assert result.returncode == 2
 
-    def test_allows_jtbd_verb_commit(self) -> None:
+    def test_blocks_jtbd_verb_commit_with_m_flag(self) -> None:
         result = _run_hook(
             tool_name="Bash",
             command='git commit -m "Enable new feature"',
+        )
+        assert result.returncode == 2
+        assert "Dev10x:git-commit" in result.stderr
+
+    def test_allows_commit_with_f_flag(self) -> None:
+        result = _run_hook(
+            tool_name="Bash",
+            command="git commit -F /tmp/claude/git/msg.txt",
         )
         assert result.returncode == 0
