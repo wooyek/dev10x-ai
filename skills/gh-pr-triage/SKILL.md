@@ -11,6 +11,7 @@ description: >
 user-invocable: true
 invocation-name: Dev10x:gh-pr-triage
 allowed-tools:
+  - mcp__plugin_Dev10x_cli__pr_comment_reply
   - Bash(~/.claude/tools/gh-pr-comments.py:*)
 ---
 

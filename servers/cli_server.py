@@ -174,6 +174,58 @@ async def pr_comments(
 
 
 @server.tool()
+async def pr_comment_reply(
+    pr_number: int,
+    comment_id: int,
+    body: str,
+    repo: str | None = None,
+) -> dict:
+    """Reply to a PR review comment thread.
+
+    Dedicated tool for posting replies — eliminates Bash permission
+    friction from raw `gh api` calls in PR response skills.
+
+    Args:
+        pr_number: PR number
+        comment_id: Root comment ID to reply to
+        body: Reply text (supports markdown)
+        repo: Repository (owner/repo). If omitted, uses current repo
+
+    Returns:
+        Dictionary with reply details (id, body, created_at)
+    """
+    home = Path.home()
+    tool_path = home / ".claude" / "tools" / "gh-pr-comments.py"
+
+    if not tool_path.exists():
+        return {"error": f"Tool not found: {tool_path}"}
+
+    args = [
+        str(tool_path),
+        "reply",
+        "--pr",
+        str(pr_number),
+        "--comment-id",
+        str(comment_id),
+        "--body",
+        body,
+    ]
+
+    if repo is not None:
+        args.extend(["--repo", repo])
+
+    result = subprocess.run(args, capture_output=True, text=True, check=False)
+
+    if result.returncode != 0:
+        return {"error": result.stderr.strip()}
+
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {"raw_output": result.stdout}
+
+
+@server.tool()
 async def request_review(
     pr_number: int,
     reviewers: list[str],

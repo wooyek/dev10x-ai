@@ -11,6 +11,7 @@ user-invocable: true
 invocation-name: Dev10x:gh-pr-respond
 allowed-tools:
   - AskUserQuestion
+  - mcp__plugin_Dev10x_cli__pr_comment_reply
   - Bash(gh:*)
   - Skill(Dev10x:gh-pr-triage)
   - Skill(Dev10x:gh-pr-fixup)
@@ -524,7 +525,7 @@ Use `gh api` for PR comment operations:
 | List comments | `gh api repos/{owner}/{repo}/pulls/{N}/comments` |
 | Filter root only | `\| jq '[.[] \| select(.in_reply_to_id == null)]'` |
 | Fetch one comment | `gh api repos/{owner}/{repo}/pulls/comments/{id}` |
-| Reply to thread | `gh api --method POST repos/{owner}/{repo}/pulls/{N}/comments/{id}/replies -f body="..."` |
+| Reply to thread | `mcp__plugin_Dev10x_cli__pr_comment_reply(pr_number=N, comment_id=ID, body="...")` |
 | Resolve thread | See `references/github_api.md` GraphQL section |
 
 ---
