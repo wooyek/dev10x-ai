@@ -1,0 +1,46 @@
+**When** I write skills with sub-skill delegation enforcement markers (Skill()),
+**I want** clear guidance on assertion patterns for verifying tool calls,
+**so** skill reviewers have concrete examples matching eval-schema.md documentation.
+
+## Summary
+
+Evaluated 4 proposed improvements from PR #406 lessons learned report.
+Applied Value Filter (deduplication, recurrence, actionability, budget).
+Result: **2 items PASS**, ready for implementation.
+
+## Changes Applied
+
+### 1. Skill() Delegation Assertion Patterns
+- **File**: `.claude/rules/skill-gates.md`
+- **Location**: Insert after line 69 (Evaluation Assertions section)
+- **Content**: New subsection "Assertion Patterns for Skill Delegation" with Skill() tool assertion examples and cross-reference to eval-schema.md Example 2
+- **Lines**: ~15
+
+### 2. Anti-Pattern Signals Documentation
+- **File**: `.claude/rules/skill-gates.md`
+- **Location**: After Change 1
+- **Content**: New subsection "Anti-Pattern Signals" explaining negative signals for regression detection
+- **Lines**: ~10
+
+**Budget**: 86 + 15 + 10 = 111 lines (budget 200 limit) ✓
+
+## Filtered Items (Skipped)
+
+- **IMPLEMENTATION_STATUS meta-documentation pattern**
+  - **Reason**: Recurrence test FAILED
+  - **Details**: One-off observation from PR #406 only; requires 2+ PR recurrence
+  - **Action**: Revisit after pattern recurs in follow-up analyses
+
+## Value Filter Results
+
+| Item | Dedup | Recurrence | Actionable | Budget | Status |
+|------|-------|-----------|-----------|--------|--------|
+| Skill() enforcement mapping | ✓ | ✓ | ✓ | ✓ | PASS |
+| Negative signals pattern | ✓ | ✓ | ✓ | ✓ | PASS |
+| IMPLEMENTATION_STATUS pattern | ✓ | ✗ | ✓ | ✓ | SKIP |
+
+## Detailed Specifications
+
+See `.claude-output/proposed_changes.md` for complete change specifications including exact content to add.
+
+Based on: https://github.com/wooyek/dev10x-ai/pull/406
