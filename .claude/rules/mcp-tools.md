@@ -19,6 +19,7 @@ registration:
 |--------|----------|----------|
 | `cli` | `detect_tracker()` | `mcp__plugin_Dev10x_cli__detect_tracker` |
 | `cli` | `pr_comments()` | `mcp__plugin_Dev10x_cli__pr_comments` |
+| `cli` | `pr_comment_reply()` | `mcp__plugin_Dev10x_cli__pr_comment_reply` |
 | `cli` | `get_commit_log()` | `mcp__plugin_Dev10x_cli__get_commit_log` |
 | `cli` | `mktmp()` | `mcp__plugin_Dev10x_cli__mktmp` |
 | `db` | `list_tables()` | `mcp__plugin_Dev10x_db__list_tables` |
@@ -58,6 +59,7 @@ supporting each tool:
 | `issue_get` | `cli` | PR #126 | v0.25.0+ |
 | `issue_comments` | `cli` | PR #126 | v0.25.0+ |
 | `pr_comments` | `cli` | PR #126 | v0.25.0+ |
+| `pr_comment_reply` | `cli` | PR #399 | v0.37.0+ |
 | `request_review` | `cli` | PR #126 | v0.25.0+ |
 | `detect_base_branch` | `cli` | PR #191 | v0.30.0+ |
 | `verify_pr_state` | `cli` | PR #191 | v0.30.0+ |

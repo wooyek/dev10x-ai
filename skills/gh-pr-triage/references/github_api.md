@@ -96,10 +96,19 @@ gh api repos/owner/repo/pulls/comments/2637416290
 
 Posts a reply to an existing review comment.
 
+**Preferred: MCP tool** (no Bash permission friction):
+```
+mcp__plugin_Dev10x_cli__pr_comment_reply(
+    pr_number=42,
+    comment_id=2637416290,
+    body="✅ Fixed - explanation here"
+)
+```
+
 **Parameters**:
 - `body` (required): The reply text (supports markdown)
 
-**Example**:
+**Fallback** (raw CLI — triggers Bash permission prompt):
 ```bash
 gh api \
   --method POST \
@@ -208,7 +217,9 @@ gh api rate_limit
 # List comments
 gh api repos/{owner}/{repo}/pulls/{pr}/comments
 
-# Post reply
+# Post reply (preferred: MCP tool)
+# mcp__plugin_Dev10x_cli__pr_comment_reply(pr_number=N, comment_id=ID, body="text")
+# Fallback:
 gh api --method POST repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies -f body="text"
 
 # Update comment

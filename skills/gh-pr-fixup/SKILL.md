@@ -10,6 +10,7 @@ description: >
 user-invocable: true
 invocation-name: Dev10x:gh-pr-fixup
 allowed-tools:
+  - mcp__plugin_Dev10x_cli__pr_comment_reply
   - Bash(~/.claude/tools/gh-pr-comments.py:*)
 ---
 
@@ -182,8 +183,18 @@ commit_url="https://github.com/{owner}/{repo}/pull/{pr_number}/commits/${full_ha
 
 ### Step 7: Reply to Comment Thread
 
-Reply **in the review comment thread** (not as a top-level PR comment):
+Reply **in the review comment thread** (not as a top-level PR comment).
 
+**Preferred: MCP tool** (no Bash permission friction):
+```
+mcp__plugin_Dev10x_cli__pr_comment_reply(
+    pr_number={pr_number},
+    comment_id={comment_id},
+    body="Fixed in [`{short_hash}`]({commit_url}) - {brief_explanation}"
+)
+```
+
+**Fallback** (raw CLI):
 ```bash
 gh api --method POST \
   repos/{owner}/{repo}/pulls/{pr_number}/comments/{comment_id}/replies \
