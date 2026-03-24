@@ -12,7 +12,7 @@ user-invocable: true
 invocation-name: Dev10x:gh-pr-triage
 allowed-tools:
   - mcp__plugin_Dev10x_cli__pr_comment_reply
-  - Bash(~/.claude/tools/gh-pr-comments.py:*)
+  - mcp__plugin_Dev10x_cli__pr_comments
 ---
 
 # Triage PR Review Comment
@@ -78,8 +78,8 @@ URL format: https://github.com/{owner}/{repo}/pull/{pr_number}#discussion_r{comm
 ```
 
 **Fetch the comment:**
-```bash
-~/.claude/tools/gh-pr-comments.py get --comment-id {comment_id}
+```
+mcp__plugin_Dev10x_cli__pr_comments(action="get", comment_id={comment_id})
 ```
 
 Extract:
@@ -95,8 +95,8 @@ Extract:
 
 Check for previously addressed issues to avoid duplicate work:
 
-```bash
-~/.claude/tools/gh-pr-comments.py list --pr {pr_number} --root-only
+```
+mcp__plugin_Dev10x_cli__pr_comments(action="list", pr_number={pr_number})
 ```
 
 Look for:

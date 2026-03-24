@@ -143,15 +143,11 @@ Gather this data before composing:
    basename "$(ls -t ~/.claude/projects/<encoded-cwd>/*.jsonl | head -1)" .jsonl
    ```
 2. **Review threads** — list root comments and their status:
-   ```bash
-   ~/.claude/tools/gh-pr-comments.py list \
-     --pr {number} --root-only
    ```
-3. **Unaddressed comments** — check if any remain:
-   ```bash
-   ~/.claude/tools/gh-pr-comments.py list \
-     --pr {number} --root-only --unaddressed {username}
+   mcp__plugin_Dev10x_cli__pr_comments(action="list", pr_number={number})
    ```
+3. **Unaddressed comments** — filter the list result for unresolved
+   root comments (where `in_reply_to_id` is null)
 4. **Current commit** — `git log --oneline <base-branch>..HEAD`
 5. **PR body context** — `gh pr view {number} --json body -q '.body'`
 

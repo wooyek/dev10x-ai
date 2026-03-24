@@ -26,6 +26,68 @@ from subprocess_utils import parse_key_value_output, run_script
 server = FastMCP(name="Dev10x-cli")
 
 
+# ── GitHub helpers ───────────────────────────────────────────────
+
+
+def _detect_repo() -> str | None:
+    """Detect current GitHub repository (owner/repo) from git remote."""
+    result = subprocess.run(
+        ["gh", "repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"],
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=10,
+    )
+    if result.returncode == 0:
+        return result.stdout.strip()
+    return None
+
+
+def _gh_api(
+    endpoint: str,
+    method: str = "GET",
+    fields: dict[str, str | list[str]] | None = None,
+    jq: str | None = None,
+) -> subprocess.CompletedProcess[str]:
+    """Call gh api with consistent error handling.
+
+    Args:
+        endpoint: GitHub API endpoint path (e.g., repos/{owner}/{repo}/pulls/...)
+        method: HTTP method (GET, POST, PUT, DELETE)
+        fields: Body fields for POST/PUT. Lists become repeated -f key[]=val args.
+        jq: Optional jq filter expression for response
+    """
+    args = ["gh", "api"]
+    if method != "GET":
+        args.extend(["-X", method])
+    if jq:
+        args.extend(["--jq", jq])
+    if fields:
+        for key, value in fields.items():
+            if isinstance(value, list):
+                for item in value:
+                    args.extend(["-f", f"{key}[]={item}"])
+            else:
+                args.extend(["-f", f"{key}={value}"])
+    args.append(endpoint)
+
+    return subprocess.run(
+        args,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
+    )
+
+
+def _resolve_repo(repo: str | None) -> tuple[str | None, dict | None]:
+    """Resolve repo or return an error dict."""
+    resolved = repo or _detect_repo()
+    if not resolved:
+        return None, {"error": "Could not detect repository. Provide repo parameter."}
+    return resolved, None
+
+
 # ── GitHub tools ─────────────────────────────────────────────────
 
 
@@ -136,8 +198,8 @@ async def pr_comments(
     """Manage GitHub PR review comments and threads.
 
     Args:
-        action: One of: list, get, reply, resolve, threads, summary
-        pr_number: PR number (required for list, reply, resolve, threads)
+        action: One of: list, get, reply, resolve
+        pr_number: PR number (required for list, reply)
         comment_id: Comment ID (required for get, reply, resolve)
         body: Comment body text (required for reply)
         repo: Repository (owner/repo). If omitted, uses current repo
@@ -145,24 +207,67 @@ async def pr_comments(
     Returns:
         Dictionary with action results (comments list or operation status)
     """
-    home = Path.home()
-    tool_path = home / ".claude" / "tools" / "gh-pr-comments.py"
+    resolved_repo, err = _resolve_repo(repo)
+    if err:
+        return err
 
-    if not tool_path.exists():
-        return {"error": f"Tool not found: {tool_path}"}
+    if action == "get":
+        if comment_id is None:
+            return {"error": "comment_id required for 'get' action"}
+        result = _gh_api(f"repos/{resolved_repo}/pulls/comments/{comment_id}")
 
-    args = [str(tool_path), action]
+    elif action == "list":
+        if pr_number is None:
+            return {"error": "pr_number required for 'list' action"}
+        result = _gh_api(
+            f"repos/{resolved_repo}/pulls/{pr_number}/comments?per_page=100",
+        )
 
-    if pr_number is not None:
-        args.extend(["--pr", str(pr_number)])
-    if comment_id is not None:
-        args.extend(["--comment-id", str(comment_id)])
-    if body is not None:
-        args.extend(["--body", body])
-    if repo is not None:
-        args.extend(["--repo", repo])
+    elif action == "reply":
+        if pr_number is None or comment_id is None or body is None:
+            return {"error": "pr_number, comment_id, and body required for 'reply'"}
+        result = _gh_api(
+            f"repos/{resolved_repo}/pulls/{pr_number}/comments",
+            method="POST",
+            fields={"body": body, "in_reply_to": str(comment_id)},
+        )
 
-    result = subprocess.run(args, capture_output=True, text=True, check=False)
+    elif action == "resolve":
+        if comment_id is None:
+            return {"error": "comment_id required for 'resolve' action"}
+        query = """query($id: ID!) {
+          node(id: $id) {
+            ... on PullRequestReviewComment {
+              pullRequestReviewThread { id }
+            }
+          }
+        }"""
+        thread_result = _gh_api(
+            "graphql",
+            fields={"query": query, "id": str(comment_id)},
+            jq=".data.node.pullRequestReviewThread.id",
+        )
+        if thread_result.returncode != 0:
+            return {"error": thread_result.stderr.strip()}
+        thread_id = thread_result.stdout.strip()
+        if not thread_id or not thread_id.startswith("PRRT_"):
+            return {
+                "error": f"Could not find thread for comment {comment_id}. "
+                "The resolve action requires a GraphQL node_id, not a REST "
+                "integer ID. Use the node_id field from a comment response."
+            }
+        mutation = """mutation($threadId: ID!) {
+          resolveReviewThread(input: {threadId: $threadId}) {
+            thread { id isResolved }
+          }
+        }"""
+        result = _gh_api(
+            "graphql",
+            fields={"query": mutation, "threadId": thread_id},
+        )
+
+    else:
+        return {"error": f"Unknown action: {action}. Supported: list, get, reply, resolve"}
 
     if result.returncode != 0:
         return {"error": result.stderr.strip()}
@@ -194,27 +299,15 @@ async def pr_comment_reply(
     Returns:
         Dictionary with reply details (id, body, created_at)
     """
-    home = Path.home()
-    tool_path = home / ".claude" / "tools" / "gh-pr-comments.py"
+    resolved_repo, err = _resolve_repo(repo)
+    if err:
+        return err
 
-    if not tool_path.exists():
-        return {"error": f"Tool not found: {tool_path}"}
-
-    args = [
-        str(tool_path),
-        "reply",
-        "--pr",
-        str(pr_number),
-        "--comment-id",
-        str(comment_id),
-        "--body",
-        body,
-    ]
-
-    if repo is not None:
-        args.extend(["--repo", repo])
-
-    result = subprocess.run(args, capture_output=True, text=True, check=False)
+    result = _gh_api(
+        f"repos/{resolved_repo}/pulls/{pr_number}/comments",
+        method="POST",
+        fields={"body": body, "in_reply_to": str(comment_id)},
+    )
 
     if result.returncode != 0:
         return {"error": result.stderr.strip()}
@@ -241,23 +334,23 @@ async def request_review(
         repo: Repository (owner/repo). If omitted, uses current repo
 
     Returns:
-        Dictionary with keys: requested (list), failed (list)
+        Dictionary with keys: requested_reviewers (list) or requested_teams (list)
     """
-    home = Path.home()
-    tool_path = home / ".claude" / "tools" / "gh-request-review.py"
+    resolved_repo, err = _resolve_repo(repo)
+    if err:
+        return err
 
-    if not tool_path.exists():
-        return {"error": f"Tool not found: {tool_path}"}
-
-    args = [str(tool_path), str(pr_number)]
-    args.extend(reviewers)
-
+    fields: dict[str, str | list[str]] = {}
     if team:
-        args.append("--team")
-    if repo is not None:
-        args.extend(["--repo", repo])
+        fields["team_reviewers"] = reviewers
+    else:
+        fields["reviewers"] = reviewers
 
-    result = subprocess.run(args, capture_output=True, text=True, check=False)
+    result = _gh_api(
+        f"repos/{resolved_repo}/pulls/{pr_number}/requested_reviewers",
+        method="POST",
+        fields=fields,
+    )
 
     if result.returncode != 0:
         return {"error": result.stderr.strip()}

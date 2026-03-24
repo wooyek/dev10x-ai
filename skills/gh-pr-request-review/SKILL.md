@@ -8,7 +8,7 @@ description: >
 user-invocable: true
 invocation-name: Dev10x:gh-pr-request-review
 allowed-tools:
-  - Bash(~/.claude/tools/gh-request-review.py:*)
+  - mcp__plugin_Dev10x_cli__request_review
   - Bash(gh repo view:*)
   - Bash(yq:*)
   - AskUserQuestion
@@ -76,7 +76,7 @@ projects:
      from (do NOT use plain text)
    - **Not found, `default_action: skip`** → print "No reviewers
      configured for {repo}, skipping" and stop
-4. Call `gh-request-review.py` with the resolved reviewers
+4. Call the `request_review` MCP tool with the resolved reviewers
 
 ## Usage
 
@@ -93,17 +93,14 @@ the current repo, and requests review from the configured reviewers:
 
 Pass reviewer names directly to skip config lookup:
 
-```bash
-~/.claude/tools/gh-request-review.py \
-  --pr PR_NUMBER \
-  --reviewer org-name/team-slug
+```
+mcp__plugin_Dev10x_cli__request_review(
+    pr_number=PR_NUMBER, reviewers=["org-name/team-slug"], team=true)
 ```
 
-```bash
-~/.claude/tools/gh-request-review.py \
-  --pr PR_NUMBER \
-  --reviewer user1 \
-  --reviewer user2
+```
+mcp__plugin_Dev10x_cli__request_review(
+    pr_number=PR_NUMBER, reviewers=["user1", "user2"])
 ```
 
 ### With verification
@@ -115,9 +112,8 @@ gh pr view PR_NUMBER --json reviewRequests \
 
 ## Notes
 
-- Use `gh-request-review.py` for requesting reviews (handles both
-  users and teams)
+- Use the `request_review` MCP tool for requesting reviews (handles
+  both users and teams)
 - Team format: `org-name/team-slug`
-- The script itself stays CLI-only — config awareness lives in the
-  skill layer, not the script
+- Config awareness lives in the skill layer, not the MCP tool
 - Verify the review request was assigned by checking `reviewRequests`

@@ -32,8 +32,8 @@ structured JSON responses and input validation:
 | Detect PR context | `mcp__plugin_Dev10x_cli__pr_detect(arg)` | `gh-pr-detect.sh` |
 | Get issue details | `mcp__plugin_Dev10x_cli__issue_get(number, repo?)` | `gh-issue-get.sh` |
 | Get issue comments | `mcp__plugin_Dev10x_cli__issue_comments(number, repo?)` | `gh-issue-comments.sh` |
-| Manage PR comments | `mcp__plugin_Dev10x_cli__pr_comments(action, ...)` | `~/.claude/tools/gh-pr-comments.py` |
-| Request review | `mcp__plugin_Dev10x_cli__request_review(pr_number, reviewers, ...)` | `~/.claude/tools/gh-request-review.py` |
+| Manage PR comments | `mcp__plugin_Dev10x_cli__pr_comments(action, ...)` | Inline `gh api` calls |
+| Request review | `mcp__plugin_Dev10x_cli__request_review(pr_number, reviewers, ...)` | Inline `gh api` calls |
 
 **Example usage in a skill:**
 
