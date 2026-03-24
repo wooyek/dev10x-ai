@@ -754,8 +754,8 @@ For each REDUNDANT_UV_PREFIX finding:
 ```
 Fix type: SKILL_UPDATE
 Skill: Dev10x:some-skill (line 42)
-Before: uv run --script ~/.claude/tools/gh-pr-comments.py get ...
-After:  ~/.claude/tools/gh-pr-comments.py get ...
+Before: uv run --script ~/.claude/tools/some-script.py get ...
+After:  ~/.claude/tools/some-script.py get ...
 Prereq: script has #!/usr/bin/env -S uv run --script + chmod +x
 ```
 
@@ -809,7 +809,7 @@ for consistency.
 
 | # | Script / Caller | Issue | Classification | Fix |
 |---|---|---|---|---|
-| 1 | `tools/gh-pr-comments.py` | `#!/usr/bin/env python3` | WRONG_SHEBANG | Change to uv shebang + PEP 723 |
+| 1 | `tools/some-script.py` | `#!/usr/bin/env python3` | WRONG_SHEBANG | Change to uv shebang + PEP 723 |
 | 2 | `tools/upload-screenshots.py` | Has deps but python3 shebang | WRONG_SHEBANG | Change shebang (deps already in PEP 723) |
 | 3 | `scripts/fernet-decrypt.py` | mode 644 | NOT_EXECUTABLE | `chmod +x` |
 | 4 | `Dev10x:some-skill/SKILL.md` | `uv run --script ~/.claude/tools/...` | REDUNDANT_UV_PREFIX | Drop prefix |
@@ -833,10 +833,10 @@ for consistency.
 
 ```
 # With prefix — allow rule must match "uv run":
-Bash(uv run --script ~/.claude/tools/gh-pr-comments.py:*)
+Bash(uv run --script ~/.claude/tools/some-script.py:*)
 
 # Without prefix — allow rule matches the script path directly:
-Bash(~/.claude/tools/gh-pr-comments.py:*)
+Bash(~/.claude/tools/some-script.py:*)
 ```
 
 The second form is simpler, more specific, and follows the same

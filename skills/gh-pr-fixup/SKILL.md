@@ -11,7 +11,7 @@ user-invocable: true
 invocation-name: Dev10x:gh-pr-fixup
 allowed-tools:
   - mcp__plugin_Dev10x_cli__pr_comment_reply
-  - Bash(~/.claude/tools/gh-pr-comments.py:*)
+  - mcp__plugin_Dev10x_cli__pr_comments
 ---
 
 # Implement Fix for PR Review Comment
@@ -71,8 +71,8 @@ URL format: https://github.com/{owner}/{repo}/pull/{pr_number}#discussion_r{comm
 ```
 
 **Fetch the comment:**
-```bash
-~/.claude/tools/gh-pr-comments.py get --comment-id {comment_id}
+```
+mcp__plugin_Dev10x_cli__pr_comments(action="get", comment_id={comment_id})
 ```
 
 Extract:
