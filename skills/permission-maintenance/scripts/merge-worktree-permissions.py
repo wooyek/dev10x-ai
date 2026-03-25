@@ -48,6 +48,22 @@ NOISE_PATTERNS = [
     re.compile(r'\.sh\)"?\s*$'),
 ]
 
+GENERALIZE_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"(detect-tracker\.sh)\s+[^:)]+"), r"\1"),
+    (re.compile(r"(gh-issue-get\.sh)\s+[^:)]+"), r"\1"),
+    (re.compile(r"(gh-pr-detect\.sh)\s+[^:)]+"), r"\1"),
+    (re.compile(r"(generate-commit-list\.sh)\s+[^:)]+"), r"\1"),
+    (re.compile(r"(extract-session\.sh)\s+[^:)]+"), r"\1"),
+    (re.compile(r"(/tmp/claude/[^/]+/)[^/]+\.[A-Za-z0-9]{6,}\.(txt|md|json)"), r"\1**"),
+    (re.compile(r"(\.[A-Za-z0-9]{8,})\.(txt|md|json)"), r"**"),
+]
+
+
+def generalize_permission(entry: str) -> str:
+    for pattern, replacement in GENERALIZE_PATTERNS:
+        entry = pattern.sub(replacement, entry)
+    return entry
+
 
 def find_config() -> Path:
     if USERSPACE_CONFIG.is_file():
@@ -130,7 +146,9 @@ def merge_permissions(
         wt_allow = extract_allow_set(wt_data)
         new_entries |= wt_allow - main_allow
 
-    stable_entries = sorted(e for e in new_entries if not is_noise(e))
+    generalized = {generalize_permission(e) for e in new_entries}
+    generalized -= main_allow
+    stable_entries = sorted(e for e in generalized if not is_noise(e))
 
     if not stable_entries:
         return 0, []
