@@ -10,6 +10,8 @@ self-correcting guardrails, and a complete scope-to-merge pipeline —
 so you can supervise in 5-minute windows instead of hovering over
 every command.
 
+[![asciicast](https://asciinema.org/a/vAEDMseToIBk35wo.svg)](https://asciinema.org/a/vAEDMseToIBk35wo)
+
 ## The problem with AI coding assistants
 
 **Permission friction kills autonomy.** Every ad-hoc bash command
