@@ -150,6 +150,16 @@ Write the findings array as JSON to the temp file path.
 - Show count: "Found N issues (X errors, Y warnings, Z info)"
 - For each finding: severity, file:line, description, suggested fix
 
+**When findings = 0:**
+
+**REQUIRED: Call `AskUserQuestion`** even when no findings exist.
+This confirms the clean review to the user and prevents silent
+skip-through (GH-447 F5). Options:
+- Continue (Recommended) — Proceed to next pipeline step
+- Re-review — Run the review again with different scope
+
+**When findings > 0:**
+
 **REQUIRED: Call `AskUserQuestion`** (do NOT use plain text).
 Options:
 - Fix all (Recommended) — Send all ERROR and WARNING findings to
