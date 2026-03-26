@@ -122,6 +122,12 @@ description: "Monitor PR #{pr_number}"
 prompt: <see "Agent Prompt Template" below, with variables filled in>
 ```
 
+**REQUIRED: `max_turns: 200` on the Agent call.** Without this,
+haiku agents exhaust their default budget (~19 Bash calls) before
+CI completes on long-running suites. Session GH-446 confirmed
+this failure mode. Always include `max_turns: 200` in the Agent
+parameters — it is not optional.
+
 **Why haiku?** Monitoring agents run `gh pr checks --watch` and
 report pass/fail — they do not need Opus-level reasoning. Using
 haiku reduces cost without affecting monitoring quality.
@@ -218,7 +224,12 @@ Repeat until all CI checks pass:
 3. Parse results:
    - ALL PASSING → verify check count (see below), then mark PR
      ready (`gh pr ready {pr_number}`) and go to Phase 2
-   - PENDING → wait 30 seconds via `sleep 30`, then re-check
+   - ANY PENDING → wait 30 seconds via `sleep 30`, then re-check.
+     **Hard rule: Do NOT exit Phase 1 while ANY check is PENDING.**
+     The loop MUST continue until zero checks remain in PENDING
+     state — either all pass, or a failure is detected. Exiting
+     early with PENDING checks was the #1 monitor regression
+     (GH-447 F1).
    - FAILURES → analyze and fix (see CI Failure Handling below)
 
 4. After fixing CI failures or pushing new commits, wait **60
