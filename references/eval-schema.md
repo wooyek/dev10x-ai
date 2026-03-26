@@ -81,13 +81,16 @@ Signals are **machine-detectable patterns** for regression detection:
 - ✓ `gate*-uses-tool`: "AskUserQuestion" appears in tool call list
 - ✓ `gate*-correct-options`: Option labels match documented list
 - ✓ `skill*-uses-tool`: "Skill(" appears in tool call list (e.g., "Skill(Dev10x:gh-pr-fixup)")
+- ✓ `skill*-tool-called`: Skill() tool invocation appears, not just mentioned in reasoning
 - ✗ `gate*-no-plain-text`: No inline question text before tool call
 - ✗ `no-auto-*`: Explicit user confirmation before proceeding
 - ✗ `no-inline-delegation`: Skill not invoked via inline natural language
+- ✗ `no-stated-but-not-executed`: Skill() promise not followed by actual tool call
 
 Use negative signals (`✗`) to detect regressions like:
 - Agents asking "Confirm this action?" as text instead of calling AskUserQuestion
 - Agents delegating to skills via text ("Call the fixup skill") instead of Skill() tool
+- Agents stating they'll call Skill() but proceeding inline without the tool call
 - Auto-resolving states without user confirmation
 - Silently accepting defaults
 
