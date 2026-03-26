@@ -3,6 +3,63 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.40.0 — Delegation Hardening & Fixup Skill Gaps
+
+Released 2026-03-26
+
+### Features
+
+- **Frictionless issue creation from skills** — skills can now
+  create GitHub issues without approval prompts ([GH-445])
+- **Strengthen delegation bypass prevention** — skills enforce
+  proper delegation chains instead of raw CLI calls ([GH-458])
+- **Resolve gh-pr-fixup skill gaps** — fixup skill now handles
+  all edge cases surfaced by audit ([GH-459])
+
+### Improvements
+
+- **Harden work-on skill against audit regressions** — work-on
+  orchestration no longer drifts when audit findings change
+  ([GH-448])
+- **Prevent raw command bypass in PR creation** — PR creation
+  enforces skill delegation instead of raw `gh pr create`
+  ([GH-448])
+- **Prevent delegation bypass in gh-pr-respond** — response skill
+  enforces proper triage-then-fixup pipeline ([GH-447])
+- **Prevent premature CI exit in gh-pr-monitor** — monitor waits
+  for all checks before declaring success ([GH-447])
+- **Enforce triage delegation for all comment types** — every
+  review comment routes through triage before fixup ([GH-463])
+- **Enhance eval signal patterns** — delegation bypass detection
+  uses more precise signal matching ([a09a2d6])
+- **Clear PR merge policy and consolidation guidance** — document
+  when to merge vs. consolidate PRs ([cf14b16])
+
+### Bug Fixes
+
+- **Resolve pr_comment_reply HTTP 422 on integer fields** — MCP
+  tool now serialises numeric fields correctly ([GH-447])
+- **Resolve skill audit findings in fixup and respond** — fix
+  compliance gaps found during audit ([GH-459])
+- **Prevent false positive unaddressed thread reports** — thread
+  status detection no longer flags resolved threads ([GH-464])
+
+### Documentation
+
+- **Embed asciinema demo in README** — interactive terminal demo
+  on the project landing page ([64d4a2e])
+
+[GH-445]: https://github.com/Brave-Labs/Dev10x/issues/445
+[GH-447]: https://github.com/Brave-Labs/Dev10x/issues/447
+[GH-448]: https://github.com/Brave-Labs/Dev10x/issues/448
+[GH-458]: https://github.com/Brave-Labs/Dev10x/issues/458
+[GH-459]: https://github.com/Brave-Labs/Dev10x/issues/459
+[GH-463]: https://github.com/Brave-Labs/Dev10x/issues/463
+[GH-464]: https://github.com/Brave-Labs/Dev10x/issues/464
+[a09a2d6]: https://github.com/Brave-Labs/Dev10x/commit/a09a2d6
+[cf14b16]: https://github.com/Brave-Labs/Dev10x/commit/cf14b16
+[64d4a2e]: https://github.com/Brave-Labs/Dev10x/commit/64d4a2e
+
 ## 0.39.0 — Generic Agents & Permission Hardening
 
 Released 2026-03-25
