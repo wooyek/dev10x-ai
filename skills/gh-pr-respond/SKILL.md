@@ -107,6 +107,8 @@ step description. If you see that marker, you MUST call the
 6. Gate 6 (hide comments): `AskUserQuestion` — MANDATORY
 7. VALID comments: `Skill(Dev10x:gh-pr-fixup)` — NEVER inline
 8. Triage: `Skill(Dev10x:gh-pr-triage)` — NEVER inline
+9. Pre-action checkpoint: BEFORE any `Edit` or `git commit` on
+   a reviewed file, verify a `Skill()` call preceded it
 
 ## Overview
 
@@ -126,7 +128,7 @@ Dev10x:gh-pr-respond (this skill)
     ├── Dev10x:gh-pr-triage         → validate, reply if invalid (never auto-resolves)
     ├── resolve gate      → ask user to confirm thread resolution
     └── Dev10x:gh-pr-fixup  → implement fix, fixup commit, reply with ref
-         └── commit:fixup → create the fixup! commit
+         └── Dev10x:git-fixup → create the fixup! commit
 ```
 
 ## Critical: Delegation is Mandatory
@@ -151,6 +153,23 @@ for it — not `Edit` + `git commit` + `gh api`. If you used
 raw commands instead of `Skill()`, STOP and redo the step with
 proper delegation. Audit sessions show 3 of 4 invocations
 bypass delegation under context pressure (GH-444).
+
+**Pre-action intervention checkpoint:** If you are about to call
+`Edit` on a file mentioned in a review comment, or about to run
+`git commit`, STOP and ask yourself: "Did I invoke `Skill()`
+for this?" If the answer is no, you are bypassing delegation.
+The correct sequence is ALWAYS:
+1. `Skill(Dev10x:gh-pr-triage)` → verdict
+2. If VALID: `Skill(Dev10x:gh-pr-fixup)` → fix + commit + reply
+3. Never: `Edit` → `git commit` → `gh api` (this is the bypass)
+
+**Anti-pattern: "Stated-but-not-executed" bypass (GH-458).**
+The most common bypass is acknowledging the delegation requirement
+in your reasoning ("I need to call Skill(Dev10x:gh-pr-fixup)")
+then proceeding to implement the fix inline anyway. Three audit
+sessions caught this exact pattern — the agent says it will
+delegate, then does the work itself. Stating intent is not
+execution. Only a `Skill()` tool call counts as delegation.
 
 ## Preamble: Branch Location Check
 
@@ -627,7 +646,7 @@ Input URL
 Dev10x:gh-pr-monitor → Dev10x:gh-pr-respond (this skill)
                  ├── Dev10x:gh-pr-triage
                  └── Dev10x:gh-pr-fixup
-                      └── commit:fixup
+                      └── Dev10x:git-fixup
 ```
 
 **Standalone usage:**
