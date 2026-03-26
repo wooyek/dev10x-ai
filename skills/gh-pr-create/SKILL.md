@@ -368,6 +368,12 @@ Next steps:
 
 ## Important Notes
 
+- **DO NOT use raw `git push` or `gh pr create` commands.**
+  Always use `Skill(Dev10x:git)` for push and the MCP tool
+  `mcp__plugin_Dev10x_cli__create_pr` (or the `create-pr.sh`
+  script as fallback) for PR creation. Raw commands bypass
+  protected branch checks and body formatting. Audit sessions
+  GH-448 and GH-446 confirmed this regression pattern.
 - Always create PRs as drafts initially
 - **Base branch is auto-detected** — `detect-base-branch.sh` checks for
   `develop`/`development` first, falls back to `main`/`master`/`trunk`.
