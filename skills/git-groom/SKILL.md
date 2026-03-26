@@ -69,6 +69,15 @@ because the parent cannot predict which grooming strategy is
 appropriate. The parent's "Full shipping pipeline" selection
 establishes *intent to groom*, not *which strategy to use*.
 
+**NEVER auto-select a grooming strategy.** Even when invoked
+from a parent orchestrator that has chosen "Full shipping
+pipeline", you MUST present the `AskUserQuestion` gate for
+strategy selection. Auto-selecting autosquash because it is
+"Recommended" is a gate bypass — the recommendation is a
+default hint for the user, not permission to skip the gate.
+Anti-pattern (GH-458): agent ran `git autosquash-develop`
+without presenting the strategy gate in nested mode.
+
 ## Workflow
 
 ### Phase 1: Analyze Current State
