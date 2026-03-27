@@ -72,9 +72,17 @@ class TestDispatcherBlocking:
         assert result.returncode == 2
         assert "Dev10x:git-commit" in result.stderr
 
-    def test_allows_commit_with_f_flag(self) -> None:
+    def test_allows_commit_with_skill_temp_f_flag(self) -> None:
+        result = _run_hook(
+            tool_name="Bash",
+            command="git commit -F /tmp/claude/git/commit-msg.W9DryMXsQ5Aw.txt",
+        )
+        assert result.returncode == 0
+
+    def test_blocks_commit_with_arbitrary_f_flag(self) -> None:
         result = _run_hook(
             tool_name="Bash",
             command="git commit -F /tmp/claude/git/msg.txt",
         )
-        assert result.returncode == 0
+        assert result.returncode == 2
+        assert "Dev10x:git-commit" in result.stderr
