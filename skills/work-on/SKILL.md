@@ -600,6 +600,7 @@ for the full compaction protocol.
 
 | Action | MUST delegate to | Never use directly |
 |--------|-----------------|-------------------|
+| Run tests | `Skill(test)` | `pytest`, `uv run pytest`, `python -m pytest` |
 | Create a commit | `Skill(Dev10x:git-commit)` | `git commit` |
 | Create a PR | `Skill(Dev10x:gh-pr-create)` | `gh pr create` |
 | Monitor CI | `Skill(Dev10x:gh-pr-monitor)` | `gh pr checks --watch` |
@@ -626,13 +627,14 @@ event, verify the routing table is still present by scanning
 for "Skill(Dev10x:git-commit)" in the current context. If
 missing, re-read this section before proceeding.
 
-1. commit → `Skill(Dev10x:git-commit)`
-2. create PR → `Skill(Dev10x:gh-pr-create)`
-3. monitor CI → `Skill(Dev10x:gh-pr-monitor)`
-4. push → `Skill(Dev10x:git)`
-5. groom → `Skill(Dev10x:git-groom)`
-6. branch → `Skill(Dev10x:ticket-branch)`
-7. verify acceptance → `Skill(Dev10x:verify-acc-dod)`
+1. run tests → `Skill(test)`
+2. commit → `Skill(Dev10x:git-commit)`
+3. create PR → `Skill(Dev10x:gh-pr-create)`
+4. monitor CI → `Skill(Dev10x:gh-pr-monitor)`
+5. push → `Skill(Dev10x:git)`
+6. groom → `Skill(Dev10x:git-groom)`
+7. branch → `Skill(Dev10x:ticket-branch)`
+8. verify acceptance → `Skill(Dev10x:verify-acc-dod)`
 
 ### Groom Step: Always Delegate, Never Self-Assess
 
