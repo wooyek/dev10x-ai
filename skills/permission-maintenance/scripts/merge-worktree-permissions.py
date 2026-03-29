@@ -46,6 +46,7 @@ NOISE_PATTERNS = [
     re.compile(r"\.local/.*\.py\s+/tmp/"),
     re.compile(r"\s+2>&1"),
     re.compile(r'\.sh\)"?\s*$'),
+    re.compile(r"git-push-safe\.sh\s+-u\s+origin\s+\S+/"),
 ]
 
 GENERALIZE_PATTERNS: list[tuple[re.Pattern[str], str]] = [
