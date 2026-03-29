@@ -53,7 +53,7 @@ class TestGeneralizePermission:
 
         result = update_paths.generalize_permission(entry)
 
-        assert result == "Write(/tmp/claude/git/**)"
+        assert result == "Write(/tmp/claude/git/*)"
 
 
 class TestGeneralizePermissions:

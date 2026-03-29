@@ -27,7 +27,7 @@ USERSPACE_CONFIG = (
     Path.home() / ".claude" / "skills" / "Dev10x:permission-maintenance" / "projects.yaml"
 )
 PLUGIN_CONFIG = Path(__file__).resolve().parent.parent / "projects.yaml"
-VERSION_PATTERN = re.compile(r"(plugins/cache/Brave-Labs/Dev10x/)(\d+\.\d+\.\d+)")
+VERSION_PATTERN = re.compile(r"(plugins/cache/[^/]+/Dev10x/)(\d+\.\d+\.\d+)")
 
 
 def find_config() -> Path:
@@ -164,13 +164,13 @@ def ensure_base_permissions(
 
 
 GENERALIZE_PATTERNS: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(r"(detect-tracker\.sh)\s+[^:)]+"), r"\1"),
-    (re.compile(r"(gh-issue-get\.sh)\s+[^:)]+"), r"\1"),
-    (re.compile(r"(gh-pr-detect\.sh)\s+[^:)]+"), r"\1"),
-    (re.compile(r"(generate-commit-list\.sh)\s+[^:)]+"), r"\1"),
-    (re.compile(r"(extract-session\.sh)\s+[^:)]+"), r"\1"),
-    (re.compile(r"(/tmp/claude/[^/]+/)[^/]+\.[A-Za-z0-9]{6,}\.(txt|md|json)"), r"\1**"),
-    (re.compile(r"(\.[A-Za-z0-9]{8,})\.(txt|md|json)"), r"**"),
+    (re.compile(r"(detect-tracker\.sh)\s+[^)]+"), r"\1:*"),
+    (re.compile(r"(gh-issue-get\.sh)\s+[^)]+"), r"\1:*"),
+    (re.compile(r"(gh-pr-detect\.sh)\s+[^)]+"), r"\1:*"),
+    (re.compile(r"(generate-commit-list\.sh)\s+[^)]+"), r"\1:*"),
+    (re.compile(r"(extract-session\.sh)\s+[^)]+"), r"\1:*"),
+    (re.compile(r"(\.(?:sh|py))\s+[^):]+(?::\*)?"), r"\1:*"),
+    (re.compile(r"(/tmp/claude/[^/]+/)[^/)]+\.[A-Za-z0-9]{6,}\.(txt|md|json)"), r"\1*"),
     (re.compile(r"(git reset --hard) origin/\S+"), r"\1"),
     (re.compile(r"(git reset --soft) [A-Fa-f0-9]{6,}"), r"\1"),
 ]
@@ -323,6 +323,17 @@ def main() -> int:
     return 0
 
 
+def _load_global_allow_rules() -> set[str]:
+    global_settings = Path.home() / ".claude" / "settings.json"
+    if not global_settings.is_file():
+        return set()
+    try:
+        data = json.loads(global_settings.read_text())
+        return set(data.get("permissions", {}).get("allow", []))
+    except (json.JSONDecodeError, OSError):
+        return set()
+
+
 def _ensure_base(
     *,
     config: dict,
@@ -335,10 +346,20 @@ def _ensure_base(
         print("No base_permissions defined in config.")
         return 0
 
+    global_rules = _load_global_allow_rules()
+    filtered = [p for p in base_permissions if p not in global_rules]
+    skipped = len(base_permissions) - len(filtered)
+
     if not quiet:
         print(f"Base permissions: {len(base_permissions)} rules")
+        if skipped > 0:
+            print(f"  Skipping {skipped} already in global settings.json")
         if dry_run:
             print("(dry run — no files will be modified)\n")
+
+    if not filtered:
+        print("All base permissions already covered by global settings.")
+        return 0
 
     total_added = 0
     files_changed = 0
@@ -346,7 +367,7 @@ def _ensure_base(
     for path in sorted(settings_files):
         count, messages = ensure_base_permissions(
             path,
-            base_permissions,
+            filtered,
             dry_run=dry_run,
         )
         if count > 0:
@@ -397,6 +418,21 @@ def _generalize(
     return 0
 
 
+def _detect_plugin_cache() -> str:
+    cache_root = Path.home() / ".claude" / "plugins" / "cache"
+    if not cache_root.is_dir():
+        return "~/.claude/plugins/cache/Brave-Labs/Dev10x"
+    candidates = [d / "Dev10x" for d in cache_root.iterdir() if (d / "Dev10x").is_dir()]
+    if len(candidates) == 1:
+        return f"~/.claude/plugins/cache/{candidates[0].parent.name}/Dev10x"
+    if len(candidates) > 1:
+        names = ", ".join(c.parent.name for c in candidates)
+        print(f"Multiple plugin cache orgs found: {names}")
+        print(f"Using first match: {candidates[0].parent.name}")
+        return f"~/.claude/plugins/cache/{candidates[0].parent.name}/Dev10x"
+    return "~/.claude/plugins/cache/Brave-Labs/Dev10x"
+
+
 def _init_userspace_config() -> int:
     if USERSPACE_CONFIG.is_file():
         print(f"Config already exists: {USERSPACE_CONFIG}")
@@ -405,8 +441,15 @@ def _init_userspace_config() -> int:
         print(f"ERROR: Plugin default config not found: {PLUGIN_CONFIG}", file=sys.stderr)
         return 1
     USERSPACE_CONFIG.parent.mkdir(parents=True, exist_ok=True)
-    USERSPACE_CONFIG.write_text(PLUGIN_CONFIG.read_text())
+    content = PLUGIN_CONFIG.read_text()
+    detected_cache = _detect_plugin_cache()
+    content = content.replace(
+        "~/.claude/plugins/cache/Brave-Labs/Dev10x",
+        detected_cache,
+    )
+    USERSPACE_CONFIG.write_text(content)
     print(f"Created: {USERSPACE_CONFIG}")
+    print(f"Plugin cache: {detected_cache}")
     print("Edit this file to add your project roots.")
     return 0
 
