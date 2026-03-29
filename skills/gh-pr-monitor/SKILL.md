@@ -132,6 +132,13 @@ parameters — it is not optional.
 report pass/fail — they do not need Opus-level reasoning. Using
 haiku reduces cost without affecting monitoring quality.
 
+**Long CI suites (> 10 min):** Haiku agents may still exhaust
+their budget on test suites that take 10+ minutes (GH-497 F5).
+If the project's CI regularly exceeds 10 minutes, use
+`model: "sonnet"` instead of `model: "haiku"` for the monitor
+agent. The main session should also set `max_turns: 400` for
+these projects.
+
 ### Step 4: Report to user
 
 **DO NOT SKIP this step in any mode (full agent or poll).**
@@ -454,6 +461,17 @@ The Dev10x:slack-review-request skill will:
 ## Phase 3: Notification (REQUIRES USER CONFIRMATION)
 
 **CRITICAL: Do NOT post notifications without user confirmation.**
+
+### Step 0: Verify PR state via MCP
+
+**Hard rule: Verify final PR state with the MCP tool — NEVER use
+raw `gh pr view` or `gh pr checks`.**
+
+`mcp__plugin_Dev10x_cli__verify_pr_state(pr_number={pr_number})`
+
+Parse `is_draft`, `state`, `review_decision`, and `checks_passing`
+from the response. Only proceed to notification if checks pass and
+no blocking issues.
 
 ### Step 1: Prepare
 
