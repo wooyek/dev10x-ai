@@ -128,6 +128,11 @@ Code CLI to run it. Run `/Dev10x:skill-index` for the full reference.
 [Full installation guide →](docs/installation.md) — prerequisites,
 dependencies, manual clone, develop branch, and verification.
 
+## Why Dev10x?
+
+[Why Dev10x →](docs/why-dev10x.md) — who it's for, what problems
+it solves, and how it compares to alternatives.
+
 ## Codex Skills
 
 A Codex-native pack is available in `codex-skills/` for use outside
