@@ -10,6 +10,7 @@ description: >
 user-invocable: true
 invocation-name: Dev10x:git
 allowed-tools:
+  - mcp__plugin_Dev10x_cli__push_safe
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/git/scripts/git-push-safe.sh:*)
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/git/scripts/git-rebase-groom.sh:*)
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/git/scripts/git-seq-editor.sh:*)
@@ -40,8 +41,17 @@ Mark completed when done: `TaskUpdate(taskId, status="completed")`
 
 ## Safe Push
 
-Always push via the wrapper script to prevent force-pushing to protected
-branches:
+**Primary: MCP tool call** (no permission friction):
+
+```
+mcp__plugin_Dev10x_cli__push_safe(flags="[flags]", remote="origin", refspec="branch")
+```
+
+MCP calls avoid `Bash()` allow-rule matching and provide
+structured responses. Use the MCP tool as the default for
+all push operations.
+
+**Fallback: wrapper script** (when MCP server is unavailable):
 
 ```bash
 ${CLAUDE_PLUGIN_ROOT}/skills/git/scripts/git-push-safe.sh [flags] [remote] [refspec]
