@@ -74,6 +74,12 @@ gh pr list --state open --json number,title,headRefName,isDraft,mergeable
 gh issue list --state open --json number,title,labels
 ```
 
+**Issue fetching:** Use MCP `mcp__plugin_Dev10x_cli__issue_get`
+as the primary tool for fetching individual issue details. Fall
+back to `gh issue view` only when the MCP tool is unavailable.
+MCP calls avoid permission friction and provide structured
+responses.
+
 **With arguments**: Accept a space-separated list of URLs,
 issue numbers, or PR numbers. Classify each argument
 independently:
@@ -211,6 +217,10 @@ Before processing **each** work item, execute this two-step gate:
    If it does not, create or switch to the correct branch
    before proceeding. This prevents commits landing on the
    wrong branch when processing items sequentially.
+   **NEVER use raw `git checkout -b`** — always delegate to
+   `Skill(skill="Dev10x:ticket-branch")` for branch creation.
+   Raw checkout bypasses naming conventions, worktree detection,
+   and base-branch validation.
 
 2. **Delegation check:** STOP and ask yourself: "Am I about to
    implement this item directly?" If yes, invoke
@@ -248,9 +258,17 @@ Work-on executes the pr-continuation play:
 4. `Dev10x:git-groom` to clean commit history
 5. Mark ready via `gh pr ready`
 6. Monitor CI — fix failures with fixup commits
-7. When CI passes and no new comments → merge via
-   `gh pr merge <MERGE_STRATEGY> --delete-branch`
-   (see Merge Strategy below)
+7. **Pre-merge gate (REQUIRED):** Before merging, verify ALL:
+   - CI checks pass (`gh pr checks`)
+   - No unaddressed review comments
+     (`mcp__plugin_Dev10x_cli__pr_comments` or
+     `gh api repos/{owner}/{repo}/pulls/{N}/comments`)
+   - PR is marked ready (not draft)
+   - Working copy is clean
+   Do NOT merge via raw `gh pr merge` — delegate to
+   `Dev10x:work-on` which enforces the full pre-merge
+   checklist. Raw merge bypasses review comment checks
+   (GH-549 F-05).
 8. After merge → rebase any downstream items that
    depend on this PR's changes
 
@@ -269,14 +287,29 @@ For each issue (or parallel group of issues):
    to track the resulting PR through CI and merge
 4. After merge → update develop, rebase downstream items
 
-**Parallel execution:** For non-conflicting issues, launch
-subagents via:
+**Parallel execution:** Background `Agent()` subagents
+**cannot invoke `Skill()`** — the Skill tool is only
+available in the main session. This means background agents
+bypass the full `Dev10x:work-on` lifecycle (branch setup,
+code review, shipping pipeline, CI monitoring). All 6
+background agents in session GH-549 failed on Write/Edit
+due to missing permissions that `bypassPermissions` does
+not propagate into subagents (see Known Limitations below).
+
+**REQUIRED: Process issues sequentially via Skill() in the
+main session** unless you can confirm that background agents
+have the necessary permissions and tool access:
+
 ```
-Agent(subagent_type="general-purpose",
-    description="Implement issue #N",
-    prompt="...",
-    run_in_background=true)
+Skill(skill="Dev10x:work-on", args="<issue-url>")
 ```
+
+Only use background `Agent()` dispatch when:
+1. The agent prompt includes ALL play steps inline (not via
+   Skill delegation)
+2. Permission propagation is confirmed (test with one agent
+   before dispatching all)
+3. The user has explicitly approved parallel agent execution
 
 **Known limitation:** Agents with `isolation: "worktree"`
 cannot use Write/Edit tools reliably. Use background agents
@@ -369,9 +402,16 @@ handed off for external review.
 After all items are processed and PRs merged:
 
 1. Call `TaskList` to show the full task list
-2. Verify all items are either merged, closed, or have
+2. **REQUIRED: Check PR comments for every PR.** For each PR
+   processed in this session, call
+   `mcp__plugin_Dev10x_cli__pr_comments(pr_number=N)` and
+   verify zero unaddressed comments remain. CI-green is NOT
+   sufficient — unaddressed review comments (including bot
+   comments) must be resolved before declaring work complete
+   (GH-549 F-01).
+3. Verify all items are either merged, closed, or have
    research comments posted
-3. Show summary table:
+4. Show summary table:
 
 ```
 | Item | Type | Result |
@@ -407,6 +447,27 @@ improvements.
 At any pause signal, invoke `Dev10x:session-wrap-up`.
 Active worktrees and in-progress PRs are bookmarked
 automatically.
+
+## Known Limitations
+
+- **`bypassPermissions` non-propagation:** The
+  `bypassPermissions` flag does not propagate into background
+  `Agent()` subagents. All background agents run with default
+  permissions, causing Write/Edit tool blocks when the user's
+  settings require approval. This affects all parallel
+  dispatch patterns. Workaround: process items sequentially
+  via `Skill()` in the main session, or use
+  `mode: "dontAsk"` on Agent calls (GH-549 F-04).
+
+- **`Skill()` unavailable in subagents:** Background agents
+  cannot call `Skill()` — only the main session has access.
+  Subagents that need skill delegation must inline the full
+  workflow steps or fall back to sequential processing in
+  the main session (GH-549 F-02).
+
+- **Worktree Write/Edit restriction:** Agents with
+  `isolation: "worktree"` cannot use Write/Edit tools. See
+  `Dev10x:work-on` parallelism policy for workarounds.
 
 ## Examples
 
