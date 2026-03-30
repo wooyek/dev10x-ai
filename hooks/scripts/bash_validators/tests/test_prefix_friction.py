@@ -38,9 +38,37 @@ class TestShouldRun:
         inp = _make_input(command="git -C /some/path log --oneline")
         assert validator.should_run(inp=inp) is True
 
+    def test_true_for_rev_parse_toplevel(self, validator: PrefixFrictionValidator) -> None:
+        inp = _make_input(command='cd "$(git rev-parse --show-toplevel)" && git status --short')
+        assert validator.should_run(inp=inp) is True
+
     def test_false_for_simple_command(self, validator: PrefixFrictionValidator) -> None:
         inp = _make_input(command="git status")
         assert validator.should_run(inp=inp) is False
+
+
+class TestCdRevparseChain:
+    @pytest.fixture()
+    def validator(self) -> PrefixFrictionValidator:
+        return PrefixFrictionValidator()
+
+    def test_blocks_cd_revparse_with_quotes(self, validator: PrefixFrictionValidator) -> None:
+        inp = _make_input(command='cd "$(git rev-parse --show-toplevel)" && git status --short')
+        result = validator.validate(inp=inp)
+        assert result is not None
+        assert "unnecessary" in result.message
+        assert "git status --short" in result.message
+
+    def test_blocks_cd_revparse_without_quotes(self, validator: PrefixFrictionValidator) -> None:
+        inp = _make_input(command="cd $(git rev-parse --show-toplevel) && git status --short")
+        result = validator.validate(inp=inp)
+        assert result is not None
+        assert "unnecessary" in result.message
+
+    def test_allows_standalone_revparse(self, validator: PrefixFrictionValidator) -> None:
+        inp = _make_input(command="git rev-parse --show-toplevel")
+        result = validator.validate(inp=inp)
+        assert result is None
 
 
 class TestGitCNoop:
@@ -48,9 +76,7 @@ class TestGitCNoop:
     def validator(self) -> PrefixFrictionValidator:
         return PrefixFrictionValidator()
 
-    def test_blocks_git_c_matching_cwd(
-        self, validator: PrefixFrictionValidator
-    ) -> None:
+    def test_blocks_git_c_matching_cwd(self, validator: PrefixFrictionValidator) -> None:
         inp = _make_input(
             command="git -C /work/tt/.worktrees/tt-pos-4 log --oneline -5",
             cwd="/work/tt/.worktrees/tt-pos-4",
@@ -60,9 +86,7 @@ class TestGitCNoop:
         assert "redundant" in result.message
         assert "git log --oneline -5" in result.message
 
-    def test_allows_git_c_different_path(
-        self, validator: PrefixFrictionValidator
-    ) -> None:
+    def test_allows_git_c_different_path(self, validator: PrefixFrictionValidator) -> None:
         inp = _make_input(
             command="git -C /work/tt/other-repo log --oneline",
             cwd="/work/tt/.worktrees/tt-pos-4",
@@ -91,9 +115,7 @@ class TestCdNoopChain:
     def validator(self) -> PrefixFrictionValidator:
         return PrefixFrictionValidator()
 
-    def test_blocks_cd_matching_cwd_with_env_git(
-        self, validator: PrefixFrictionValidator
-    ) -> None:
+    def test_blocks_cd_matching_cwd_with_env_git(self, validator: PrefixFrictionValidator) -> None:
         inp = _make_input(
             command="cd /work/tt/.worktrees/tt-pos-4 && GIT_SEQUENCE_EDITOR=true git develop-rebase --autosquash",
             cwd="/work/tt/.worktrees/tt-pos-4",
@@ -101,13 +123,9 @@ class TestCdNoopChain:
         result = validator.validate(inp=inp)
         assert result is not None
         assert "redundant" in result.message
-        assert (
-            "GIT_SEQUENCE_EDITOR=true git develop-rebase --autosquash" in result.message
-        )
+        assert "GIT_SEQUENCE_EDITOR=true git develop-rebase --autosquash" in result.message
 
-    def test_allows_cd_to_different_path(
-        self, validator: PrefixFrictionValidator
-    ) -> None:
+    def test_allows_cd_to_different_path(self, validator: PrefixFrictionValidator) -> None:
         inp = _make_input(
             command="cd /work/tt/other-repo && git status",
             cwd="/work/tt/.worktrees/tt-pos-4",
@@ -120,9 +138,7 @@ class TestCdNoopChain:
         result = validator.validate(inp=inp)
         assert result is None
 
-    def test_blocks_cd_with_trailing_slash(
-        self, validator: PrefixFrictionValidator
-    ) -> None:
+    def test_blocks_cd_with_trailing_slash(self, validator: PrefixFrictionValidator) -> None:
         inp = _make_input(
             command="cd /work/tt/.worktrees/tt-pos-4/ && ls",
             cwd="/work/tt/.worktrees/tt-pos-4",
@@ -153,9 +169,7 @@ class TestMergeBase:
     def validator(self) -> PrefixFrictionValidator:
         return PrefixFrictionValidator()
 
-    def test_blocks_merge_base_subshell(
-        self, validator: PrefixFrictionValidator
-    ) -> None:
+    def test_blocks_merge_base_subshell(self, validator: PrefixFrictionValidator) -> None:
         inp = _make_input(command="git log $(git merge-base develop HEAD)..HEAD")
         result = validator.validate(inp=inp)
         assert result is not None
@@ -173,24 +187,18 @@ class TestAndChaining:
     def validator(self) -> PrefixFrictionValidator:
         return PrefixFrictionValidator()
 
-    def test_blocks_setup_and_path_based(
-        self, validator: PrefixFrictionValidator
-    ) -> None:
+    def test_blocks_setup_and_path_based(self, validator: PrefixFrictionValidator) -> None:
         inp = _make_input(command="mkdir -p /tmp/foo && ~/.claude/tools/script.sh arg1")
         result = validator.validate(inp=inp)
         assert result is not None
         assert "&&" in result.message
 
-    def test_allows_non_setup_and_chain(
-        self, validator: PrefixFrictionValidator
-    ) -> None:
+    def test_allows_non_setup_and_chain(self, validator: PrefixFrictionValidator) -> None:
         inp = _make_input(command="git add file.py && git status")
         result = validator.validate(inp=inp)
         assert result is None
 
-    def test_allows_setup_without_path_based(
-        self, validator: PrefixFrictionValidator
-    ) -> None:
+    def test_allows_setup_without_path_based(self, validator: PrefixFrictionValidator) -> None:
         inp = _make_input(command="mkdir -p /tmp/foo && ls /tmp/foo")
         result = validator.validate(inp=inp)
         assert result is None

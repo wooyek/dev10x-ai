@@ -9,6 +9,7 @@ the right pattern on the first attempt.
 | Pattern | Why blocked | Use instead |
 |---------|------------|-------------|
 | `cmd1 && cmd2` (setup + path-based script) | `&&` shifts prefix, breaks allow rules for path-based commands | Separate Bash tool calls |
+| `cd "$(git rev-parse --show-toplevel)" && ...` | Subshell + chaining, git works from any CWD | Run command directly, or `git rev-parse` then `cd` separately |
 | `ENV=value git ...` (any env prefix) | Env prefix shifts effective prefix, breaks allow rules | Drop prefix or use `git develop-rebase` alias |
 | `cat <<'EOF'` / `cat >` / `echo >` | Heredocs/redirects blocked by security hook | Write tool + reference file (`git commit -F`) |
 | `python3 -c "..."` inline code | Inline execution blocked | Extract to `~/.claude/tools/script.py` with uv shebang |
