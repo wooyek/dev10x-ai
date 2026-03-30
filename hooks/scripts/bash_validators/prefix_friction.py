@@ -42,6 +42,16 @@ MERGE_BASE_RE = re.compile(r"\$\(git\s+merge-base\s+(\w+)\s+HEAD\)")
 GIT_SUBCOMMAND_RE = re.compile(r"\bgit\s+(log|diff|rebase)\b")
 
 CD_NOOP_RE = re.compile(r"^cd\s+(\S+)\s*&&\s*(.*)")
+CD_REVPARSE_RE = re.compile(r'^cd\s+"?\$\(git\s+rev-parse\s+--show-toplevel\)"?\s*&&\s*(.*)')
+
+CD_REVPARSE_MSG = (
+    '\u26a0\ufe0f  `cd "$(git rev-parse --show-toplevel)"` is unnecessary.\n\n'
+    "Git commands already operate from the repo root regardless of CWD.\n"
+    "Drop the `cd ... &&` prefix and run the command directly:\n"
+    "    {bare_command}\n\n"
+    "If you need the repo root path, use:\n"
+    "    git rev-parse --show-toplevel"
+)
 
 CD_NOOP_MSG = (
     "\u26a0\ufe0f  `cd {path}` is redundant — CWD is already `{cwd}`.\n\n"
@@ -176,9 +186,14 @@ class PrefixFrictionValidator:
             or ENV_PREFIX_GIT_RE.match(cmd) is not None
             or "merge-base" in cmd
             or "git -C" in cmd
+            or "rev-parse --show-toplevel" in cmd
         )
 
     def validate(self, inp: HookInput) -> HookResult | None:
+        result = self._check_cd_revparse_chain(command=inp.command)
+        if result:
+            return result
+
         result = self._check_git_c_noop(command=inp.command, cwd=inp.cwd)
         if result:
             return result
@@ -196,6 +211,19 @@ class PrefixFrictionValidator:
             return result
 
         return self._check_and_chaining(command=inp.command)
+
+    def _check_cd_revparse_chain(
+        self,
+        *,
+        command: str,
+    ) -> HookResult | None:
+        match = CD_REVPARSE_RE.match(command)
+        if not match:
+            return None
+        bare = match.group(1).strip()
+        return HookResult(
+            message=CD_REVPARSE_MSG.format(bare_command=bare),
+        )
 
     def _check_git_c_noop(
         self,
@@ -279,9 +307,7 @@ class PrefixFrictionValidator:
         for i, seg in enumerate(segments[1:], start=2):
             if _is_path_based(seg):
                 matched = _matches_allow_rule(seg, self._allow_patterns)
-                rule_hint = (
-                    f"Bash({matched}:*)" if matched else "a path-based allow rule"
-                )
+                rule_hint = f"Bash({matched}:*)" if matched else "a path-based allow rule"
                 detail = (
                     f"segment {i} '{seg[:70]}' would be approved by {rule_hint} "
                     f"but the command starts with '{setup_token}'"

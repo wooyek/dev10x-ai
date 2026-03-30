@@ -153,15 +153,22 @@ double-nested paths like `apps/web/apps/web/src/...`.
 git rev-parse --show-prefix
 ```
 
-If the output is non-empty, CWD is a subdirectory. Reset to
-the worktree root before proceeding:
+If the output is non-empty, CWD is a subdirectory. Get the
+repo root and reset CWD in two separate steps (never chain
+with `&&`):
 
 ```bash
-cd "$(git rev-parse --show-toplevel)"
+git rev-parse --show-toplevel
 ```
 
-This is the ONE exception to the "avoid `cd`" rule — it
-prevents path misinterpretation in all subsequent git commands.
+Then use the returned path directly:
+
+```bash
+cd /absolute/path/to/repo/root
+```
+
+This avoids the `cd "$(git rev-parse ...)" && ...` pattern
+which hooks block due to subshell + chaining friction.
 
 **Never `git -C <path>`:** `git -C` breaks allow-rule matching
 in `settings.local.json`. Always use `cd` to the repo root
