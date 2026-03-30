@@ -193,14 +193,14 @@ A synthesis step then compares them before the user sees anything.
 **Launch 3 agents concurrently:**
 
 ```
-Agent(subagent_type="Explore", model="sonnet",
+Agent(subagent_type="Explore", model="opus",
     description="Design: Minimize complexity",
     prompt="""Design [feature] with the constraint: minimize
     complexity. Prefer fewest components, simplest data model,
     least code. Return: component list, data flow, trade-offs.""",
     run_in_background=true)
 
-Agent(subagent_type="Explore", model="sonnet",
+Agent(subagent_type="Explore", model="opus",
     description="Design: Maximize flexibility",
     prompt="""Design [feature] with the constraint: maximize
     flexibility for future extension. Use abstractions, plugin
@@ -208,7 +208,7 @@ Agent(subagent_type="Explore", model="sonnet",
     data flow, trade-offs.""",
     run_in_background=true)
 
-Agent(subagent_type="Explore", model="sonnet",
+Agent(subagent_type="Explore", model="opus",
     description="Design: Optimize for existing patterns",
     prompt="""Design [feature] to match the existing codebase
     patterns as closely as possible. Reuse existing abstractions,
