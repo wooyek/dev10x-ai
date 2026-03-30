@@ -12,6 +12,7 @@ user-invocable: true
 invocation-name: Dev10x:git-commit
 allowed-tools:
   - AskUserQuestion
+  - mcp__plugin_Dev10x_cli__mktmp
   - Bash(/tmp/claude/bin/mktmp.sh:*)
   - Write(/tmp/claude/git/**)
 ---
@@ -601,6 +602,9 @@ What would you like to do? (1/2/3/done)
   `git add && git rebase --continue`. Each call must stand alone.
 - **Never stage individual files**: Use `git add -A` or `git add .`
   exclusively. Selective staging bypasses the skill contract.
+- **Mandatory mktmp usage**: ALL temp files for commit messages
+  MUST be created via mktmp (MCP tool or script fallback).
+  Hardcoded paths are rejected by hooks and cause commit failure.
 
 ## Integration with Other Skills
 
