@@ -85,6 +85,14 @@ Files matching: `skills/**`
     "as discussed"); all constraints documented inline.
 13. **Bundled binaries** — if `skills/<name>/bin/` contains a non-script
     binary, verify license compatibility and flag size > 1 MB (INFO).
+14. **SKILL.md size budget** — run `wc -l skills/<name>/SKILL.md`. Flag:
+    - > 200 lines: WARNING — plan extraction of examples/schemas to
+      `references/` or `tool-calls/` subdirectory
+    - > 400 lines: CRITICAL — extract now; agent comprehension degrades
+    Exemptions (document in checklist response):
+    - Orchestration hubs (`work-on`, `fanout`, `skill-audit`) may
+      exceed 400 lines if they contain multiple complete sub-workflows
+    - Each exemption must have a one-line justification
 
 ## Output Format
 

@@ -142,8 +142,24 @@ evaluation, and testing — usable on any project.
 | Agent specs | 50 |
 | Reference docs | 200 |
 | `CLAUDE.md` | 100 |
+| `SKILL.md` | 200 |
 
 When a file reaches 80% of its budget, plan a split.
+
+**SKILL.md overflow strategy**: extract stable content to
+`skills/<name>/references/` (detailed schemas, full examples,
+CI failure tables) or `skills/<name>/tool-calls/` (AskUserQuestion
+call specs). Keep SKILL.md focused on: frontmatter, overview,
+orchestration steps, decision gates.
+
+**Known SKILL.md overrides** (orchestration hubs — semantically
+cohesive, justified by scope):
+- `work-on` (1191 lines) — 4-phase adaptive orchestrator with
+  5 complete play definitions and subagent dispatch patterns
+- `skill-audit` (1042 lines) — multi-wave audit with per-skill
+  behavioral analysis patterns
+- `fanout` (434 lines) — parallel work stream orchestrator with
+  6-phase execution model and parallel group management
 
 ## Budget Overrides
 
