@@ -3,6 +3,28 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.44.0 — MCP Expansion & Hook Hardening
+
+Released 2026-03-31
+
+### Features
+
+- **MCP redirect for gh issue create** — issue creation routes
+  through MCP tool instead of raw CLI ([GH-552])
+
+### Improvements
+
+- **Block direct git-push-safe invocation** — prevent users from
+  calling push-safe directly via CLI, redirect to skill wrapper
+  with safety guards ([GH-560])
+
+### Fixes
+
+- **Prevent monitor green during CI run** — monitor no longer
+  reports premature success before CI completion ([GH-553])
+- **Unblock commit from non-mktmp temp files** — allow commits
+  from temporary files created outside mktmp system ([GH-554])
+
 ## 0.43.0 — Skill Ecosystem & Compliance Hardening
 
 Released 2026-03-30
