@@ -51,7 +51,6 @@ ENV_PREFIX_RE = re.compile(r"^[A-Z_]+=\S+\s")
 GIT_C_RE = re.compile(r"^git\s+-C\s+")
 COMMENT_PREFIX_RE = re.compile(r"^#")
 HEREDOC_RE = re.compile(r"cat\s+<<|cat\s+>|echo\s+>|printf\s+>")
-CD_PREFIX_RE = re.compile(r"^cd\s+\S+\s*&&\s*")
 
 DANGEROUS_COMMANDS = re.compile(
     r"git\s+push\s+--force|"
