@@ -13,6 +13,7 @@ __pycache__/
 *.pyc
 .venv/
 *.egg-info/
+.coverage
 
 # Claude Code local settings
 .claude/settings.local.json
