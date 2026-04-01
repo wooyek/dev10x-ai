@@ -65,7 +65,12 @@ defaults:
         prompt: >
           List all root comments (in_reply_to_id == null) on the
           PR. If a review ID is specified, filter to that review.
-          Report "No unaddressed comments" and stop if none found.
+          Always check the review body for structured findings —
+          parse individual items (bullet points with severity
+          markers, numbered items with file:line refs) into
+          separate synthetic comments. Merge with inline comments.
+          Report "No unaddressed comments" only if both inline
+          and body findings are empty.
       - subject: Triage all comments
         type: detailed
         prompt: >

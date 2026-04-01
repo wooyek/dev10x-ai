@@ -360,17 +360,46 @@ gh api repos/{owner}/{repo}/pulls/{pr_number}/comments \
 **For a review URL** (`#pullrequestreview-{review_id}`):
 Filter to only comments from that review (match `pull_request_review_id`).
 
-If no unaddressed inline comments found, check for a **body-only
-review** (review body text without inline comments). CI hygiene
-reviews from `claude[bot]` commonly produce these. If a review
-body exists:
+**Always check the review body for findings**, even when inline
+comments exist. CI hygiene reviews from `claude[bot]` commonly
+produce body-only findings, and inline threads may already be
+resolved while the body contains unaddressed items.
+
+**Body-only review handling:**
+
 1. Extract the review body via
    `gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews`
-   filtered by `review_id`
-2. Treat the review body as a single top-level comment to address
-3. Continue to Step 2 (triage) with this synthetic comment
+   filtered by `review_id` (or scan all reviews if no review ID)
+2. **Parse individual findings** from the body. Findings are
+   identified by these patterns:
+   - Bullet points starting with severity markers:
+     `CRITICAL:`, `BLOCKING:`, `INFO:`, `WARNING:`, `NIT:`
+   - Numbered items (`1.`, `2.`, etc.) with file:line references
+   - Markdown list items (`- ` or `* `) that reference specific
+     code locations (e.g., `mutations.py:115`)
+   - Bold-prefixed items (`**[BLOCKING]**`, `**[INFO]**`)
+3. Create one **synthetic comment** per parsed finding. Each
+   synthetic comment carries:
+   - `body`: the finding text (one bullet/item)
+   - `path`: extracted file path (if present in the finding)
+   - `line`: extracted line number (if present)
+   - `review_id`: the parent review ID
+   - `is_body_finding`: `true` (distinguishes from inline comments)
+4. If the body contains no parseable findings but has non-empty
+   text, treat the entire body as a single synthetic comment
+   (fallback for unstructured review bodies)
+5. Merge synthetic comments with any inline comments collected
+   above, then continue to Step 2 (triage)
 
-If neither inline comments nor review body found → report
+**Replying to body findings:** Since body findings have no inline
+comment thread, replies are posted as top-level PR comments via:
+```bash
+gh api --method POST \
+  repos/{owner}/{repo}/issues/{pr_number}/comments \
+  -f body="Re: {finding_summary}\n\n{reply}"
+```
+
+If no inline comments AND no review body findings found → report
 "No unaddressed comments" and stop.
 
 ### Step 2: Triage all comments (parallel)
