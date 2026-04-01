@@ -9,6 +9,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+GIT_SCRIPTS_DIR="$(cd "$SCRIPT_DIR/../../git/scripts" && pwd)"
 
 FORCE=false
 for arg in "$@"; do
@@ -18,10 +19,13 @@ done
 # shellcheck source=detect-base-branch.sh
 source "$SCRIPT_DIR/detect-base-branch.sh" ${FORCE:+--force}
 
+# shellcheck source=../../git/scripts/protected-branches.sh
+source "$GIT_SCRIPTS_DIR/protected-branches.sh"
+
 BRANCH_NAME=$(git symbolic-ref --short HEAD)
 
 # Cannot create PR from protected branches
-if [[ "$BRANCH_NAME" =~ ^(develop|development|main|master|trunk)$ ]]; then
+if is_protected_branch "$BRANCH_NAME"; then
     echo "❌ Cannot create PR from $BRANCH_NAME. Checkout a feature branch first." >&2
     exit 1
 fi
