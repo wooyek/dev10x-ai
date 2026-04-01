@@ -232,6 +232,33 @@ commits require destructive `git reset --hard` cleanup, and
 inline implementation bypasses work-on's structured lifecycle
 (branch setup, code review, shipping pipeline).
 
+### Permission-Aware Dispatch
+
+Classify each work item before dispatch to avoid Write/Edit
+failures in background agents:
+
+| Task type | Needs Write/Edit? | Dispatch method |
+|-----------|-------------------|----------------|
+| Issue implementation | Yes | Main session via `Skill()` |
+| PR with code fixes needed | Yes | Main session via `Skill()` |
+| PR ready to merge (CI green, no comments) | No | Background `Agent()` OK |
+| CI monitoring only | No | Background `Agent()` OK |
+| Investigation / research | No | Background `Agent()` OK |
+
+**Decision rule:** If the task MAY require creating or editing
+files (implementation, fixups, conflict resolution), it MUST
+run in the main session via `Skill()`. Background agents are
+only safe for read-only operations (monitoring, fetching,
+reviewing without fixes).
+
+**Pre-dispatch check:** Before dispatching a background agent,
+verify the item does NOT need Write/Edit by checking:
+1. PR has no unaddressed review comments requiring code changes
+2. PR CI is passing (no fixup commits needed)
+3. PR has no merge conflicts (no rebase needed)
+
+If any check fails → route to main session instead.
+
 ### Work-On Delegation
 
 **REQUIRED: Every issue MUST be delegated to `Dev10x:work-on`.**
@@ -291,31 +318,21 @@ For each issue (or parallel group of issues):
 **cannot invoke `Skill()`** — the Skill tool is only
 available in the main session. This means background agents
 bypass the full `Dev10x:work-on` lifecycle (branch setup,
-code review, shipping pipeline, CI monitoring). All 6
-background agents in session GH-549 failed on Write/Edit
-due to missing permissions that `bypassPermissions` does
-not propagate into subagents (see Known Limitations below).
+code review, shipping pipeline, CI monitoring).
 
-**REQUIRED: Process issues sequentially via Skill() in the
-main session** unless you can confirm that background agents
-have the necessary permissions and tool access:
+**REQUIRED: Use Permission-Aware Dispatch (see above).**
+Issues always need Write/Edit → process sequentially via
+`Skill()` in the main session:
 
 ```
 Skill(skill="Dev10x:work-on", args="<issue-url>")
 ```
 
-Only use background `Agent()` dispatch when:
-1. The agent prompt includes ALL play steps inline (not via
-   Skill delegation)
-2. Permission propagation is confirmed (test with one agent
-   before dispatching all)
-3. The user has explicitly approved parallel agent execution
-
-**Known limitation:** Agents with `isolation: "worktree"`
-cannot use Write/Edit tools reliably. Use background agents
-without worktree isolation, or implement sequentially in the
-main session. See `Dev10x:work-on` Phase 4 parallelism
-policy for details.
+Background `Agent()` dispatch is only permitted for
+read-only operations per the Permission-Aware Dispatch
+table. For write-requiring work, background agents fail
+on Write/Edit due to permission non-propagation (GH-549,
+GH-555).
 
 ### Post-Merge Rebase
 
@@ -454,16 +471,16 @@ automatically.
   `bypassPermissions` flag does not propagate into background
   `Agent()` subagents. All background agents run with default
   permissions, causing Write/Edit tool blocks when the user's
-  settings require approval. This affects all parallel
-  dispatch patterns. Workaround: process items sequentially
-  via `Skill()` in the main session, or use
-  `mode: "dontAsk"` on Agent calls (GH-549 F-04).
+  settings require approval. **Mitigation:** Use the
+  Permission-Aware Dispatch table in Phase 3 to route
+  write-requiring tasks to the main session (GH-549 F-04,
+  GH-555, GH-562).
 
 - **`Skill()` unavailable in subagents:** Background agents
   cannot call `Skill()` — only the main session has access.
-  Subagents that need skill delegation must inline the full
-  workflow steps or fall back to sequential processing in
-  the main session (GH-549 F-02).
+  All implementation work MUST run in the main session via
+  `Skill(Dev10x:work-on)`. Background agents are limited to
+  monitoring and read-only operations (GH-549 F-02).
 
 - **Worktree Write/Edit restriction:** Agents with
   `isolation: "worktree"` cannot use Write/Edit tools. See
