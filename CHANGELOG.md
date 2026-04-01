@@ -3,6 +3,37 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.45.0 — CI Safety & Hook Config
+
+Released 2026-04-01
+
+### Features
+
+- **CI merge-conflict detection** — CI pipeline now detects
+  merge conflicts before allowing PR progression ([GH-563])
+- **Safe deterministic transcript analysis** — enable
+  transcript analysis with reproducible, safe parsing ([GH-565])
+
+### Improvements
+
+- **Config-driven hook validation** — all hooks use YAML-driven
+  validation instead of hardcoded patterns ([GH-572])
+- **Clarify memory path conventions** — db skill documents
+  correct memory file path patterns ([GH-567])
+
+### Fixes
+
+- **Prevent PR ready with unaddressed findings** — PR cannot
+  be marked ready when body-level findings remain ([GH-564])
+- **Detect quoted paths in cd/git-C checks** — noop detection
+  handles quoted directory paths correctly ([GH-568])
+- **Remove unused CD_PREFIX_RE pattern** — dead regex cleanup
+
+### Tests
+
+- **Hook rule validation coverage** — ensure allow rules
+  permit legitimate skill command invocations ([GH-572])
+
 ## 0.44.0 — MCP Expansion & Hook Hardening
 
 Released 2026-03-31
