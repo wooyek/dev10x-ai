@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import traceback
+from pathlib import Path
 
 import click
 
@@ -84,3 +85,33 @@ def plan_archive() -> None:
     from dev10x.hooks.task_plan_sync import cmd_archive
 
     cmd_archive()
+
+
+@hook.command(name="validate-edit")
+@click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True, path_type=Path),
+    default=None,
+)
+@click.option("--debug", is_flag=True)
+def validate_edit(config_path: Path | None, debug: bool) -> None:
+    """Validate Edit/Write tool calls against sensitive file rules.
+
+    Reads JSON from stdin, checks file paths against rules.
+    Exit codes: 0=allow, 2=block.
+    """
+    import json
+
+    from dev10x.hooks.edit_validator import validate_edit_write
+
+    try:
+        data = json.load(sys.stdin)
+    except (json.JSONDecodeError, EOFError):
+        sys.exit(0)
+
+    validate_edit_write(
+        data=data,
+        yaml_path=config_path,
+        debug=debug,
+    )
