@@ -46,3 +46,41 @@ def validate_bash() -> None:
             continue
 
     sys.exit(0)
+
+
+@hook.group(name="plan")
+def plan() -> None:
+    """Plan synchronization commands."""
+
+
+@plan.command(name="sync")
+def plan_sync() -> None:
+    """Sync task state from stdin (PostToolUse hook mode)."""
+    from dev10x.hooks.task_plan_sync import cmd_hook
+
+    cmd_hook()
+
+
+@plan.command(name="summary")
+def plan_summary() -> None:
+    """Read plan YAML, output JSON summary."""
+    from dev10x.hooks.task_plan_sync import cmd_json_summary
+
+    cmd_json_summary()
+
+
+@plan.command(name="set-context")
+@click.argument("pairs", nargs=-1, required=True)
+def plan_set_context(pairs: tuple[str, ...]) -> None:
+    """Store plan-level context metadata (K=V pairs, dot-paths supported)."""
+    from dev10x.hooks.task_plan_sync import cmd_set_context
+
+    cmd_set_context(args=list(pairs))
+
+
+@plan.command(name="archive")
+def plan_archive() -> None:
+    """Archive completed plan to .claude/session/archive/."""
+    from dev10x.hooks.task_plan_sync import cmd_archive
+
+    cmd_archive()
