@@ -1,19 +1,19 @@
 from tests.fakers.hook_input import (
-    BashHookInputFactory,
-    EditHookInputFactory,
-    HookInputFactory,
+    BashHookInputFaker,
+    EditHookInputFaker,
+    HookInputFaker,
 )
 from tests.fakers.validation_rule import (
-    CompensationFactory,
-    ConfigFactory,
-    RuleFactory,
+    CompensationFaker,
+    ConfigFaker,
+    RuleFaker,
 )
 
 __all__ = [
-    "BashHookInputFactory",
-    "CompensationFactory",
-    "ConfigFactory",
-    "EditHookInputFactory",
-    "HookInputFactory",
-    "RuleFactory",
+    "BashHookInputFaker",
+    "CompensationFaker",
+    "ConfigFaker",
+    "EditHookInputFaker",
+    "HookInputFaker",
+    "RuleFaker",
 ]
