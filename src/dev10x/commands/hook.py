@@ -115,3 +115,24 @@ def validate_edit(config_path: Path | None, debug: bool) -> None:
         yaml_path=config_path,
         debug=debug,
     )
+
+
+@hook.group(name="session")
+def session() -> None:
+    """Session lifecycle commands."""
+
+
+@session.command(name="reload")
+def session_reload_cmd() -> None:
+    """Reload prior session state (SessionStart hook)."""
+    from dev10x.hooks.session import session_reload
+
+    session_reload()
+
+
+@session.command(name="compact")
+def session_compact_cmd() -> None:
+    """Inject context summary before compaction (PreCompact hook)."""
+    from dev10x.hooks.session import context_compact
+
+    context_compact()
