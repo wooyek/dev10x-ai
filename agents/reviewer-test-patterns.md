@@ -49,6 +49,9 @@ Files matching: `**/tests/**/*.py`
     must use `yield` + teardown for cleanup safety. CRITICAL.
 12. **Cross-file fixture DRY** — same helper in multiple test files
     in same package → suggest extraction to `conftest.py`. WARNING.
+13. **Factory inheritance patterns** — verify factories use inheritance
+    for specialized variants; base class should have sensible defaults
+    for all required fields; subclasses should override only what differs.
 
 ## Output Format
 
