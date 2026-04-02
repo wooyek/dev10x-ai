@@ -5,7 +5,7 @@ import factory
 from dev10x.domain.validation_rule import Compensation, Config, Rule
 
 
-class CompensationFactory(factory.Factory):
+class CompensationFaker(factory.Factory):
     class Meta:
         model = Compensation
 
@@ -17,7 +17,7 @@ class CompensationFactory(factory.Factory):
     description = factory.Faker("sentence", nb_words=6)
 
 
-class RuleFactory(factory.Factory):
+class RuleFaker(factory.Factory):
     class Meta:
         model = Rule
 
@@ -30,7 +30,7 @@ class RuleFactory(factory.Factory):
     reason = factory.Faker("sentence", nb_words=8)
 
 
-class ConfigFactory(factory.Factory):
+class ConfigFaker(factory.Factory):
     class Meta:
         model = Config
 

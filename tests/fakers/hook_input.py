@@ -5,7 +5,7 @@ import factory
 from dev10x.domain.hook_input import HookInput
 
 
-class HookInputFactory(factory.Factory):
+class HookInputFaker(factory.Factory):
     class Meta:
         model = HookInput
 
@@ -20,7 +20,7 @@ class HookInputFactory(factory.Factory):
     cwd = factory.Faker("file_path", depth=3)
 
 
-class BashHookInputFactory(HookInputFactory):
+class BashHookInputFaker(HookInputFaker):
     tool_name = "Bash"
     command = factory.Faker(
         "random_element",
@@ -33,7 +33,7 @@ class BashHookInputFactory(HookInputFactory):
     )
 
 
-class EditHookInputFactory(HookInputFactory):
+class EditHookInputFaker(HookInputFaker):
     tool_name = "Edit"
     command = ""
     raw = factory.LazyAttribute(
