@@ -1,0 +1,253 @@
+---
+name: Dev10x:gh-pr-merge
+description: >
+  Validate all pre-merge conditions and execute PR merge.
+  Checks unresolved threads, CI status, draft state, mergeability,
+  working copy, fixup commits, and review approval before merging.
+  TRIGGER when: PR is ready to merge and needs pre-merge validation.
+  DO NOT TRIGGER when: PR is still draft, CI is failing, or review
+  comments are unaddressed.
+user-invocable: true
+invocation-name: Dev10x:gh-pr-merge
+allowed-tools:
+  - Bash(gh pr view:*)
+  - Bash(gh pr merge:*)
+  - Bash(gh pr checks:*)
+  - Bash(gh api graphql:*)
+  - Bash(gh repo view:*)
+  - Bash(git status:*)
+  - Bash(git log:*)
+---
+
+## Orchestration
+
+This skill follows `references/task-orchestration.md` patterns.
+Create a task at invocation, mark completed when done:
+
+**REQUIRED: Create a task at invocation.** Execute at startup:
+
+1. `TaskCreate(subject="Merge PR", activeForm="Merging PR")`
+
+Mark completed when done: `TaskUpdate(taskId, status="completed")`
+
+## Overview
+
+Pre-merge validation gate that checks 7 conditions before
+executing `gh pr merge`. Prevents premature merges like PR #633
+(merged with 7 unaddressed review comments).
+
+## Merge Strategy Resolution
+
+The merge strategy is resolved in this order:
+
+1. **Per-project config** — read
+   `~/.claude/projects/<project>/memory/settings-pr-merge.yaml`
+2. **Default** — `squash`
+
+### Config file format
+
+```yaml
+# ~/.claude/projects/<project>/memory/settings-pr-merge.yaml
+strategy: squash        # squash | rebase | merge
+delete_branch: true     # delete remote branch after merge
+solo_maintainer: false  # skip external approval requirement
+```
+
+All fields are optional. Defaults:
+- `strategy`: `squash`
+- `delete_branch`: `true`
+- `solo_maintainer`: `false`
+
+## Pre-Merge Validation Checks
+
+Run ALL 7 checks before merging. Report results as a checklist.
+If ANY check fails, refuse to merge and report which failed.
+
+### Check 1: No unresolved review threads
+
+Query GitHub GraphQL for unresolved review threads:
+
+```bash
+gh api graphql -f query='
+  query($owner: String!, $repo: String!, $number: Int!) {
+    repository(owner: $owner, name: $repo) {
+      pullRequest(number: $number) {
+        reviewThreads(first: 100) {
+          nodes {
+            isResolved
+            comments(first: 1) {
+              nodes { body author { login } }
+            }
+          }
+        }
+      }
+    }
+  }
+' -f owner=OWNER -f repo=REPO -F number=NUMBER
+```
+
+Count threads where `isResolved` is `false`. If any exist,
+report the count and first comment of each unresolved thread.
+
+### Check 2: CI checks passing
+
+```bash
+gh pr checks NUMBER --json name,state,conclusion
+```
+
+All required checks must have `conclusion` of `SUCCESS` or
+`NEUTRAL`. No checks should be `PENDING` or `IN_PROGRESS`.
+Report any failing or pending checks by name.
+
+### Check 3: PR is not in draft
+
+```bash
+gh pr view NUMBER --json isDraft
+```
+
+If `isDraft` is `true`, report that the PR must be marked
+ready before merging.
+
+### Check 4: No merge conflicts
+
+```bash
+gh pr view NUMBER --json mergeable
+```
+
+The `mergeable` field must be `MERGEABLE`. If `CONFLICTING`,
+report that merge conflicts must be resolved first.
+
+### Check 5: Working copy is clean
+
+```bash
+git status --porcelain
+```
+
+If output is non-empty, report uncommitted changes that must
+be committed or stashed before merging.
+
+### Check 6: No fixup/squash commits remaining
+
+```bash
+git log --oneline origin/develop..HEAD
+```
+
+Scan commit subjects for `fixup!` or `squash!` prefixes.
+If any exist, report that commit history must be groomed
+first (via `Dev10x:git-groom`).
+
+### Check 7: Review approval
+
+```bash
+gh pr view NUMBER --json reviewDecision
+```
+
+Check that `reviewDecision` is `APPROVED`.
+
+**Solo-maintainer override:** If `solo_maintainer: true` in
+config, skip this check entirely. Solo maintainers do not
+require external approval.
+
+## Execution Flow
+
+### Step 1: Detect PR
+
+Detect the current PR using the branch name:
+
+```bash
+gh pr view --json number,headRefName,baseRefName
+```
+
+If no PR exists for the current branch, report and stop.
+Extract owner/repo from `gh repo view --json owner,name`.
+
+### Step 2: Load merge strategy config
+
+Read the per-project config file. If it does not exist, use
+defaults (`strategy: squash`, `delete_branch: true`,
+`solo_maintainer: false`).
+
+### Step 3: Run all 7 validation checks
+
+Run checks in parallel where possible (checks 1-4 use `gh`
+commands, check 5-6 use `git` commands). Collect all results
+before reporting.
+
+### Step 4: Report validation results
+
+Present results as a checklist:
+
+```
+## Pre-Merge Validation
+
+- [x] No unresolved review threads (0 unresolved)
+- [x] CI checks passing (12/12 green)
+- [x] PR is not in draft
+- [x] No merge conflicts (MERGEABLE)
+- [x] Working copy is clean
+- [x] No fixup/squash commits (8 clean commits)
+- [x] Review approved (or solo-maintainer override)
+```
+
+If any check fails, show `[ ]` with failure details:
+
+```
+- [ ] CI checks passing (2 failing: lint, type-check)
+```
+
+### Step 5: Merge or refuse
+
+**All checks pass:** Execute merge with configured strategy:
+
+```bash
+gh pr merge NUMBER --STRATEGY --delete-branch
+```
+
+Where `--STRATEGY` is one of `--squash`, `--rebase`, or
+`--merge` based on config.
+
+If `delete_branch` is `false`, omit `--delete-branch`.
+
+**Any check fails:** Do NOT merge. Report which checks failed
+and what action is needed to resolve each one. Suggest the
+appropriate skill for remediation:
+
+| Failed check | Remediation |
+|-------------|-------------|
+| Unresolved threads | `Dev10x:gh-pr-respond` |
+| CI failing | `Dev10x:gh-pr-monitor` |
+| Still in draft | `gh pr ready` |
+| Merge conflicts | Rebase onto base branch |
+| Dirty working copy | `Dev10x:git-commit` |
+| Fixup commits | `Dev10x:git-groom` |
+| No approval | Request review |
+
+### Step 6: Confirm merge
+
+After successful merge, report:
+
+```
+PR #NUMBER merged via STRATEGY into BASE_BRANCH.
+Remote branch deleted: yes/no
+```
+
+## Auto-Advance Behavior
+
+This skill is designed to auto-advance in shipping pipelines.
+After a successful merge, the calling skill should proceed
+immediately to the next step (typically acceptance criteria
+verification). No confirmation gate after merge.
+
+If merge fails (e.g., branch protection rules), report the
+error and let the calling skill decide how to proceed.
+
+## Important Notes
+
+- Never merge without running ALL 7 checks first
+- Never bypass checks even if "it looks fine"
+- The solo-maintainer override only skips check 7 (approval),
+  not the other 6 checks
+- This skill must NOT be called from background agents
+  (`Dev10x:gh-pr-monitor` explicitly forbids merge operations)
+- Always use `gh pr merge` (not `git merge`) to ensure GitHub
+  records the merge event properly
