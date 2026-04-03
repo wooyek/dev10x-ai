@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from dev10x.domain import HookAllow, HookInput, HookResult
 
 
+@runtime_checkable
 class Validator(Protocol):
     name: str
 
