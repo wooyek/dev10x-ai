@@ -29,6 +29,29 @@ class EditRule:
     message: str
     compensations: list[dict[str, str]] = field(default_factory=list)
 
+    def matches_file(self, *, file_path: str) -> bool:
+        if self.file_pattern and self.file_pattern.search(file_path):
+            return True
+        name = _basename(path=file_path)
+        if name in self.file_names:
+            return True
+        if any(name.startswith(p) for p in self.file_prefixes):
+            return True
+        return any(s in file_path for s in self.file_substrings)
+
+    def matches_content(self, *, content: str) -> bool:
+        if self.content_pattern is None:
+            return True
+        return self.content_pattern.search(content) is not None
+
+    def format_message(self, *, file_path: str) -> str:
+        msg = self.message.format(file_path=file_path)
+        for comp in self.compensations:
+            desc = comp.get("description", "")
+            if desc:
+                msg += f"\n\n{desc.strip()}"
+        return msg
+
 
 def load_rules(*, yaml_path: Path = _YAML_PATH) -> list[EditRule]:
     data: dict[str, Any] = yaml.safe_load(yaml_path.read_text())
@@ -57,32 +80,6 @@ def load_rules(*, yaml_path: Path = _YAML_PATH) -> list[EditRule]:
 
 def _basename(path: str) -> str:
     return path.rsplit("/", 1)[-1] if "/" in path else path
-
-
-def matches_file(*, rule: EditRule, file_path: str) -> bool:
-    if rule.file_pattern and rule.file_pattern.search(file_path):
-        return True
-    name = _basename(path=file_path)
-    if name in rule.file_names:
-        return True
-    if any(name.startswith(p) for p in rule.file_prefixes):
-        return True
-    return any(s in file_path for s in rule.file_substrings)
-
-
-def matches_content(*, rule: EditRule, content: str) -> bool:
-    if rule.content_pattern is None:
-        return True
-    return rule.content_pattern.search(content) is not None
-
-
-def format_message(*, rule: EditRule, file_path: str) -> str:
-    msg = rule.message.format(file_path=file_path)
-    for comp in rule.compensations:
-        desc = comp.get("description", "")
-        if desc:
-            msg += f"\n\n{desc.strip()}"
-    return msg
 
 
 def block(*, message: str) -> None:
@@ -115,12 +112,12 @@ def validate_edit_write(
         print(f"[DEBUG] Loaded {len(rules)} Edit|Write rules", file=sys.stderr)
 
     for rule in rules:
-        if not matches_file(rule=rule, file_path=file_path):
+        if not rule.matches_file(file_path=file_path):
             continue
-        if not matches_content(rule=rule, content=content):
+        if not rule.matches_content(content=content):
             continue
         if debug:
             print(f"[DEBUG] Rule '{rule.name}' matched: {file_path}", file=sys.stderr)
-        block(message=format_message(rule=rule, file_path=file_path))
+        block(message=rule.format_message(file_path=file_path))
 
     sys.exit(0)
