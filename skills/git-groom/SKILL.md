@@ -269,6 +269,27 @@ Commands in interactive rebase:
 - `fixup` - meld into previous commit (discard message)
 - `drop` - remove commit
 
+### Conflict Resolution During Rebase
+
+When any rebase strategy encounters conflicts, resolve them
+inline before falling back to abort + Strategy B:
+
+1. Run `git diff --name-only --diff-filter=U` to list conflicted files
+2. For each conflicted file:
+   a. Read the file with the Read tool
+   b. Identify conflict markers and determine the correct resolution
+   c. Edit the file to remove markers and apply the resolution
+   d. Stage: `git add <file>`
+3. Continue: `git rebase --continue`
+4. If conflicts recur, repeat (max 3 rounds)
+5. If resolution fails after 3 rounds or conflicts are too complex,
+   abort and fall back to Strategy B (soft reset)
+
+**MCP tool callers:** When `rebase_groom` or `mass_rewrite` returns
+`{"conflict": true}`, the rebase is paused — not aborted. Use the
+`conflicted_files` list to resolve, then run `git rebase --continue`
+via Bash. Do NOT call `git rebase --abort` unless resolution fails.
+
 ### Phase 3: Push Changes
 
 Mark phase transition: `TaskUpdate(taskId=execute_task, status="completed")` then `TaskUpdate(taskId=push_task, status="in_progress")`
@@ -376,18 +397,37 @@ Limit title to 72 characters. Add body for complex changes.
 
 ### Rebase Conflicts
 
+When a rebase hits merge conflicts, the groom skill is responsible
+for resolving them rather than aborting and asking the user.
+
+**Detection:** Scripts output `CONFLICT_DETECTED` with structured
+info (conflicted files, rebase HEAD). MCP tools return
+`{"conflict": true, "conflicted_files": [...]}`.
+
+**Resolution loop:**
+
+1. Read each conflicted file with the Read tool
+2. Examine the conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`)
+3. Resolve by choosing the correct version or merging both sides
+4. Write the resolved file with the Edit tool (remove all markers)
+5. Stage resolved files: `git add <file>`
+6. Continue: `git rebase --continue`
+7. If new conflicts arise, repeat from step 1
+
+**When to abort instead of resolving:**
+- Conflicts span 5+ files with complex semantic changes
+- The conflict indicates a fundamental structural divergence
+  that requires the user's domain knowledge to resolve
+- After 3 resolution rounds with recurring conflicts
+
+In abort cases, run `git rebase --abort` and fall back to
+Strategy B (soft reset) as documented below.
+
 ```bash
-# Fix conflicts in files
-vim conflicted-file.py
-
-# Mark as resolved
-git add conflicted-file.py
-
-# Continue rebase
-git rebase --continue
-
-# Or abort if things go wrong
 git rebase --abort
+git reset --soft $(git merge-base develop HEAD)
+git reset HEAD
+# Recommit in clean atomic chunks
 ```
 
 ### Autosquash Fails on Cross-Commit Fixups

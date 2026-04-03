@@ -66,9 +66,7 @@ def validate_shas(config_shas: set[str], current_shas: set[str]) -> None:
     stale = config_shas - current_shas
     if not stale:
         return
-    print(
-        "ERROR: These SHAs from config don't exist in current branch:", file=sys.stderr
-    )
+    print("ERROR: These SHAs from config don't exist in current branch:", file=sys.stderr)
     for sha in sorted(stale):
         print(f"  {sha}", file=sys.stderr)
     print("\nRe-check SHAs with: git log --oneline develop..HEAD", file=sys.stderr)
@@ -133,9 +131,17 @@ def write_seq_editor(commits_config: dict, msgs_dir: Path, seq_editor: Path) -> 
     ]
 
     seq_editor.write_text("\n".join(lines), encoding="utf-8")
-    seq_editor.chmod(
-        seq_editor.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH
-    )
+    seq_editor.chmod(seq_editor.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
+
+
+def is_rebase_in_progress() -> bool:
+    git_dir = run(["git", "rev-parse", "--git-dir"]).stdout.strip()
+    return (Path(git_dir) / "rebase-merge").is_dir()
+
+
+def get_conflicted_files() -> list[str]:
+    result = run(["git", "diff", "--name-only", "--diff-filter=U"], check=False)
+    return [f for f in result.stdout.strip().splitlines() if f]
 
 
 def run_rebase(base_sha: str, seq_editor: Path) -> None:
@@ -148,6 +154,16 @@ def run_rebase(base_sha: str, seq_editor: Path) -> None:
         text=True,
     )
     if result.returncode != 0:
+        if is_rebase_in_progress():
+            files = get_conflicted_files()
+            print("CONFLICT_DETECTED")
+            print(f"conflicted_files={','.join(files)}")
+            rebase_head = run(
+                ["git", "rev-parse", "--short", "REBASE_HEAD"], check=False
+            ).stdout.strip()
+            print(f"rebase_head={rebase_head or 'unknown'}")
+            print("hint=Resolve conflicts, git add, then git rebase --continue")
+            sys.exit(1)
         print("Rebase failed.", file=sys.stderr)
         print("  Abort:   git rebase --abort", file=sys.stderr)
         print("  Recover: git reflog  →  git reset --hard HEAD@{n}", file=sys.stderr)

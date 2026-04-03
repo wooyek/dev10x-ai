@@ -35,4 +35,19 @@ fi
 export GROOM_SEQ_FILE
 GIT_SEQUENCE_EDITOR="$SEQ_EDITOR" \
 GIT_EDITOR="true" \
-    exec git rebase -i "$base_ref" "$@"
+    git rebase -i "$base_ref" "$@" || rc=$?
+rc=${rc:-0}
+
+if [[ $rc -eq 0 ]]; then
+    exit 0
+fi
+
+if [[ -d "$(git rev-parse --git-dir)/rebase-merge" ]]; then
+    echo "CONFLICT_DETECTED"
+    echo "conflicted_files=$(git diff --name-only --diff-filter=U | tr '\n' ',')"
+    echo "rebase_head=$(git rev-parse --short REBASE_HEAD 2>/dev/null || echo unknown)"
+    echo "hint=Resolve conflicts, git add, then git rebase --continue"
+    exit 1
+fi
+
+exit "$rc"

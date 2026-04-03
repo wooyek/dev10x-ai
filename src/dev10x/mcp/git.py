@@ -38,6 +38,18 @@ def rebase_groom(*, seq_path: str, base_ref: str) -> dict[str, Any]:
     result = run_script("skills/git/scripts/git-rebase-groom.sh", seq_path, base_ref)
 
     if result.returncode != 0:
+        stdout = result.stdout.strip()
+        if "CONFLICT_DETECTED" in stdout:
+            parsed = parse_key_value_output(stdout)
+            return {
+                "success": False,
+                "conflict": True,
+                "conflicted_files": [
+                    f for f in parsed.get("conflicted_files", "").split(",") if f
+                ],
+                "rebase_head": parsed.get("rebase_head", "unknown"),
+                "hint": parsed.get("hint", ""),
+            }
         return {"success": False, "error": result.stderr.strip()}
 
     try:
@@ -77,10 +89,23 @@ def mass_rewrite(*, config_path: str) -> dict[str, Any]:
     )
 
     if result.returncode != 0:
+        stdout = result.stdout.strip()
+        if "CONFLICT_DETECTED" in stdout:
+            parsed = parse_key_value_output(stdout)
+            return {
+                "success": False,
+                "conflict": True,
+                "conflicted_files": [
+                    f for f in parsed.get("conflicted_files", "").split(",") if f
+                ],
+                "rebase_head": parsed.get("rebase_head", "unknown"),
+                "hint": parsed.get("hint", ""),
+                "output": stdout,
+            }
         return {
             "success": False,
             "error": result.stderr.strip(),
-            "output": result.stdout.strip(),
+            "output": stdout,
         }
 
     return {"success": True, "output": result.stdout.strip()}
