@@ -56,6 +56,21 @@ Not:
 plugins are implementation details. The main commit describes the outcome;
 subsequent commits (if any) describe optional supporting changes.
 
+## Code-Level Consolidations
+
+Code consolidations differ from structural consolidations:
+
+- **Structural** (e.g., plugin merges): Move entire directories,
+  preserve file structure, verify all components load
+- **Code-level** (e.g., deduplication): Remove duplicate implementations,
+  consolidate to canonical source, verify all call sites updated
+
+For code-level consolidations, review focuses on:
+1. No duplicate implementations remain in any location
+2. All call sites reference the canonical version
+3. Test coverage follows the new import location
+4. No orphaned imports, stale references, or unused modules
+
 ## Reviewers' Expectations
 
 Consolidation PRs are typically large (hundreds of files). Reviewers expect:
