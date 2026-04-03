@@ -8,7 +8,7 @@ from pathlib import Path
 import click
 
 from dev10x.domain import HookInput
-from dev10x.validators import VALIDATORS
+from dev10x.validators import get_validators
 
 _DEBUG = os.environ.get("HOOK_DEBUG", "") != ""
 
@@ -31,7 +31,7 @@ def validate_bash() -> None:
     if not inp.command:
         sys.exit(0)
 
-    for validator in VALIDATORS:
+    for validator in get_validators():
         try:
             if validator.should_run(inp=inp):
                 result = validator.validate(inp=inp)
