@@ -84,6 +84,45 @@ When reviewing tests:
 3. Missing scenarios
 4. Best practice violations
 
+## Factory Class Design
+
+When writing tests with factory-boy fakers, follow these patterns:
+
+**Class structure**: Factories subclass `factory.Factory` with a `Meta` class defining the `model`:
+
+```python
+class ItemFaker(factory.Factory):
+    class Meta:
+        model = Item
+    price = factory.LazyFunction(Decimal)  # mutable default
+```
+
+**LazyAttribute vs LazyFunction**:
+- Use `LazyAttribute` when a field depends on other factory attributes
+- Use `LazyFunction` for collection defaults to prevent cross-instance pollution
+
+**Factory inheritance**: Extract common fields to a base factory, specialize in subclasses:
+
+```python
+class HookInputFactory(factory.Factory):
+    class Meta:
+        model = HookInput
+    tool_name = factory.Faker("random_element", elements=[...])
+
+class BashHookInputFactory(HookInputFactory):
+    tool_name = "Bash"
+```
+
+**conftest.py fixture wrapping**: Return the factory class itself, not an instance:
+
+```python
+@pytest.fixture()
+def hook_input_factory() -> type[HookInputFactory]:
+    return HookInputFactory
+```
+
+This allows tests to call `.build()` or `.create()` with overrides.
+
 ## Example Structure
 
 ```python

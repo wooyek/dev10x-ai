@@ -26,8 +26,10 @@ fixture definitions, faker references, or random value patterns).
    - `faker.pyint()` for IDs checked against permission sets
    - Collision-avoidance loops (`while id in excluded`)
    - Falsy values (0, None) when code uses `if not value:`
-   - Low-entropy providers ("word", "color_name") for fields
-     that must differ — suggest `uuid4()` or set-subtraction
+   - Low-entropy providers ("word", "color_name") for fields that must
+     differ — suggest `uuid4()` or set-subtraction. Exception:
+     `factory.Faker("random_element", elements=[...])` with bounded list
+     is safe and preferred for deterministic test data from known sets
    - Constraint message assertions without order verification
    - Fix: `max(ids, default=0) + 1` or `faker.pyint(min_value=1)`
 2. **update_fields discriminator** — verify tests cover both
