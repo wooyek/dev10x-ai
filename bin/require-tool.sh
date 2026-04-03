@@ -8,12 +8,14 @@
 
 set -euo pipefail
 
-# ── Installation URLs ─────────────────────────────────────────
-declare -A _TOOL_INSTALL_URL=(
-    [jq]="https://jqlang.github.io/jq/download/"
-    [yq]="https://github.com/mikefarah/yq#install"
-    [gh]="https://cli.github.com/manual/installation"
-)
+# ── Installation URLs (case statement for bash 3.2 compat) ────
+_get_install_url() {
+    case "$1" in
+        jq) echo "https://jqlang.github.io/jq/download/" ;;
+        yq) echo "https://github.com/mikefarah/yq#install" ;;
+        gh) echo "https://cli.github.com/manual/installation" ;;
+    esac
+}
 
 # require_tool <name>
 #   Checks tool is available on PATH.
@@ -25,7 +27,8 @@ require_tool() {
         return 0
     fi
 
-    local url="${_TOOL_INSTALL_URL[$name]:-}"
+    local url
+    url=$(_get_install_url "$name")
     echo >&2 "ERROR: '$name' not found on PATH."
     if [[ -n "$url" ]]; then
         echo >&2 "Install: $url"
