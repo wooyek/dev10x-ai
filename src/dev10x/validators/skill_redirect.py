@@ -103,6 +103,7 @@ def _load_config(yaml_path: Path = _YAML_PATH) -> _Config:
 
 _CONFIG: _Config = _load_config()
 
+
 _QUICK_TOKENS = frozenset(["commit", "create", "push", "rebase", "checks", "issue"])
 
 _COMMIT_HEAL_MSG = (
