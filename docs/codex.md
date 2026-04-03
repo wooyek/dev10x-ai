@@ -5,7 +5,7 @@ Each skill is installable into `~/.codex/skills/<skill-name>`.
 
 ## What was ported
 
-- All 59 Dev10x skills were ported to Codex format under `codex-skills/`
+- All 67 Dev10x skills were ported to Codex format under `codex-skills/`
 - `SKILL.md` frontmatter normalized to Codex-compatible fields:
   - `name`
   - `description`

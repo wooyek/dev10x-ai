@@ -32,7 +32,7 @@ git operation.
 
 ### Pre-approved workflows, not ad-hoc scripts
 
-59 skills encapsulate complete dev workflows as slash commands.
+67 skills encapsulate complete dev workflows as slash commands.
 `/commit` handles gitmoji, ticket reference, and benefit-focused
 title — all through pre-approved tool calls that never trigger
 permission prompts.
@@ -42,15 +42,19 @@ step matches an allow rule. Zero interruptions.
 
 ### Guardrails that teach, not just block
 
-8 hooks intercept dangerous patterns *before* they execute — and
-redirect the AI toward the approved path:
+14 hooks across 5 lifecycle events intercept dangerous patterns
+*before* they execute — and redirect the AI toward the approved
+path:
 
-- **`detect-and-chaining`** catches `mkdir && script.sh` that
-  breaks allow rules → teaches separate calls
-- **`block-python3-inline`** blocks `python3 -c "..."` →
-  teaches `uv run --script`
-- **`validate-commit-jtbd`** blocks "Add retry logic" → teaches
-  "Enable automatic retry on failure"
+- **`validate-bash-command`** catches `&&` chaining, inline
+  `python3 -c`, and other patterns that break allow rules →
+  teaches separate calls and `uv run --script`
+- **`validate-edit-write`** blocks `.env` file creation and
+  enforces safe file editing patterns
+- **`ruff-format-python`** auto-formats Python files after every
+  Edit/Write — no manual formatting step needed
+- **`task-plan-sync`** persists task state to survive context
+  compaction across long sessions
 
 The hooks carry educational messages. The AI learns from each
 block. By mid-session, it stops triggering them entirely.
@@ -104,16 +108,17 @@ review comment) is concise enough to evaluate in seconds.
 
 | Family | Skills | What it automates |
 |--------|--------|-------------------|
-| **Git** | [`git-commit`](skills/git-commit/SKILL.md), [`git-commit-split`](skills/git-commit-split/SKILL.md), [`git-fixup`](skills/git-fixup/SKILL.md), [`git-groom`](skills/git-groom/SKILL.md), [`git-promote`](skills/git-promote/SKILL.md), [`git-worktree`](skills/git-worktree/SKILL.md), [`git`](skills/git/SKILL.md), [`git-alias-setup`](skills/git-alias-setup/SKILL.md) | Atomic commits, clean history, workspace isolation |
-| **PR** | [`gh-pr-create`](skills/gh-pr-create/SKILL.md), [`gh-pr-review`](skills/gh-pr-review/SKILL.md), [`gh-pr-respond`](skills/gh-pr-respond/SKILL.md), [`gh-pr-monitor`](skills/gh-pr-monitor/SKILL.md), [`gh-pr-triage`](skills/gh-pr-triage/SKILL.md), [`gh-pr-fixup`](skills/gh-pr-fixup/SKILL.md), [`gh-pr-request-review`](skills/gh-pr-request-review/SKILL.md), [`gh-pr-bookmark`](skills/gh-pr-bookmark/SKILL.md), [`gh-context`](skills/gh-context/SKILL.md), [`request-review`](skills/request-review/SKILL.md) | Full PR lifecycle, domain-routed review |
-| **Tickets** | [`ticket-create`](skills/ticket-create/SKILL.md), [`ticket-branch`](skills/ticket-branch/SKILL.md), [`ticket-scope`](skills/ticket-scope/SKILL.md), [`ticket-jtbd`](skills/ticket-jtbd/SKILL.md), [`work-on`](skills/work-on/SKILL.md), [`linear`](skills/linear/SKILL.md), [`project-scope`](skills/project-scope/SKILL.md) | Issue tracker integration, ticket scoping |
+| **Git** | [`git-commit`](skills/git-commit/SKILL.md), [`git-commit-split`](skills/git-commit-split/SKILL.md), [`git-fixup`](skills/git-fixup/SKILL.md), [`git-groom`](skills/git-groom/SKILL.md), [`git-promote`](skills/git-promote/SKILL.md), [`git-worktree`](skills/git-worktree/SKILL.md), [`git`](skills/git/SKILL.md), [`git-alias-setup`](skills/git-alias-setup/SKILL.md), [`release-notes`](skills/release-notes/SKILL.md) | Atomic commits, clean history, workspace isolation, release notes |
+| **PR** | [`gh-pr-create`](skills/gh-pr-create/SKILL.md), [`gh-pr-review`](skills/gh-pr-review/SKILL.md), [`gh-pr-respond`](skills/gh-pr-respond/SKILL.md), [`gh-pr-monitor`](skills/gh-pr-monitor/SKILL.md), [`gh-pr-triage`](skills/gh-pr-triage/SKILL.md), [`gh-pr-fixup`](skills/gh-pr-fixup/SKILL.md), [`gh-pr-request-review`](skills/gh-pr-request-review/SKILL.md), [`gh-pr-bookmark`](skills/gh-pr-bookmark/SKILL.md), [`gh-pr-doctor`](skills/gh-pr-doctor/SKILL.md), [`gh-pr-merge`](skills/gh-pr-merge/SKILL.md), [`gh-context`](skills/gh-context/SKILL.md), [`request-review`](skills/request-review/SKILL.md), [`review`](skills/review/SKILL.md), [`review-fix`](skills/review-fix/SKILL.md) | Full PR lifecycle, domain-routed review, self-review |
+| **Tickets** | [`ticket-create`](skills/ticket-create/SKILL.md), [`ticket-branch`](skills/ticket-branch/SKILL.md), [`ticket-scope`](skills/ticket-scope/SKILL.md), [`ticket-jtbd`](skills/ticket-jtbd/SKILL.md), [`work-on`](skills/work-on/SKILL.md), [`linear`](skills/linear/SKILL.md), [`project-scope`](skills/project-scope/SKILL.md), [`investigate`](skills/investigate/SKILL.md) | Issue tracker integration, ticket scoping, bug investigation |
 | **Park** | [`park`](skills/park/SKILL.md), [`park-todo`](skills/park-todo/SKILL.md), [`park-remind`](skills/park-remind/SKILL.md), [`park-discover`](skills/park-discover/SKILL.md) | Deferred work parking |
-| **Scoping** | [`scope`](skills/scope/SKILL.md), [`jtbd`](skills/jtbd/SKILL.md), [`adr`](skills/adr/SKILL.md) | Architecture decisions, Job Story format |
-| **QA** | [`qa-scope`](skills/qa-scope/SKILL.md), [`qa-self`](skills/qa-self/SKILL.md), [`playwright`](skills/playwright/SKILL.md) | Test planning, self-review, browser testing |
-| **Session** | [`session-tasks`](skills/session-tasks/SKILL.md), [`session-wrap-up`](skills/session-wrap-up/SKILL.md) | In-session work tracking |
+| **Scoping** | [`scope`](skills/scope/SKILL.md), [`jtbd`](skills/jtbd/SKILL.md), [`adr`](skills/adr/SKILL.md), [`adr-evaluate`](skills/adr-evaluate/SKILL.md), [`ddd`](skills/ddd/SKILL.md) | Architecture decisions, Job Story format, DDD workshops |
+| **QA** | [`qa-scope`](skills/qa-scope/SKILL.md), [`qa-self`](skills/qa-self/SKILL.md), [`playwright`](skills/playwright/SKILL.md), [`py-test`](skills/py-test/SKILL.md) | Test planning, self-review, browser testing, pytest runner |
+| **Session** | [`session-tasks`](skills/session-tasks/SKILL.md), [`session-wrap-up`](skills/session-wrap-up/SKILL.md), [`plan-sync`](skills/plan-sync/SKILL.md), [`fanout`](skills/fanout/SKILL.md), [`verify-acc-dod`](skills/verify-acc-dod/SKILL.md) | In-session work tracking, parallel execution, acceptance verification |
 | **DB** | [`db`](skills/db/SKILL.md), [`db-psql`](skills/db-psql/SKILL.md) | Safe database query planning and execution |
-| **Tooling** | [`py-uv`](skills/py-uv/SKILL.md), [`slack`](skills/slack/SKILL.md), [`slack-review-request`](skills/slack-review-request/SKILL.md) | Python packaging, Slack notifications |
-| **Meta** | [`skill-create`](skills/skill-create/SKILL.md), [`skill-audit`](skills/skill-audit/SKILL.md), [`skill-index`](skills/skill-index/SKILL.md), [`audit-report`](skills/audit-report/SKILL.md), [`playbook`](skills/playbook/SKILL.md) | Create, audit, and discover skills |
+| **Tooling** | [`py-uv`](skills/py-uv/SKILL.md), [`slack`](skills/slack/SKILL.md), [`slack-review-request`](skills/slack-review-request/SKILL.md), [`slack-setup`](skills/slack-setup/SKILL.md), [`ask`](skills/ask/SKILL.md) | Python packaging, Slack notifications, interactive prompts |
+| **Meta** | [`skill-create`](skills/skill-create/SKILL.md), [`skill-audit`](skills/skill-audit/SKILL.md), [`skill-index`](skills/skill-index/SKILL.md), [`audit-report`](skills/audit-report/SKILL.md), [`playbook`](skills/playbook/SKILL.md), [`skill-reinforcement`](skills/skill-reinforcement/SKILL.md), [`onboarding`](skills/onboarding/SKILL.md) | Create, audit, discover, and learn skills |
+| **Maintenance** | [`memory-maintenance`](skills/memory-maintenance/SKILL.md), [`permission-maintenance`](skills/permission-maintenance/SKILL.md), [`playbook-maintenance`](skills/playbook-maintenance/SKILL.md), [`context-audit`](skills/context-audit/SKILL.md) | Memory, permission, playbook, and context hygiene |
 
 All skills use the `Dev10x:` prefix — type `/Dev10x:git-commit` in the Claude
 Code CLI to run it. Run `/Dev10x:skill-index` for the full reference.

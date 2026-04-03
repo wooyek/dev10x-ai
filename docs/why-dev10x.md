@@ -25,7 +25,7 @@ is for you.
 
 Every ad-hoc bash command triggers a permission prompt. Every
 prompt pulls you back to the terminal. Dev10x solves this with
-59 pre-approved skills that match allow rules — zero interruptions
+67 pre-approved skills that match allow rules — zero interruptions
 during normal workflows.
 
 ### Progress is invisible
@@ -79,14 +79,14 @@ for *why* agent-driven workflows matter. Dev10x provides the
 ### vs. Other Claude Code plugins/skills
 
 Most Claude Code skills are individual commands. Dev10x is a
-**complete pipeline** — 59 skills that chain together from ticket
+**complete pipeline** — 67 skills that chain together from ticket
 to merged PR, with hooks that teach the AI to self-correct and
 a playbook system that adapts to your project.
 
 | Aspect | Individual skills | Dev10x |
 |--------|-------------------|--------|
 | Scope | Single command | Full lifecycle |
-| Guardrails | None | 8 hooks, self-correcting |
+| Guardrails | None | 14 hooks, self-correcting |
 | Consistency | Per-author | Enforced conventions |
 | Orchestration | Manual chaining | Automated pipelines |
 | Customization | Fork and edit | Playbook overrides |
