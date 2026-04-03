@@ -31,4 +31,7 @@ VALIDATORS: list[Validator] = [
     PrBaseValidator(),
 ]
 
+for _v in VALIDATORS:
+    assert isinstance(_v, Validator), f"{type(_v).__name__} does not implement Validator"
+
 __all__ = ["VALIDATORS", "Validator"]
