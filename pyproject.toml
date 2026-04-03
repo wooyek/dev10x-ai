@@ -33,6 +33,15 @@ where = ["src"]
 [tool.pytest.ini_options]
 norecursedirs = ["codex-skills"]
 testpaths = ["tests"]
+addopts = "--cov=dev10x --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["dev10x"]
+
+[tool.coverage.report]
+fail_under = 30
+show_missing = true
+exclude_lines = ["if __name__", "pragma: no cover"]
 
 [tool.ruff]
 line-length = 99
