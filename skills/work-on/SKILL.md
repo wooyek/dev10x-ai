@@ -564,7 +564,7 @@ restarts. Run:
 task-plan-sync.py --set-context \
     work_type=<detected_work_type> \
     tickets='<JSON array of ticket IDs>' \
-    routing_table='{"commit":"Skill(Dev10x:git-commit)","create_pr":"Skill(Dev10x:gh-pr-create)","monitor_ci":"Skill(Dev10x:gh-pr-monitor)","push":"Skill(Dev10x:git)","groom":"Skill(Dev10x:git-groom)","branch":"Skill(Dev10x:ticket-branch)","verify_acceptance":"Skill(Dev10x:verify-acc-dod)"}'
+    routing_table='{"commit":"Skill(Dev10x:git-commit)","create_pr":"Skill(Dev10x:gh-pr-create)","monitor_ci":"Skill(Dev10x:gh-pr-monitor)","push":"Skill(Dev10x:git)","groom":"Skill(Dev10x:git-groom)","branch":"Skill(Dev10x:ticket-branch)","verify_acceptance":"Skill(Dev10x:verify-acc-dod)","merge_pr":"Skill(Dev10x:gh-pr-merge)"}'
 ```
 
 This ensures the PreCompact hook can inject the routing table and
@@ -611,6 +611,7 @@ for the full compaction protocol.
 | Check PR state | `mcp__plugin_Dev10x_cli__pr_detect` | `gh pr view --json` |
 | Verify PR readiness | `mcp__plugin_Dev10x_cli__verify_pr_state` | `gh pr checks` |
 | Verify acceptance criteria | `Skill(Dev10x:verify-acc-dod)` | Inline checks |
+| Merge PR | `Skill(Dev10x:gh-pr-merge)` | `gh pr merge`, `git merge` |
 
 This table survives context compaction — it is the canonical
 routing for shipping actions. If you are about to run a raw
@@ -641,6 +642,7 @@ missing, re-read this section before proceeding.
 9. check PR state → `mcp__plugin_Dev10x_cli__pr_detect`
 10. verify PR readiness → `mcp__plugin_Dev10x_cli__verify_pr_state`
 11. verify acceptance → `Skill(Dev10x:verify-acc-dod)`
+12. merge PR → `Skill(Dev10x:gh-pr-merge)`
 
 ### Groom Step: Always Delegate, Never Self-Assess
 
@@ -825,6 +827,7 @@ Common skill delegations:
 | Groom commit history | `Dev10x:git-groom` skill |
 | Update PR description | `Dev10x:gh-pr-create` skill (update mode) |
 | Request review | `Dev10x:gh-pr-request-review` skill |
+| Merge PR | `Dev10x:gh-pr-merge` skill |
 
 ### Post-Step Skill Delegation Verification
 

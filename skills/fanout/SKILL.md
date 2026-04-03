@@ -19,6 +19,7 @@ allowed-tools:
   - Skill(skill="Dev10x:git-commit")
   - Skill(skill="Dev10x:gh-pr-create")
   - Skill(skill="Dev10x:ticket-branch")
+  - Skill(skill="Dev10x:gh-pr-merge")
   - Skill(skill="Dev10x:session-wrap-up")
   - Skill(skill="Dev10x:skill-audit")
   - mcp__plugin_Dev10x_cli__*
@@ -293,9 +294,9 @@ Work-on executes the pr-continuation play:
    - PR is marked ready (not draft)
    - Working copy is clean
    Do NOT merge via raw `gh pr merge` — delegate to
-   `Dev10x:work-on` which enforces the full pre-merge
-   checklist. Raw merge bypasses review comment checks
-   (GH-549 F-05).
+   `Skill(Dev10x:gh-pr-merge)` which validates all 7
+   pre-merge conditions. Raw merge bypasses review comment
+   checks (GH-549 F-05).
 8. After merge → rebase any downstream items that
    depend on this PR's changes
 
@@ -407,8 +408,8 @@ For each PR:
 2. If CI fails → fix with fixup commits, push, re-monitor
 3. If new review comments → delegate to `Dev10x:gh-pr-respond`
 4. When CI passes and PR is approved → merge via
-   `gh pr merge <MERGE_STRATEGY> --delete-branch`
-   (see Merge Strategy below)
+   `Skill(Dev10x:gh-pr-merge)` (validates all pre-merge
+   conditions, uses configured merge strategy)
 5. After merge → rebase downstream branches if needed
 
 Mark each subtask `completed` when the PR is merged or
