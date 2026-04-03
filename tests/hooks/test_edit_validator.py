@@ -2,126 +2,98 @@
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 import pytest
 import yaml
 
+from dev10x.domain.validation_rule import Rule
 from dev10x.hooks.edit_validator import (
     EditRule,
-    _basename,
     load_rules,
 )
 
 
 @pytest.fixture()
-def rule_with_pattern() -> EditRule:
-    return EditRule(
+def rule_with_pattern() -> Rule:
+    return Rule(
         name="block-env",
-        file_pattern=re.compile(r"\.env$"),
-        file_names=frozenset(),
-        file_prefixes=(),
-        file_substrings=(),
-        content_pattern=None,
+        file_pattern=r"\.env$",
         message="BLOCKED: {file_path}",
     )
 
 
 @pytest.fixture()
-def rule_with_names() -> EditRule:
-    return EditRule(
+def rule_with_names() -> Rule:
+    return Rule(
         name="block-secrets",
-        file_pattern=None,
-        file_names=frozenset({"credentials.json", "secrets.yaml"}),
-        file_prefixes=(),
-        file_substrings=(),
-        content_pattern=None,
+        file_names=["credentials.json", "secrets.yaml"],
         message="BLOCKED: sensitive file",
     )
 
 
 @pytest.fixture()
-def rule_with_prefixes() -> EditRule:
-    return EditRule(
+def rule_with_prefixes() -> Rule:
+    return Rule(
         name="block-dot-env",
-        file_pattern=None,
-        file_names=frozenset(),
-        file_prefixes=(".env",),
-        file_substrings=(),
-        content_pattern=None,
+        file_prefixes=[".env"],
         message="BLOCKED: env file",
     )
 
 
 @pytest.fixture()
-def rule_with_substrings() -> EditRule:
-    return EditRule(
+def rule_with_substrings() -> Rule:
+    return Rule(
         name="block-secret-dirs",
-        file_pattern=None,
-        file_names=frozenset(),
-        file_prefixes=(),
-        file_substrings=("/secrets/",),
-        content_pattern=None,
+        file_substrings=["/secrets/"],
         message="BLOCKED: secrets directory",
     )
 
 
 @pytest.fixture()
-def rule_with_content_pattern() -> EditRule:
-    return EditRule(
+def rule_with_content_pattern() -> Rule:
+    return Rule(
         name="block-eval",
-        file_pattern=re.compile(r"SKILL\.md$"),
-        file_names=frozenset(),
-        file_prefixes=(),
-        file_substrings=(),
-        content_pattern=re.compile(r"\beval\b"),
+        file_pattern=r"SKILL\.md$",
+        content_pattern=r"\beval\b",
         message="BLOCKED: eval in skill",
     )
-
-
-class TestBasename:
-    def test_extracts_filename_from_path(self) -> None:
-        assert _basename(path="/work/project/src/main.py") == "main.py"
-
-    def test_returns_input_when_no_slash(self) -> None:
-        assert _basename(path="main.py") == "main.py"
 
 
 class TestMatchesFile:
     def test_matches_file_pattern(
         self,
-        rule_with_pattern: EditRule,
+        rule_with_pattern: Rule,
     ) -> None:
         assert rule_with_pattern.matches_file(file_path="/work/.env") is True
 
     def test_rejects_non_matching_pattern(
         self,
-        rule_with_pattern: EditRule,
+        rule_with_pattern: Rule,
     ) -> None:
         assert rule_with_pattern.matches_file(file_path="/work/main.py") is False
 
     def test_matches_file_names(
         self,
-        rule_with_names: EditRule,
+        rule_with_names: Rule,
     ) -> None:
         assert rule_with_names.matches_file(file_path="/work/credentials.json") is True
 
     def test_rejects_non_matching_names(
         self,
-        rule_with_names: EditRule,
+        rule_with_names: Rule,
     ) -> None:
         assert rule_with_names.matches_file(file_path="/work/config.json") is False
 
     def test_matches_file_prefixes(
         self,
-        rule_with_prefixes: EditRule,
+        rule_with_prefixes: Rule,
     ) -> None:
         assert rule_with_prefixes.matches_file(file_path="/work/.env.production") is True
 
     def test_matches_file_substrings(
         self,
-        rule_with_substrings: EditRule,
+        rule_with_substrings: Rule,
     ) -> None:
         assert (
             rule_with_substrings.matches_file(
@@ -134,39 +106,38 @@ class TestMatchesFile:
 class TestMatchesContent:
     def test_matches_when_no_content_pattern(
         self,
-        rule_with_pattern: EditRule,
+        rule_with_pattern: Rule,
     ) -> None:
         assert rule_with_pattern.matches_content(content="anything") is True
 
     def test_matches_content_pattern(
         self,
-        rule_with_content_pattern: EditRule,
+        rule_with_content_pattern: Rule,
     ) -> None:
         assert rule_with_content_pattern.matches_content(content="eval(code)") is True
 
     def test_rejects_non_matching_content(
         self,
-        rule_with_content_pattern: EditRule,
+        rule_with_content_pattern: Rule,
     ) -> None:
         assert rule_with_content_pattern.matches_content(content="safe code") is False
 
 
 class TestFormatMessage:
-    def test_formats_file_path(self, rule_with_pattern: EditRule) -> None:
+    def test_formats_file_path(self, rule_with_pattern: Rule) -> None:
         result = rule_with_pattern.format_message(file_path="/work/.env")
 
         assert result == "BLOCKED: /work/.env"
 
     def test_appends_compensation_descriptions(self) -> None:
-        rule = EditRule(
+        from dev10x.domain.validation_rule import Compensation
+
+        rule = Rule(
             name="test",
-            file_pattern=None,
-            file_names=frozenset(),
-            file_prefixes=(),
-            file_substrings=(),
-            content_pattern=None,
             message="BLOCKED",
-            compensations=[{"description": "Use the Write tool instead"}],
+            compensations=[
+                Compensation(type="use-skill", description="Use the Write tool instead")
+            ],
         )
 
         result = rule.format_message(file_path="/work/file.py")
@@ -218,3 +189,8 @@ class TestLoadRules:
         rules = load_rules(yaml_path=yaml_path)
 
         assert len(rules) == 0
+
+
+class TestEditRuleAlias:
+    def test_editrule_is_rule(self) -> None:
+        assert EditRule is Rule
