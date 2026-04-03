@@ -11,10 +11,7 @@ import yaml
 from dev10x.hooks.edit_validator import (
     EditRule,
     _basename,
-    format_message,
     load_rules,
-    matches_content,
-    matches_file,
 )
 
 
@@ -96,39 +93,38 @@ class TestMatchesFile:
         self,
         rule_with_pattern: EditRule,
     ) -> None:
-        assert matches_file(rule=rule_with_pattern, file_path="/work/.env") is True
+        assert rule_with_pattern.matches_file(file_path="/work/.env") is True
 
     def test_rejects_non_matching_pattern(
         self,
         rule_with_pattern: EditRule,
     ) -> None:
-        assert matches_file(rule=rule_with_pattern, file_path="/work/main.py") is False
+        assert rule_with_pattern.matches_file(file_path="/work/main.py") is False
 
     def test_matches_file_names(
         self,
         rule_with_names: EditRule,
     ) -> None:
-        assert matches_file(rule=rule_with_names, file_path="/work/credentials.json") is True
+        assert rule_with_names.matches_file(file_path="/work/credentials.json") is True
 
     def test_rejects_non_matching_names(
         self,
         rule_with_names: EditRule,
     ) -> None:
-        assert matches_file(rule=rule_with_names, file_path="/work/config.json") is False
+        assert rule_with_names.matches_file(file_path="/work/config.json") is False
 
     def test_matches_file_prefixes(
         self,
         rule_with_prefixes: EditRule,
     ) -> None:
-        assert matches_file(rule=rule_with_prefixes, file_path="/work/.env.production") is True
+        assert rule_with_prefixes.matches_file(file_path="/work/.env.production") is True
 
     def test_matches_file_substrings(
         self,
         rule_with_substrings: EditRule,
     ) -> None:
         assert (
-            matches_file(
-                rule=rule_with_substrings,
+            rule_with_substrings.matches_file(
                 file_path="/work/secrets/api.key",
             )
             is True
@@ -140,24 +136,24 @@ class TestMatchesContent:
         self,
         rule_with_pattern: EditRule,
     ) -> None:
-        assert matches_content(rule=rule_with_pattern, content="anything") is True
+        assert rule_with_pattern.matches_content(content="anything") is True
 
     def test_matches_content_pattern(
         self,
         rule_with_content_pattern: EditRule,
     ) -> None:
-        assert matches_content(rule=rule_with_content_pattern, content="eval(code)") is True
+        assert rule_with_content_pattern.matches_content(content="eval(code)") is True
 
     def test_rejects_non_matching_content(
         self,
         rule_with_content_pattern: EditRule,
     ) -> None:
-        assert matches_content(rule=rule_with_content_pattern, content="safe code") is False
+        assert rule_with_content_pattern.matches_content(content="safe code") is False
 
 
 class TestFormatMessage:
     def test_formats_file_path(self, rule_with_pattern: EditRule) -> None:
-        result = format_message(rule=rule_with_pattern, file_path="/work/.env")
+        result = rule_with_pattern.format_message(file_path="/work/.env")
 
         assert result == "BLOCKED: /work/.env"
 
@@ -173,7 +169,7 @@ class TestFormatMessage:
             compensations=[{"description": "Use the Write tool instead"}],
         )
 
-        result = format_message(rule=rule, file_path="/work/file.py")
+        result = rule.format_message(file_path="/work/file.py")
 
         assert "Use the Write tool instead" in result
 
