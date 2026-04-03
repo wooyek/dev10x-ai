@@ -94,11 +94,13 @@ def _parse_yaml(*, yaml_path: Path) -> Config:
                 compensations=compensations,
                 hook_block=entry.get("hook_block", True),
                 reason=entry.get("reason", ""),
+                message=entry.get("message", ""),
                 related=entry.get("related", []),
                 file_pattern=entry.get("file_pattern", ""),
                 file_names=entry.get("file_names", []),
                 file_prefixes=entry.get("file_prefixes", []),
                 file_substrings=entry.get("file_substrings", []),
+                content_pattern=entry.get("content_pattern", ""),
             )
         )
 
@@ -119,11 +121,13 @@ def _dict_to_config(*, raw: dict[str, Any]) -> Config:
             compensations=[Compensation(**c) for c in r.get("compensations", [])],
             hook_block=r.get("hook_block", True),
             reason=r.get("reason", ""),
+            message=r.get("message", ""),
             related=r.get("related", []),
             file_pattern=r.get("file_pattern", ""),
             file_names=r.get("file_names", []),
             file_prefixes=r.get("file_prefixes", []),
             file_substrings=r.get("file_substrings", []),
+            content_pattern=r.get("content_pattern", ""),
         )
         for r in raw.get("rules", [])
     ]

@@ -7,79 +7,46 @@ iterates registered rules, first block wins.
 from __future__ import annotations
 
 import json
-import re
 import sys
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import yaml
 
+from dev10x.domain.validation_rule import Compensation, Rule
+
 _YAML_PATH = Path(__file__).parent.parent / "validators" / "command-skill-map.yaml"
 
-
-@dataclass(frozen=True)
-class EditRule:
-    name: str
-    file_pattern: re.Pattern[str] | None
-    file_names: frozenset[str]
-    file_prefixes: tuple[str, ...]
-    file_substrings: tuple[str, ...]
-    content_pattern: re.Pattern[str] | None
-    message: str
-    compensations: list[dict[str, str]] = field(default_factory=list)
-
-    def matches_file(self, *, file_path: str) -> bool:
-        if self.file_pattern and self.file_pattern.search(file_path):
-            return True
-        name = _basename(path=file_path)
-        if name in self.file_names:
-            return True
-        if any(name.startswith(p) for p in self.file_prefixes):
-            return True
-        return any(s in file_path for s in self.file_substrings)
-
-    def matches_content(self, *, content: str) -> bool:
-        if self.content_pattern is None:
-            return True
-        return self.content_pattern.search(content) is not None
-
-    def format_message(self, *, file_path: str) -> str:
-        msg = self.message.format(file_path=file_path)
-        for comp in self.compensations:
-            desc = comp.get("description", "")
-            if desc:
-                msg += f"\n\n{desc.strip()}"
-        return msg
+EditRule = Rule
 
 
-def load_rules(*, yaml_path: Path = _YAML_PATH) -> list[EditRule]:
+def load_rules(*, yaml_path: Path = _YAML_PATH) -> list[Rule]:
     data: dict[str, Any] = yaml.safe_load(yaml_path.read_text())
-    rules: list[EditRule] = []
+    rules: list[Rule] = []
     for entry in data.get("rules", []):
         if entry.get("matcher") != "Edit|Write":
             continue
         if not entry.get("hook_block", False):
             continue
-        fp = entry.get("file_pattern")
-        cp = entry.get("content_pattern")
+        compensations = [
+            Compensation(**{k: v for k, v in c.items() if k in Compensation.__dataclass_fields__})
+            for c in entry.get("compensations", [])
+        ]
         rules.append(
-            EditRule(
+            Rule(
                 name=entry.get("name", ""),
-                file_pattern=re.compile(fp) if fp else None,
-                file_names=frozenset(entry.get("file_names", [])),
-                file_prefixes=tuple(entry.get("file_prefixes", [])),
-                file_substrings=tuple(entry.get("file_substrings", [])),
-                content_pattern=re.compile(cp) if cp else None,
+                matcher="Edit|Write",
+                hook_block=True,
+                file_pattern=entry.get("file_pattern", ""),
+                file_names=entry.get("file_names", []),
+                file_prefixes=entry.get("file_prefixes", []),
+                file_substrings=entry.get("file_substrings", []),
+                content_pattern=entry.get("content_pattern", ""),
                 message=(entry.get("message") or entry.get("reason") or "BLOCKED").strip(),
-                compensations=entry.get("compensations", []),
+                compensations=compensations,
             )
         )
     return rules
-
-
-def _basename(path: str) -> str:
-    return path.rsplit("/", 1)[-1] if "/" in path else path
 
 
 def block(*, message: str) -> None:

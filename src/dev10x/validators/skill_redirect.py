@@ -17,13 +17,14 @@ Dev10x:skill-reinforcement. Per-project overrides:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import yaml
 
 from dev10x.domain import HookInput, HookResult
+from dev10x.domain.validation_rule import Compensation, Config, Rule
 
 _YAML_PATH = Path(__file__).parent / "command-skill-map.yaml"
 
@@ -38,37 +39,12 @@ OVERRIDE_HINT = (
 )
 
 
-@dataclass
-class _Compensation:
-    type: str
-    skill: str = ""
-    tool: str = ""
-    guardrails: str = ""
-    fallback: str = ""
-    description: str = ""
-
-
-@dataclass
-class _Rule:
-    name: str
-    patterns: list[re.Pattern[str]]
-    except_: list[str]
-    compensations: list[_Compensation]
-
-
-@dataclass
-class _Config:
-    friction_level: str = "guided"
-    plugin_repo: str = ""
-    rules: list[_Rule] = field(default_factory=list)
-
-
-def _load_config(yaml_path: Path = _YAML_PATH) -> _Config:
+def _load_config(yaml_path: Path = _YAML_PATH) -> Config:
     data: dict[str, Any] = yaml.safe_load(yaml_path.read_text())
     cfg_data = data.get("config", {})
     friction_level = cfg_data.get("friction_level", "guided")
     plugin_repo = cfg_data.get("plugin_repo", "")
-    rules: list[_Rule] = []
+    rules: list[Rule] = []
     for entry in data.get("rules", []):
         matcher = entry.get("matcher", "Bash")
         if matcher != "Bash":
@@ -76,7 +52,7 @@ def _load_config(yaml_path: Path = _YAML_PATH) -> _Config:
         if not entry.get("hook_block", False):
             continue
         compensations = [
-            _Compensation(
+            Compensation(
                 type=c.get("type", "use-skill"),
                 skill=c.get("skill", ""),
                 tool=c.get("tool", ""),
@@ -87,21 +63,23 @@ def _load_config(yaml_path: Path = _YAML_PATH) -> _Config:
             for c in entry.get("compensations", [])
         ]
         rules.append(
-            _Rule(
+            Rule(
                 name=entry.get("name", ""),
-                patterns=[re.compile(p) for p in entry.get("patterns", [])],
+                patterns=entry.get("patterns", []),
+                matcher="Bash",
                 except_=entry.get("except", []),
                 compensations=compensations,
+                hook_block=True,
             )
         )
-    return _Config(
+    return Config(
         friction_level=friction_level,
         plugin_repo=plugin_repo,
         rules=rules,
     )
 
 
-_CONFIG: _Config = _load_config()
+_CONFIG: Config = _load_config()
 
 _QUICK_TOKENS = frozenset(["commit", "create", "push", "rebase", "checks", "issue"])
 
@@ -122,7 +100,7 @@ _WRONG_TEMP_PATH_RE = re.compile(r"-F\s+/tmp/claude/(?!git/)\S+/\S+\.\S+")
 def _format_skill_msg(
     *,
     label: str,
-    comp: _Compensation,
+    comp: Compensation,
     friction_level: str,
     plugin_repo: str,
 ) -> str:
@@ -179,9 +157,7 @@ class SkillRedirectValidator:
     def validate(self, inp: HookInput) -> HookResult | None:
         command = inp.command
         for rule in _CONFIG.rules:
-            if not any(p.search(command) for p in rule.patterns):
-                continue
-            if any(exc in command for exc in rule.except_):
+            if not rule.matches_command(command=command):
                 continue
             comp = rule.compensations[0] if rule.compensations else None
             if not comp:
@@ -190,7 +166,7 @@ class SkillRedirectValidator:
                 continue
             if comp.skill == "Dev10x:git-commit" and _WRONG_TEMP_PATH_RE.search(command):
                 return HookResult(message=_COMMIT_HEAL_MSG)
-            label = rule.patterns[0].pattern
+            label = rule.compiled_patterns[0].pattern
             msg = _format_skill_msg(
                 label=label,
                 comp=comp,
