@@ -3,6 +3,102 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.46.0 — Architecture Consolidation & Performance
+
+Released 2026-04-04
+
+### Features
+
+- **Unified Python package structure** — all validators, hooks,
+  and CLI tools consolidated into `src/dev10x/` package with
+  lazy-loading entry point ([GH-588], [GH-589])
+- **RuleEngine for unified rule evaluation** — single engine
+  replaces per-validator rule dispatch ([GH-644])
+- **Typed config loading via Protocol** — config system uses
+  Protocol-based contracts for type safety ([GH-650])
+- **Friction-level tiered enforcement** — skill redirect hooks
+  support configurable friction levels per command ([GH-530])
+- **Executable acceptance criteria checks** — verify
+  definition-of-done criteria programmatically ([GH-640])
+- **Structured decision widgets** — AskUserQuestion gates use
+  rich option widgets instead of plain text ([GH-636])
+- **Pre-merge validation gate** — blocking check before merge
+  ensures CI and review requirements are met ([GH-635])
+- **On-demand PR review audits** — trigger review audits
+  outside the normal PR lifecycle ([GH-551])
+- **Configurable protected branch lists** — per-project
+  protected branches without hardcoding ([GH-578])
+- **Permission-aware dispatch in fanout** — parallel work
+  streams respect permission boundaries ([GH-562])
+- **Project-level commit gitmoji mapping** — projects can
+  override default gitmoji conventions ([GH-585])
+- **Groom skill conflict resolution** — interactive rebase
+  handles merge conflicts gracefully ([GH-625])
+
+### Performance
+
+- **msgpack-cached config loading** — config reads use msgpack
+  cache, reducing hook latency ([GH-591], [GH-652], [GH-653])
+- **Lazy validator imports** — validators load only when
+  needed, cutting startup time ([GH-654])
+- **Startup time regression tests** — benchmark suite prevents
+  hook performance regressions ([GH-656], [GH-657], [GH-658])
+
+### Refactoring
+
+- **Domain-driven validator architecture** — validators use
+  Protocol conformance, shared GitContext, and reusable domain
+  value objects ([GH-648], [GH-649], [GH-651])
+- **Unified Rule/Config across all validators** — single Rule
+  and Config types replace per-validator duplicates ([GH-645])
+- **Single SQL validation source** — SQL checks consolidated
+  into one module ([GH-647])
+- **Domain-driven plan persistence** — plan storage uses
+  domain models instead of raw file I/O ([GH-646])
+- **Tell Don't Ask on EditRule** — EditRule encapsulates its
+  own decision logic ([GH-643])
+- **First-class skill script packages** — skill scripts are
+  proper Python packages with imports ([GH-604])
+- **Isolated tool modules** — Git, GitHub, and utility tools
+  split into focused modules ([GH-600], [GH-601])
+- **Python-based session hook dispatch** — session hooks
+  migrate from shell to Python ([GH-598])
+- **CLI-based validators** — Edit/Write and Bash validation
+  use Click CLI commands ([GH-594], [GH-596], [GH-597])
+- **Unified test directory** — all tests under `tests/`
+  mirroring `src/` structure ([GH-595], [GH-607])
+- **Deterministic test data via fakers** — factory-based
+  test data generation ([GH-592])
+- **Deprecated hook scripts removed** — old shell shims
+  cleaned up ([GH-610])
+
+### Fixes
+
+- **Resolve macOS bash 3.2 hook errors** — hooks now work
+  on macOS default bash ([GH-661])
+- **Resolve permission-maintenance noise filter gaps** —
+  false positive noise in permission audits ([GH-579])
+
+### Docs
+
+- **Reflect new src/ and tests/ layout** — documentation
+  updated to match consolidated structure ([GH-611])
+- **Document TOML vs YAML benchmark decision** — ADR for
+  config format choice ([GH-655])
+- **Showcase orchestration and planning in README** —
+  feature highlights for new users
+- **Coverage reporting in pytest runs** — test output
+  includes coverage data ([GH-608])
+
+### Tests
+
+- **End-to-end validation of refactored plugin** — full
+  plugin integration test suite ([GH-612])
+- **Regex compilation benchmarking** — benchmark suite for
+  compiled regex patterns ([GH-657])
+- **Hook performance benchmarking** — pytest-benchmark
+  integration for hook validators ([GH-656])
+
 ## 0.45.0 — CI Safety & Hook Config
 
 Released 2026-04-01
