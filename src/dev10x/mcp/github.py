@@ -87,7 +87,7 @@ def issue_get(
 ) -> dict[str, Any]:
     args = [str(number)]
     if repo:
-        args.extend(["--repo", repo])
+        args.append(repo)
     result = run_script("skills/gh-context/scripts/gh-issue-get.sh", *args)
     if result.returncode != 0:
         return {"error": result.stderr.strip()}
@@ -104,7 +104,7 @@ def issue_comments(
 ) -> dict[str, Any]:
     args = [str(number)]
     if repo:
-        args.extend(["--repo", repo])
+        args.append(repo)
     result = run_script("skills/gh-context/scripts/gh-issue-comments.sh", *args)
     if result.returncode != 0:
         return {"error": result.stderr.strip()}
