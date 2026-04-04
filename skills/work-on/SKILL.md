@@ -52,6 +52,46 @@ During each phase, create subtasks for the concrete work items
 discovered — e.g., Phase 2 creates one subtask per source being
 fetched, Phase 4 creates subtasks per plan step.
 
+## Phase 0: Session Friction Level (GH-689)
+
+**At the very start** — before Phase 1 — prompt the user to set
+the session friction level. This controls how aggressively the
+skill auto-advances vs pauses for confirmation.
+
+**Skip this prompt when:**
+- Running as a nested invocation from `Dev10x:fanout` (fanout
+  sets friction level once for the entire session)
+- Session config already exists at `.claude/Dev10x/session.yaml`
+  (loaded after compaction or from a prior invocation)
+
+**REQUIRED: Call `AskUserQuestion`** (ALWAYS_ASK — fires at all
+friction levels, including adaptive).
+
+Options:
+- Guided (Recommended) — Gates fire with recommendations,
+  user can override. Default for attended sessions.
+- Adaptive (AFK) — Auto-select recommended options at all
+  gates. No `AskUserQuestion` interruptions except
+  `ALWAYS_ASK` gates. Best for walk-away sessions.
+- Strict — All gates fire, no auto-selection. Every
+  decision requires explicit user input.
+
+**Persist the choice** to `.claude/Dev10x/session.yaml`:
+
+```yaml
+friction_level: guided  # strict | guided | adaptive
+```
+
+Write this file using the Write tool. The PreCompact hook
+reads it to inject friction context into recovery summaries.
+
+**How skills consume the level:**
+- Gates marked `(Recommended)` auto-select at `adaptive`
+- Gates marked `ALWAYS_ASK` always fire regardless of level
+- The `references/friction-levels.md` document defines the
+  full behavior matrix
+- Playbook steps may override with `friction_level:` per step
+
 ## Prerequisites
 
 | Capability | Required for | Tool |
