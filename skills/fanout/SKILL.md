@@ -124,6 +124,7 @@ independently:
 |---------|------|--------|
 | `https://github.com/{owner}/{repo}/issues` | `scope:issues` | Restrict scan to issues only |
 | `https://github.com/{owner}/{repo}/pulls` | `scope:pulls` | Restrict scan to PRs only |
+| `https://github.com/{owner}/{repo}/milestone/{N}` | `scope:milestone` | Fetch milestone title, list issues |
 | `https://github.com/{owner}/{repo}/issues/{N}` | `item:issue` | Fetch specific issue |
 | `https://github.com/{owner}/{repo}/pull/{N}` | `item:pr` | Fetch specific PR |
 | `#N` or bare number | `item` | Classify per `Dev10x:work-on` Phase 1 rules |
@@ -267,6 +268,18 @@ Skipping either step causes cascading errors — wrong-branch
 commits require destructive `git reset --hard` cleanup, and
 inline implementation bypasses work-on's structured lifecycle
 (branch setup, code review, shipping pipeline).
+
+### Post-Item Delegation Verification (REQUIRED)
+
+After completing **each** work item, verify that
+`Skill(Dev10x:work-on)` was invoked for that item. If not,
+this is a compliance violation — do NOT proceed to the next
+item. The same rule applies to merge operations: each PR
+MUST use `Skill(Dev10x:gh-pr-merge)`, never raw `gh pr merge`.
+
+Fanout agents degrade after the first 1–2 items, falling back
+to inline implementation and raw CLI commands for the rest of
+the batch. This check catches the drift before it cascades.
 
 ### Permission-Aware Dispatch
 
