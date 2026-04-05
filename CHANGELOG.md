@@ -3,6 +3,21 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.48.0 — Playbook Modes & Merge Safety
+
+Released 2026-04-05
+
+### Features
+
+- **Per-step modes and friction in playbooks** — playbook steps
+  can declare execution modes and friction levels independently
+  ([GH-712])
+
+### Fixes
+
+- **Ensure acceptance criteria run before merge** — acceptance
+  criteria checks execute before merge gate proceeds ([GH-711])
+
 ## 0.47.0 — Skill Reinforcement & Merge Safety
 
 Released 2026-04-05
