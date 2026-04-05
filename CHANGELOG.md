@@ -3,6 +3,56 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.47.0 — Skill Reinforcement & Merge Safety
+
+Released 2026-04-05
+
+### Features
+
+- **PermissionDenied hook corrections** — hooks detect and
+  correct permission-denied errors with targeted guidance
+  ([GH-705])
+- **Merged PR audit for unaddressed findings** — surface
+  unresolved review threads after merge ([GH-699])
+- **Autonomous merge cascade in AFK mode** — unattended
+  merge pipelines complete without manual intervention
+  ([GH-688])
+- **Session friction level prompt** — prompt users to select
+  friction level at session start ([GH-689])
+- **Comprehensive architecture auditing** — architecture
+  advisor covers broader design evaluation ([GH-687])
+
+### Fixes
+
+- **Prevent merging with unaddressed review comments** —
+  merge gate blocks when review threads remain open
+  ([GH-698])
+- **Prevent false positive on uv shebang hooks** — rule
+  engine skips uv shebang lines in script validation
+  ([GH-705])
+- **Enable background CI monitor to poll autonomously** —
+  CI monitor runs without blocking the session ([GH-695])
+- **Resolve unaddressed PR #691 review findings** — fix
+  outstanding review comments from prior PR ([GH-697])
+- **Resolve circular import in rule_engine** — break import
+  cycle in Python package structure ([GH-681])
+- **Resolve fanout audit findings** — address audit issues
+  in parallel work stream orchestrator ([GH-693])
+
+### Refactoring
+
+- **Rule-engine commit allowlist** — allowlist-based commit
+  validation replaces ad-hoc checks ([GH-705])
+- **Global skill-reinforcement overrides** — skill redirect
+  rules configurable at global scope ([GH-705])
+
+### Tests
+
+- **Ensure Python entry point loadability** — verify all
+  CLI entry points import without error ([GH-681])
+- **Ensure Python script entry point loadability** — extend
+  entry point tests to skill scripts ([GH-681])
+
 ## 0.46.0 — Architecture Consolidation & Performance
 
 Released 2026-04-04
