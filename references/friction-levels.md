@@ -24,9 +24,9 @@ config:
   friction_level: guided  # strict | guided | adaptive
 ```
 
-Per-project overrides via:
+User overrides via:
 ```
-~/.claude/projects/<project>/memory/playbooks/skill-reinforcement.yaml
+~/.claude/memory/Dev10x/skill-reinforcement.yaml
 ```
 
 ## Skill Decision Gates

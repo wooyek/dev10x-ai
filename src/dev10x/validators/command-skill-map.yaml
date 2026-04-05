@@ -7,7 +7,7 @@
 #   - Dev10x:skill-reinforcement (skill — advisory only)
 #
 # Per-project override: place a custom version at:
-#   ~/.claude/projects/<project>/memory/playbooks/skill-reinforcement.yaml
+#   ~/.claude/memory/Dev10x/skill-reinforcement.yaml
 # The hook merges override rules (user entries take precedence).
 #
 # Schema:
