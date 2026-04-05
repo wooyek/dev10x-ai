@@ -10,8 +10,8 @@ Supports three friction levels:
   adaptive — allow + warning in additionalContext (future)
 
 The YAML is the single source of truth shared with
-Dev10x:skill-reinforcement. Per-project overrides:
-  ~/.claude/projects/<project>/memory/playbooks/skill-reinforcement.yaml
+Dev10x:skill-reinforcement. User overrides:
+  ~/.claude/memory/Dev10x/skill-reinforcement.yaml
 """
 
 from __future__ import annotations
