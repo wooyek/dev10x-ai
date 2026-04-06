@@ -65,6 +65,50 @@ Feedback is re-evaluated in these scenarios:
 Feedback is **not** automatically re-checked after simple file edits or
 approvals — it requires a commit push to re-trigger.
 
+## Merge Configuration (Fanout / Work-On)
+
+When `Dev10x:fanout` or `Dev10x:work-on` orchestrate PR merges,
+two playbook-level fields control behavior.
+
+### `merge_mode`
+
+Controls whether PRs are merged autonomously after CI passes.
+
+| Mode | Behavior |
+|------|----------|
+| `manual` | Mark ready, stop. User merges explicitly. |
+| `autonomous` | After CI green + no comments → auto-merge |
+| `cascade` | Autonomous + auto-rebase downstream PRs |
+
+**Resolution order** (first match wins):
+1. Session friction level — `adaptive` defaults to `cascade`
+2. Playbook override — `merge_mode` in `work-on.yaml`
+3. Default — `manual`
+
+### `merge_strategy`
+
+Controls the `gh pr merge` flag passed during merge.
+
+| Strategy | Flag | When to use |
+|----------|------|-------------|
+| Rebase | `--rebase` | Default — atomic commits preserved |
+| Squash | `--squash` | Single-commit PRs or messy history |
+| Merge commit | `--merge` | Protected branches requiring merge |
+
+**Resolution order** (first match wins):
+1. Playbook override — `merge_strategy` in `work-on.yaml`
+2. Memory note — user feedback memory mentioning preference
+3. Default — `--rebase`
+
+### Playbook Configuration
+
+Add these fields to `~/.claude/projects/<project>/memory/playbooks/work-on.yaml`:
+
+```yaml
+merge_mode: cascade
+merge_strategy: squash
+```
+
 ## References
 
 - PR body format rules: `references/git-pr.md` § PR Body
