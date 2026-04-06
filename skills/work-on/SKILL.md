@@ -338,6 +338,12 @@ guidance applies when *expanding* the epic in Phase 4. In Phase
 how obvious the fix seems. The task list is created first; the
 agent adapts during execution.
 
+**Anti-pattern (GH-729):** A session collapsed "Reproduce the
+issue", "Investigate root cause", and "Implement fix" into a
+single task "Investigate and implement fix" because the root
+cause seemed obvious. This is a Phase 3 violation. All 3 tasks
+MUST exist in the list even if Phase 4 execution skips sub-steps.
+
 The task list is the supervisor's interface for tracking progress
 and adding new tasks during the session.
 
@@ -441,7 +447,12 @@ play definitions. If you cannot confirm this, STOP.
     count must match the number of steps after mode/friction
     resolution (not the raw play step count). If fewer tasks
     exist than resolved steps, go back and create the missing
-    ones.
+    ones. **DO NOT mark Phase 3 complete until this count
+    matches.** The VERIFY is not optional — skipping it is a
+    Phase 3 compliance violation (GH-729). Example: the bugfix
+    play with `shipping-pipeline-solo` fragment produces 14
+    steps. If `TaskList` shows fewer than 14 Phase 4 subtasks,
+    you skipped or collapsed steps — create them now.
 
 **Work type classification:**
 
