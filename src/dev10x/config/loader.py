@@ -8,7 +8,7 @@ from typing import Any
 import msgpack
 import yaml
 
-from dev10x.domain.config_loader import ConfigLoader  # noqa: F401
+from dev10x.domain.config_loader import ConfigLoader
 from dev10x.domain.validation_rule import Compensation, Config, Rule
 
 DEFAULT_TTL_SECONDS = 1800

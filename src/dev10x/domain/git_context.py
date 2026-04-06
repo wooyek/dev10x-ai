@@ -1,8 +1,8 @@
 """GitContext — lazy-cached git subprocess state.
 
 Replaces duplicated get_toplevel(), get_branch(), _run_git()
-calls scattered across session.py, task_plan_sync.py, plan.py,
-and pr_base.py with a single utility.
+calls scattered across session.py, task_plan_sync.py, and plan.py
+with a single utility.
 """
 
 from __future__ import annotations

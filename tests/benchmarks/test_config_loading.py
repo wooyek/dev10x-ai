@@ -76,7 +76,7 @@ class TestConfigLoadingBenchmark:
         assert result is not None
         assert "rules" in result
 
-    def test_tomllib_cold_load(self, benchmark, yaml_data: dict) -> None:
+    def test_tomllib_cold_load_config_section_only(self, benchmark, yaml_data: dict) -> None:
         import tomllib
 
         cfg = yaml_data.get("config", {})
