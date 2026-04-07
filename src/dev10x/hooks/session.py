@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 from datetime import UTC, datetime
@@ -266,3 +267,203 @@ def context_compact() -> None:
 
     escaped = _escape_for_json(s=summary)
     print(f'{{"hookSpecificOutput":{{"systemMessage":"{escaped}"}}}}')
+
+
+def session_tmpdir() -> None:
+    """Create session scratch directory and install mktmp.sh (SessionStart hook)."""
+    try:
+        data = json.load(sys.stdin)
+    except (json.JSONDecodeError, EOFError):
+        sys.exit(0)
+
+    session_id = data.get("session_id") or ""
+    if not session_id:
+        sys.exit(0)
+
+    Path(f"/tmp/claude/{session_id}").mkdir(parents=True, exist_ok=True)
+
+    plugin_root = Path(__file__).parents[3]
+    mktmp_src = plugin_root / "bin" / "mktmp.sh"
+    dest_bin = Path("/tmp/claude/bin")
+    dest_bin.mkdir(parents=True, exist_ok=True)
+
+    if mktmp_src.exists():
+        dest = dest_bin / "mktmp.sh"
+        shutil.copy2(src=mktmp_src, dst=dest)
+        dest.chmod(0o755)
+
+
+def session_guidance() -> None:
+    """Output session-guidance.md as additionalContext (SessionStart hook)."""
+    plugin_root = Path(__file__).parents[3]
+    guidance_file = plugin_root / "hooks" / "scripts" / "session-guidance.md"
+
+    if not guidance_file.exists():
+        sys.exit(0)
+
+    content = guidance_file.read_text()
+    escaped = _escape_for_json(s=content)
+    print(
+        '{"hookSpecificOutput":{"hookEventName":"SessionStart",'
+        f'"additionalContext":"{escaped}"}}}}'
+    )
+
+
+def session_git_aliases() -> None:
+    """Check git branch-comparison aliases and report status (SessionStart hook)."""
+    aliases = [
+        "develop-log",
+        "develop-diff",
+        "develop-rebase",
+        "autosquash-develop",
+        "development-log",
+        "development-diff",
+        "development-rebase",
+        "autosquash-development",
+        "trunk-log",
+        "trunk-diff",
+        "trunk-rebase",
+        "autosquash-trunk",
+        "main-log",
+        "main-diff",
+        "main-rebase",
+        "autosquash-main",
+        "master-log",
+        "master-diff",
+        "master-rebase",
+        "autosquash-master",
+    ]
+
+    missing = []
+    present = []
+    for alias in aliases:
+        if _run_git("config", "--get", f"alias.{alias}"):
+            present.append(alias)
+        else:
+            missing.append(alias)
+
+    if not missing:
+        print(f"Git aliases available: {' '.join(present)}")
+        print("Use `git {base}-log`, `git {base}-diff`, `git {base}-rebase`")
+        print("instead of $(git merge-base ...) to avoid permission prompts.")
+    else:
+        print(f"Git aliases missing: {' '.join(missing)}")
+        if present:
+            print(f"Git aliases available: {' '.join(present)}")
+        print("Run the git-alias-setup skill (/Dev10x:git-alias-setup) to configure them.")
+
+
+def _build_migration_replacements(
+    *,
+    plugin_root: Path,
+    home: str,
+) -> list[tuple[str, str]]:
+    version_parent = plugin_root.parent
+    current_abs = str(plugin_root) + "/"
+    current_tilde = current_abs.replace(home, "~")
+
+    replacements: list[tuple[str, str]] = []
+    try:
+        children = sorted(version_parent.iterdir())
+    except OSError:
+        return replacements
+
+    for child in children:
+        if not child.is_dir() or child == plugin_root:
+            continue
+        old_abs = str(child) + "/"
+        old_tilde = old_abs.replace(home, "~")
+        replacements.append((old_abs, current_abs))
+        replacements.append((old_tilde, current_tilde))
+
+    return replacements
+
+
+def _migrate_rules(
+    *,
+    rules: list[str],
+    replacements: list[tuple[str, str]],
+) -> tuple[list[str], int]:
+    migrated = 0
+    result = []
+    for rule in rules:
+        new_rule = rule
+        for old, new in replacements:
+            if old in rule:
+                new_rule = rule.replace(old, new)
+                migrated += 1
+                break
+        result.append(new_rule)
+    return result, migrated
+
+
+def _deduplicate_rules(rules: list[str]) -> list[str]:
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for rule in rules:
+        if rule not in seen:
+            seen.add(rule)
+            deduped.append(rule)
+    return deduped
+
+
+def session_migrate_permissions() -> None:
+    """Migrate stale plugin permission rules to current version (SessionStart hook).
+
+    Only runs when installed via plugin cache (not --plugin-dir).
+    """
+    plugin_root = Path(__file__).parents[3]
+
+    if "plugins/cache/" not in str(plugin_root):
+        sys.exit(0)
+
+    home_path = Path.home()
+    home = str(home_path)
+    replacements = _build_migration_replacements(plugin_root=plugin_root, home=home)
+    if not replacements:
+        sys.exit(0)
+
+    settings_files = [
+        f
+        for f in [
+            home_path / ".claude" / "settings.json",
+            home_path / ".claude" / "settings.local.json",
+        ]
+        if f.exists()
+    ]
+
+    total_migrated = 0
+    files_changed: list[str] = []
+
+    for settings_file in settings_files:
+        try:
+            settings = json.loads(settings_file.read_text())
+        except (json.JSONDecodeError, OSError):
+            continue
+
+        permissions = settings.get("permissions", {})
+        changed = False
+        for key in ("allow", "deny"):
+            raw = permissions.get(key, [])
+            if not raw:
+                continue
+            new_rules, count = _migrate_rules(rules=raw, replacements=replacements)
+            new_rules = _deduplicate_rules(rules=new_rules)
+            total_migrated += count
+            if count:
+                permissions[key] = new_rules
+                changed = True
+
+        if changed:
+            try:
+                settings_file.write_text(json.dumps(settings, indent=2) + "\n")
+            except OSError:
+                continue
+            files_changed.append(settings_file.name)
+
+    if total_migrated > 0:
+        files_str = ", ".join(files_changed)
+        print(
+            f"Migrated {total_migrated} stale permission rule(s) "
+            f"to current plugin version in {files_str}"
+        )
