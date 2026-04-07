@@ -1,0 +1,16 @@
+IMPLEMENTATION NOTE: Lessons Learned from PR #751
+
+The following files need to be created to complete this PR:
+
+1. .claude/rules/hook-state-schema.md
+   - Pattern documentation for hooks that write JSON state
+   - Content provided in pr_body.md
+
+2. .claude/rules/hook-patterns.md
+   - Verification guidance for Python-shell hook equivalence
+   - Content provided in pr_body.md
+
+Full PR description and file contents are in .claude-output/pr_body.md
+
+These files require approval to create due to permission system restrictions
+on sensitive configuration files.
