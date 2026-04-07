@@ -284,3 +284,32 @@ class TestQueryFunctionSuccess:
             query(database=db_alias, sql="SELECT 1")
 
         assert mock_run_script.call_count == 4
+
+
+class TestServerDbWrapper:
+    """Test async query wrapper in server_db delegates to dev10x.mcp.db."""
+
+    @pytest.mark.asyncio
+    @patch("dev10x.mcp.db.run_script")
+    async def test_async_query_delegates_to_db_module(self, mock_run_script: MagicMock) -> None:
+        from dev10x.mcp.server_db import query
+
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_result.stdout = json.dumps({"columns": ["id"], "rows": [[1]], "row_count": 1})
+        mock_run_script.return_value = mock_result
+
+        result = await query(database="pp", sql="SELECT 1")
+
+        assert result.get("row_count") == 1
+        mock_run_script.assert_called_once()
+
+    @pytest.mark.asyncio
+    @patch("dev10x.mcp.db.run_script")
+    async def test_async_query_blocks_write_statements(self, mock_run_script: MagicMock) -> None:
+        from dev10x.mcp.server_db import query
+
+        result = await query(database="pp", sql="DROP TABLE users")
+
+        assert result.get("blocked") is True
+        mock_run_script.assert_not_called()

@@ -5,6 +5,7 @@ on:
     branches: [develop]
     paths:
       - "servers/**"
+      - "src/dev10x/mcp/**"
       - "tests/mcp/**"
       - "pyproject.toml"
       - ".github/workflows/pytest-servers.yml"
@@ -12,6 +13,7 @@ on:
     branches: [develop]
     paths:
       - "servers/**"
+      - "src/dev10x/mcp/**"
       - "tests/mcp/**"
       - "pyproject.toml"
       - ".github/workflows/pytest-servers.yml"
@@ -36,6 +38,6 @@ jobs:
 
       - name: Run server tests with coverage
         run: |
-          uv run --extra dev pytest tests/mcp/ -v --tb=short \
-            -o 'addopts=' --cov=servers --cov-report=term-missing \
-            --cov-fail-under=80
+          uv run --extra dev pytest tests/mcp/ src/dev10x/mcp/tests/ -v --tb=short \
+            -o 'addopts=' --cov=src/dev10x/mcp --cov-config=.coveragerc-servers \
+            --cov-report=term-missing --cov-fail-under=80
