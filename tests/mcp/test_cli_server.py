@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 # Import the server module — needs mcp available
-cli_server = pytest.importorskip("cli_server", reason="mcp not installed")
+cli_server = pytest.importorskip("dev10x.mcp.server_cli", reason="mcp not installed")
 
 # GitHub tools extracted to dev10x.mcp.github
 gh = pytest.importorskip("dev10x.mcp.github", reason="dev10x not installed")
