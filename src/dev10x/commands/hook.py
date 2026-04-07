@@ -172,3 +172,35 @@ def session_compact_cmd() -> None:
     from dev10x.hooks.session import context_compact
 
     context_compact()
+
+
+@session.command(name="tmpdir")
+def session_tmpdir_cmd() -> None:
+    """Create session scratch directory and install mktmp.sh (SessionStart hook)."""
+    from dev10x.hooks.session import session_tmpdir
+
+    session_tmpdir()
+
+
+@session.command(name="guidance")
+def session_guidance_cmd() -> None:
+    """Output session-guidance.md as additionalContext (SessionStart hook)."""
+    from dev10x.hooks.session import session_guidance
+
+    session_guidance()
+
+
+@session.command(name="git-aliases")
+def session_git_aliases_cmd() -> None:
+    """Check git branch-comparison aliases and report status (SessionStart hook)."""
+    from dev10x.hooks.session import session_git_aliases
+
+    session_git_aliases()
+
+
+@session.command(name="migrate-permissions")
+def session_migrate_permissions_cmd() -> None:
+    """Migrate stale plugin permission rules to current version (SessionStart hook)."""
+    from dev10x.hooks.session import session_migrate_permissions
+
+    session_migrate_permissions()
