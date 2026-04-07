@@ -3,6 +3,68 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.50.0 — Fanout Safety & CI Overrides
+
+Released 2026-04-07
+
+### Features
+
+- **Allow user override for infrastructure CI failures** — users
+  can bypass infrastructure-only CI failures when appropriate
+  ([GH-730])
+
+### Fixes
+
+- **Enforce fanout audit, monitor, and fixup safety** — fanout
+  skill validates audit completion, monitors, and fixup commits
+  before proceeding ([GH-724])
+- **Enforce Check 1b in gh-pr-merge** — merge gate validates
+  all required checks before allowing merge ([GH-728])
+- **Prevent play step collapsing in work-on** — work-on skill
+  preserves individual play steps during execution ([GH-729])
+- **Prevent CI actions from running on merged PRs** — CI
+  workflows skip already-merged pull requests ([GH-721])
+
+### Tooling
+
+- **Enable direct invocation of entry-point scripts** — scripts
+  can be called directly without wrapper commands ([GH-732])
+- **Update partner name in marketplace configuration** — align
+  marketplace metadata with current branding
+
+### Tests
+
+- **Prevent script permission regressions** — test coverage for
+  script file permissions ([GH-731])
+
+## 0.49.0 — Cross-Context Auditing & Review Coverage
+
+Released 2026-04-06
+
+### Features
+
+- **Ensure reviewers flag new classes without tests** — code
+  review agents detect untested new classes ([GH-704])
+- **Enable cross-context query detection in audits** — skill
+  audit detects queries spanning multiple contexts ([GH-713])
+
+### Fixes
+
+- **Resolve plugin install failure from invalid key** — fix
+  invalid configuration key blocking plugin installation
+  ([GH-723])
+- **Align phase selection spec with Phase I addition** — phase
+  selection matches updated phase definitions ([GH-713])
+- **Resolve batch review findings from 6 PRs** — address
+  accumulated review findings across multiple PRs ([GH-709])
+
+### Documentation
+
+- **Document merge_mode and merge_strategy config** — add
+  configuration reference for merge behavior options ([GH-707])
+- **Clarify reference file discoverability and template
+  guidance** — improve documentation for reference files
+
 ## 0.48.0 — Playbook Modes & Merge Safety
 
 Released 2026-04-05
