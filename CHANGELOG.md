@@ -3,6 +3,27 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.52.0 — Marketplace & Repo Migration
+
+Released 2026-04-07
+
+### Refactoring
+
+- **Standardize JSON format for marketplace name** — align
+  marketplace.json naming convention to hyphenated format
+  (Dev10x-Guru)
+
+## 0.51.0 — Repository Migration
+
+Released 2026-04-07
+
+### Infrastructure
+
+- **Migrate repo references to Dev10x-Guru/dev10x-claude** —
+  update all installation instructions, plugin manifests, code
+  paths, tests, and documentation to reflect the new repository
+  location
+
 ## 0.50.0 — Fanout Safety & CI Overrides
 
 Released 2026-04-07
