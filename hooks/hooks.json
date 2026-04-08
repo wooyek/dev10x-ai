@@ -7,22 +7,22 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/session-start-git-aliases.sh",
+            "command": "uv run --project $CLAUDE_PLUGIN_ROOT dev10x hook session git-aliases",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/session-start-tmpdir.sh",
+            "command": "uv run --project $CLAUDE_PLUGIN_ROOT dev10x hook session tmpdir",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/session-start-guidance.sh",
+            "command": "uv run --project $CLAUDE_PLUGIN_ROOT dev10x hook session guidance",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PLUGIN_ROOT/hooks/scripts/session-start-migrate-permissions.py",
+            "command": "uv run --project $CLAUDE_PLUGIN_ROOT dev10x hook session migrate-permissions",
             "timeout": 10
           },
           {
@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/skill-tmpdir.sh",
+            "command": "uv run --project $CLAUDE_PLUGIN_ROOT dev10x hook skill tmpdir",
             "timeout": 5
           }
         ]
@@ -71,12 +71,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/session-stop-goodbye.sh",
+            "command": "uv run --project $CLAUDE_PLUGIN_ROOT dev10x hook session goodbye",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/session-stop-persist.sh",
+            "command": "uv run --project $CLAUDE_PLUGIN_ROOT dev10x hook session persist",
             "timeout": 5
           }
         ]
@@ -112,7 +112,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/skill-metrics.sh",
+            "command": "uv run --project $CLAUDE_PLUGIN_ROOT dev10x hook skill metrics",
             "timeout": 3
           }
         ]
@@ -122,7 +122,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/ruff-format-python.sh",
+            "command": "uv run --project $CLAUDE_PLUGIN_ROOT dev10x hook ruff-format",
             "timeout": 15
           }
         ]

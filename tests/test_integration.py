@@ -222,7 +222,6 @@ HOOK_SCRIPTS = [
     "hooks/scripts/validate-bash-command.py",
     "hooks/scripts/validate-edit-write.py",
     "hooks/scripts/task-plan-sync.py",
-    "hooks/scripts/session-start-migrate-permissions.py",
 ]
 
 SKILL_SCRIPTS_WITH_SRC_IMPORTS = [
