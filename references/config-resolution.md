@@ -34,7 +34,10 @@ Shipped with the plugin. Used when no user override exists.
 ## Project Mapping Format
 
 Global config files (Tier 2) use a `projects` list with glob
-matching on the repo's `nameWithOwner` (e.g., `tiretutorinc/tt-pos`):
+matching on the repo's `nameWithOwner` (e.g., `tiretutorinc/tt-pos`).
+Match uses standard Unix glob syntax (`fnmatch`): `*` matches any
+string, `?` matches a single character, `[seq]` matches any character
+in *seq*.
 
 ```yaml
 projects:
