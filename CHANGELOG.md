@@ -3,6 +3,52 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.54.0 — Hook Consolidation & Lazy Imports
+
+Released 2026-04-08
+
+### Features
+
+- **Enable SessionStart hooks via dev10x hook session** — unified
+  hook entry point for session startup ([GH-741])
+- **Enable SessionStop hooks via dev10x hook session** — unified
+  hook entry point for session teardown ([GH-742])
+- **Enable Skill and PostToolUse hooks via dev10x hook** — unified
+  hook entry point for tool-use lifecycle ([GH-743])
+- **Centralize config into ~/.claude/memory/Dev10x** — single
+  location for all plugin configuration ([GH-726])
+
+### Performance
+
+- **Defer heavy imports to command invocation** — lazy-load
+  expensive modules to reduce CLI startup time ([GH-746])
+
+### Refactoring
+
+- **Enable cli_server as thin uv shim** — reduce server startup
+  overhead with lightweight wrapper ([GH-744])
+- **Enable db_server as thin uv shim** — reduce server startup
+  overhead with lightweight wrapper ([GH-745])
+
+### Fixes
+
+- **Resolve hook failures on systems without PyYAML** — graceful
+  fallback when optional dependency is missing ([GH-766])
+- **Prevent false positive on explicit JSONL path** — path
+  validation no longer flags valid JSONL files ([GH-762])
+
+### Documentation
+
+- **Clarify glob pattern syntax in config-resolution** — improve
+  examples for file matching patterns ([GH-757])
+
+### Tests
+
+- **Enable CLI startup time benchmarking** — measure and track
+  startup performance regressions ([GH-749])
+- **Enable server tests to measure mcp package coverage** —
+  expanded test coverage for MCP servers ([GH-745])
+
 ## 0.52.0 — Marketplace & Repo Migration
 
 Released 2026-04-07
