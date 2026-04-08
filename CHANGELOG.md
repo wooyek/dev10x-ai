@@ -3,6 +3,43 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.55.0 — Merge Safety & Skill Guardrails
+
+Released 2026-04-08
+
+### Features
+
+- **Resolve skill-audit findings across 5 skills** — address
+  accumulated audit findings for improved compliance ([GH-760])
+- **Preserve fixup commit links after grooming** — groom no
+  longer drops fixup commit references from PR threads ([GH-777])
+- **Strengthen skill delegation guardrails** — prevent agents
+  from bypassing skill orchestration contracts ([GH-759])
+- **Prevent undetected cd+git chaining** — hook now catches
+  cd-then-git patterns that break allow rules ([GH-763])
+- **Prevent false positives on skill-required rules** — permission
+  auditor no longer flags rules that skills actively need ([GH-790])
+- **Enable publisher rename in permission paths** — update-paths
+  handles publisher directory renames correctly ([GH-791])
+
+### Refactoring
+
+- **Enable single-source hook implementations** — consolidate
+  12 standalone hook scripts into dev10x CLI subcommands ([GH-748])
+
+### Fixes
+
+- **Prevent false green on draft-to-ready** — CI monitor now
+  re-checks status after PR transitions from draft ([GH-774])
+- **Prevent orchestrator from pre-empting groom** — merge skill
+  waits for groom completion before proceeding ([GH-776])
+- **Prevent inline CI polling in merge skill** — delegates
+  polling to monitor agent instead of inline loops ([GH-775])
+- **Prevent merge failure in worktree setups** — gh pr merge
+  now uses --repo flag in worktree contexts ([GH-773])
+- **Prevent CI check cascade failure** — handle partial check
+  results without aborting the entire merge flow ([GH-772])
+
 ## 0.54.0 — Hook Consolidation & Lazy Imports
 
 Released 2026-04-08
