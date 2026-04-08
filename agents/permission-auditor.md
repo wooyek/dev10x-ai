@@ -48,9 +48,10 @@ Classify every allow rule into risk categories:
 
 | Category | Criteria | Example |
 |----------|----------|---------|
-| **DESTRUCTIVE** | Permits irreversible operations | `Bash(git reset:*)` allows `--hard` |
+| **DESTRUCTIVE** | Permits irreversible operations with no skill coverage | `Bash(rm -rf:*)` allows recursive deletion |
 | **OVERLY_BROAD** | Single rule covers destructive + safe operations | `Bash(gh:*)` covers `gh repo delete` |
 | **CONTRADICTS_POLICY** | Rule conflicts with CLAUDE.md instructions | `git config:*` when CLAUDE.md says "NEVER update git config" |
+| **SKILL_REQUIRED** | Rule enables skill/worktree workflows — must not be removed | `Bash(git reset:*)` for rebase recovery in worktrees |
 | **HOOK_ENABLED** | Allow rule exists so a PreToolUse hook can fire its redirect message | `Bash(git push:*)` enabled for SkillRedirectValidator |
 | **DEAD_RULE** | Rule is overridden by a hook AND the hook does not depend on the allow rule to fire | `python3 -c "import json:*"` blocked by `block-python3-inline.py` |
 | **WILDCARD_ESCAPE** | Variable prefix acts as wildcard for any command | `Bash(VARNAME=:*)` matches `VARNAME=x; rm -rf /` |
@@ -89,6 +90,21 @@ For each allow rule classified as non-SAFE, determine if the issue is **structur
 - `DEAD_RULE`: Hook blocks what the rule permits (hook does not depend on the allow rule)
 - `HOOK_ENABLED`: Allow rule enables a hook's redirect message — do NOT recommend removal
 
+### Known-Safe Patterns (Skip List)
+
+These allow rules are legitimate and must NOT be flagged as
+DESTRUCTIVE, OVERLY_BROAD, or CONTRADICTS_POLICY:
+
+| Pattern | Classification | Rationale |
+|---------|---------------|-----------|
+| `Bash(git reset:*)` | SKILL_REQUIRED | Worktree rebase recovery needs `--hard`; skills gate destructive usage |
+| `Bash(git reset --hard:*)` | SKILL_REQUIRED | Explicit variant of above — same rationale |
+| `Bash(git reset --soft:*)` | SAFE | Non-destructive; moves HEAD only |
+| `Bash(git -C:*)` | SKILL_REQUIRED | Cross-repo targeting when CWD is a different worktree; CLAUDE.md forbids redundant `-C` (when CWD matches), not all `-C` usage |
+
+When encountering these patterns during Phase 3, classify them
+per the table above — do not escalate to HIGH/CRITICAL.
+
 ### Phase 5: Deny Rule Gap Analysis
 
 Check for missing protection on known destructive operations.
@@ -111,7 +127,7 @@ dangerous-looking operations (e.g., `Dev10x:git` needs force-push,
 
 | Operation | Recommendation | Rationale |
 |-----------|---------------|-----------|
-| `git reset --hard` | **ask** | No hook covers it; skills may need it for rebase recovery |
+| `git reset --hard` | **skip** | Skills use for rebase recovery in worktrees (SKILL_REQUIRED) |
 | `git checkout .` / `git restore .` | **ask** | Dangerous but not never-legitimate |
 | `git clean` | **ask** | Rarely legitimate, but not never |
 | `git push --force` (bare) | **ask** | `Dev10x:git` handles with branch checks |
