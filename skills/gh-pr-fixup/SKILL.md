@@ -136,6 +136,14 @@ this comment:
    step, even for single-line fixes. Code changes across bounded
    contexts can break invariants that only tests catch.
 
+   **Exception for non-testable files (GH-759 F4):** Changes to
+   infrastructure files that have no applicable test suite may
+   skip test execution with a note explaining why. Non-testable
+   file types include: `.yml`/`.yaml` (CI workflows, config),
+   `.md` (documentation, SKILL.md), `.toml` (pyproject, config),
+   `Dockerfile`, `.json` (settings, manifests). When skipping,
+   note: "Tests skipped: non-testable infrastructure file."
+
    **REQUIRED: Delegate to `Skill(Dev10x:py-test)` for Python
    projects — never run pytest inline.** The skill enforces
    coverage checks that bare `pytest -x` commands bypass. This

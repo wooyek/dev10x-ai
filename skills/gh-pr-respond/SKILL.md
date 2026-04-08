@@ -18,6 +18,7 @@ allowed-tools:
   - Skill(Dev10x:git-groom)
   - Skill(Dev10x:gh-pr-monitor)
   - Skill(Dev10x:git)
+  - Skill(Dev10x:gh-pr-merge)
 ---
 
 # Respond to PR Review Comments
@@ -113,6 +114,8 @@ step description. If you see that marker, you MUST call the
    for "obviously invalid" or bot-generated comments (GH-463)
 9. Pre-action checkpoint: BEFORE any `Edit` or `git commit` on
    a reviewed file, verify a `Skill()` call preceded it
+10. Merge: `Skill(Dev10x:gh-pr-merge)` — NEVER inline
+    `gh pr merge` (GH-759 F3)
 
 ## Overview
 
@@ -181,6 +184,12 @@ Before processing comments, verify the PR branch is accessible
 from the current working directory. In multi-worktree setups, the
 PR branch may live in a different worktree than the active CWD.
 
+**Step 0: Ensure worktree tool availability.**
+Call `ToolSearch("select:EnterWorktree")` before any worktree
+detection. If unavailable, warn and stop — do NOT silently fall
+back to `git -C` (GH-759 F1). The `git -C` fallback cascades
+across nested skills, breaking allow-rule matching.
+
 1. Extract the PR branch name:
    ```bash
    gh pr view {pr_number} --repo {owner}/{repo} --json headRefName -q .headRefName
@@ -191,10 +200,8 @@ PR branch may live in a different worktree than the active CWD.
    ```
 3. If the current branch does NOT match the PR branch:
    - Check `git worktree list` for the PR branch
-   - If found in another worktree, warn: "PR branch
-     `{branch}` is checked out in `{worktree_path}`, not
-     the current directory. Switch to that worktree or use
-     `EnterWorktree` before proceeding."
+   - If found in another worktree, use `EnterWorktree` to
+     switch context. Do NOT use `git -C` as a workaround.
    - If not found anywhere, check it out:
      `git checkout {branch}`
 
@@ -432,6 +439,14 @@ parallel agents. Each subagent MUST invoke
 `Skill(Dev10x:gh-pr-triage)` — never inline the triage logic
 within the subagent prompt itself (GH-502).
 
+**Mandatory delegation in subagent prompt (GH-759 F2):**
+Include this instruction in every triage subagent prompt:
+"You MUST invoke `Skill(Dev10x:gh-pr-triage)` with the
+comment URL. Never investigate inline or post replies
+directly." Without this explicit instruction, subagents
+bypass the skill and triage inline — 3 of 3 subagents
+did so in the session that produced this finding.
+
 Mark phase transition: `TaskUpdate(taskId=triage_task, status="completed")`
 
 Present the full plan to the user as a table:
@@ -661,7 +676,10 @@ Options:
      Also verify no unresolved review threads remain before
      marking ready.
   5. If CI passes and no new comments → merge via
-     `gh pr merge --squash --delete-branch`
+     `Skill(Dev10x:gh-pr-merge)` — NEVER raw `gh pr merge`
+     (GH-759 F3). The skill validates 8 pre-merge conditions
+     including unaddressed review comments that raw merge
+     bypasses.
 - **"Groom + push only"** — Groom and push, but stop before
   monitoring and merge
 - **"Stop"** — End without pushing
