@@ -262,7 +262,17 @@ Repeat until all CI checks pass:
      checks failed, then fix (see CI Failure Handling below)
    - `"empty"` → GitHub hasn't registered check suites yet.
      Wait 60 seconds and re-run. This is expected immediately
-     after a push.
+     after a push or after converting a draft PR to ready.
+
+   **Draft-to-ready SKIPPED guard (GH-774):** When a draft PR
+   is converted to ready via `gh pr ready`, GitHub marks
+   existing check runs as SKIPPED before new suites start.
+   The script returns `"empty"` when all checks are SKIPPED
+   (non_skipping == 0). This is NOT CI-green — it means
+   GitHub has not registered new check suites yet. The agent
+   MUST loop until at least one non-skipping check appears.
+   A monitor completing in under 60 seconds on a freshly-
+   readied PR is suspect — SKIPPED checks are not terminal.
 
    **Do NOT parse `gh pr checks` text output directly.**
    Always use the script — it handles bucket classification,
