@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "Dev10x",
+      "name": "dev10x",
       "source": "./",
       "description": "67 skills for structured commits, PR lifecycle, branch hygiene, ticket management, task tracking, code review, scoping, and QA automation.",
       "keywords": [
