@@ -69,6 +69,6 @@ When adding a new SkillRedirectValidator entry:
 
 ## References
 
-- [ADR-0003](../doc/adr/0003-allow-rules-as-hook-enablers.md) — decision record
+- [ADR-0003](../docs/adr/0003-allow-rules-as-hook-enablers.md) — decision record
 - `hooks/scripts/bash_validators/skill_redirect.py` — the hook implementation
 - `agents/permission-auditor.md` — audit agent with `HOOK_ENABLED` classification
