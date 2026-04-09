@@ -135,12 +135,11 @@ mcp__claude_ai_Linear__update_issue(
 ```
 
 **JIRA ticket target:**
-Write an ADF payload file, then use the `jira-update.sh` script.
-Note: JIRA integration requires the external `Dev10x:jira` skill.
+Delegate to the `Dev10x:jira` skill for JIRA updates.
 
 1. Use the Write tool to create `/tmp/claude/jira-payload-{TICKET_ID}.json`
    with the JIRA REST API v3 ADF document format
-2. Run: `JIRA_TENANT=<your-jira-tenant> ~/.claude/skills/Dev10x:jira/scripts/jira-update.sh {TICKET_ID} /tmp/claude/jira-payload-{TICKET_ID}.json`
+2. Invoke `Skill(Dev10x:jira)` to apply the payload to the ticket
 
 ### Step 5: Confirm
 

@@ -55,7 +55,7 @@ Determine which tracker to use. Priority:
 |---------|----------|----------------|
 | GitHub | `gh` CLI | `gh issue create` |
 | Linear | Linear MCP | `mcp__claude_ai_Linear__save_issue` |
-| JIRA | `JIRA_TENANT` + keyring | `jira-update.sh` (requires external `Dev10x:jira` skill) |
+| JIRA | `JIRA_TENANT` + keyring | Delegate to `Dev10x:jira` skill |
 
 ## When to Use This Skill
 
@@ -204,11 +204,13 @@ mcp__claude_ai_Linear__save_issue(
 
 **JIRA:**
 
-> Requires the external `Dev10x:jira` skill installed at `~/.claude/skills/`.
+Delegate to the `Dev10x:jira` skill:
 
-```bash
-~/.claude/skills/Dev10x:jira/scripts/jira-update.sh "$TICKET_ID" /tmp/claude/jira-payload.json
 ```
+Skill(Dev10x:jira)
+```
+
+Pass the ticket ID and payload path as arguments.
 
 > Team-specific IDs are documented in the tracker skill (`Dev10x:linear`, `Dev10x:jira`).
 
