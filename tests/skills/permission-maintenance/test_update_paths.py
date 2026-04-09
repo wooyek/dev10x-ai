@@ -5,7 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from dev10x.skills.permission.update_paths import extract_cache_publisher, update_file
+from dev10x.skills.permission.update_paths import (
+    extract_cache_publisher,
+    extract_cache_slug,
+    update_file,
+)
 
 
 class TestExtractCachePublisher:
@@ -208,3 +212,123 @@ class TestUpdateFilePublisher:
 
         assert count == 1
         assert settings_file.read_text() == content
+
+
+class TestExtractCacheSlug:
+    @pytest.mark.parametrize(
+        "plugin_cache,expected",
+        [
+            ("~/.claude/plugins/cache/Dev10x-Guru/dev10x", "dev10x"),
+            ("~/.claude/plugins/cache/Dev10x-Guru/Dev10x", "Dev10x"),
+            ("~/.claude/plugins/cache/WooYek/dev10x-claude", "dev10x-claude"),
+        ],
+    )
+    def test_extracts_slug(self, plugin_cache: str, expected: str) -> None:
+        assert extract_cache_slug(plugin_cache) == expected
+
+    def test_returns_none_for_invalid_path(self) -> None:
+        assert extract_cache_slug("/no/cache/here") is None
+
+    def test_returns_none_for_path_ending_at_publisher(self) -> None:
+        assert extract_cache_slug("~/.claude/plugins/cache/Dev10x-Guru") is None
+
+
+class TestUpdateFileSlug:
+    @pytest.fixture()
+    def settings_file(self, tmp_path: Path) -> Path:
+        return tmp_path / "settings.local.json"
+
+    def test_normalizes_capital_slug_to_lowercase(self, settings_file: Path) -> None:
+        settings_file.write_text(
+            json.dumps(
+                {
+                    "permissions": {
+                        "allow": [
+                            "Bash(~/.claude/plugins/cache/Dev10x-Guru/Dev10x/0.54.0/skills/foo.sh:*)",
+                        ]
+                    }
+                }
+            )
+        )
+
+        count, messages = update_file(
+            settings_file,
+            target_version="0.56.0",
+            target_publisher="Dev10x-Guru",
+            target_slug="dev10x",
+        )
+
+        assert count == 1
+        data = json.loads(settings_file.read_text())
+        rule = data["permissions"]["allow"][0]
+        assert "Dev10x-Guru/dev10x/0.56.0" in rule
+        assert "Dev10x-Guru/Dev10x" not in rule
+
+    def test_normalizes_dev10x_claude_slug(self, settings_file: Path) -> None:
+        settings_file.write_text(
+            json.dumps(
+                {
+                    "permissions": {
+                        "allow": [
+                            "Bash(~/.claude/plugins/cache/Dev10x-Guru/dev10x-claude/0.30.0/scripts/x.sh:*)",
+                        ]
+                    }
+                }
+            )
+        )
+
+        count, messages = update_file(
+            settings_file,
+            target_version="0.56.0",
+            target_publisher="Dev10x-Guru",
+            target_slug="dev10x",
+        )
+
+        assert count == 1
+        data = json.loads(settings_file.read_text())
+        rule = data["permissions"]["allow"][0]
+        assert "Dev10x-Guru/dev10x/0.56.0" in rule
+
+    def test_no_change_when_slug_already_canonical(self, settings_file: Path) -> None:
+        settings_file.write_text(
+            json.dumps(
+                {
+                    "permissions": {
+                        "allow": [
+                            "Bash(~/.claude/plugins/cache/Dev10x-Guru/dev10x/0.56.0/skills/foo.sh:*)",
+                        ]
+                    }
+                }
+            )
+        )
+
+        count, messages = update_file(
+            settings_file,
+            target_version="0.56.0",
+            target_publisher="Dev10x-Guru",
+            target_slug="dev10x",
+        )
+
+        assert count == 0
+
+    def test_slug_message_reported(self, settings_file: Path) -> None:
+        settings_file.write_text(
+            json.dumps(
+                {
+                    "permissions": {
+                        "allow": [
+                            "Bash(~/.claude/plugins/cache/Dev10x-Guru/Dev10x/0.56.0/skills/foo.sh:*)",
+                        ]
+                    }
+                }
+            )
+        )
+
+        _count, messages = update_file(
+            settings_file,
+            target_version="0.56.0",
+            target_publisher="Dev10x-Guru",
+            target_slug="dev10x",
+        )
+
+        assert any("slug: Dev10x -> dev10x" in m for m in messages)

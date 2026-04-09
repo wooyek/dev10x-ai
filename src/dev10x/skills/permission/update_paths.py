@@ -29,7 +29,11 @@ USERSPACE_CONFIG = (
 PLUGIN_CONFIG = (
     Path(__file__).resolve().parents[4] / "skills" / "permission-maintenance" / "projects.yaml"
 )
-PLUGIN_NAMES = r"(?:Dev10x|dev10x-claude)"
+PLUGIN_NAMES = r"(?:Dev10x|dev10x-claude|dev10x)"
+PLUGIN_SLUG_ALIASES: dict[str, str] = {
+    "Dev10x": "dev10x",
+    "dev10x-claude": "dev10x",
+}
 VERSION_PATTERN = re.compile(rf"(plugins/cache/)([^/]+)(/{PLUGIN_NAMES}/)(\d+\.\d+\.\d+)")
 
 
@@ -40,6 +44,16 @@ def extract_cache_publisher(plugin_cache: str) -> str | None:
         if part == "cache" and i >= 2 and parts[i - 1] == "plugins":
             if i + 1 < len(parts):
                 return parts[i + 1]
+    return None
+
+
+def extract_cache_slug(plugin_cache: str) -> str | None:
+    path = Path(plugin_cache).expanduser()
+    parts = list(path.parts)
+    for i, part in enumerate(parts):
+        if part == "cache" and i >= 2 and parts[i - 1] == "plugins":
+            if i + 2 < len(parts):
+                return parts[i + 2]
     return None
 
 
@@ -115,11 +129,13 @@ def update_file(
     target_version: str,
     *,
     target_publisher: str | None = None,
+    target_slug: str | None = None,
     dry_run: bool = False,
 ) -> tuple[int, list[str]]:
     content = path.read_text()
     old_versions: set[str] = set()
     old_publishers: set[str] = set()
+    old_slugs: set[str] = set()
     count = 0
 
     def replacer(match: re.Match) -> str:
@@ -130,6 +146,7 @@ def update_file(
         old_ver = match.group(4)
 
         new_publisher = publisher
+        new_slug = plugin_slug
         new_ver = old_ver
         changed = False
 
@@ -138,6 +155,13 @@ def update_file(
             new_publisher = target_publisher
             changed = True
 
+        if target_slug:
+            current_slug_name = plugin_slug.strip("/")
+            if current_slug_name != target_slug:
+                old_slugs.add(current_slug_name)
+                new_slug = f"/{target_slug}/"
+                changed = True
+
         if old_ver != target_version:
             old_versions.add(old_ver)
             new_ver = target_version
@@ -145,7 +169,7 @@ def update_file(
 
         if changed:
             count += 1
-            return prefix + new_publisher + plugin_slug + new_ver
+            return prefix + new_publisher + new_slug + new_ver
         return match.group(0)
 
     new_content = VERSION_PATTERN.sub(replacer, content)
@@ -161,6 +185,8 @@ def update_file(
     messages = []
     for old_pub in sorted(old_publishers):
         messages.append(f"  publisher: {old_pub} -> {target_publisher}")
+    for old_slug in sorted(old_slugs):
+        messages.append(f"  slug: {old_slug} -> {target_slug}")
     for old_ver in sorted(old_versions):
         messages.append(f"  {old_ver} -> {target_version} ({count} replacements)")
     return count, messages
@@ -333,10 +359,13 @@ def main() -> int:
         return 1
 
     publisher = extract_cache_publisher(config["plugin_cache"])
+    slug = extract_cache_slug(config["plugin_cache"])
     if not args.quiet:
         print(f"Target version: {target}")
         if publisher:
             print(f"Target publisher: {publisher}")
+        if slug:
+            print(f"Target slug: {slug}")
     if args.dry_run and not args.quiet:
         print("(dry run — no files will be modified)\n")
 
@@ -348,6 +377,7 @@ def main() -> int:
             path,
             target,
             target_publisher=publisher,
+            target_slug=slug,
             dry_run=args.dry_run,
         )
         if count > 0:
