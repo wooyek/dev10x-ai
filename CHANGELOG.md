@@ -3,6 +3,69 @@
 All notable changes to the Dev10x Claude Code Plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.56.0 — Concurrency Safety & Context Efficiency
+
+Released 2026-04-09
+
+### New Skills
+
+- **Enable parallel fanout experimentation** — dispatch
+  worktree-isolated agents in parallel to validate newer
+  Claude Code capability assumptions ([GH-781])
+- **Allow maintenance commits to bypass JTBD** — configurable
+  bypass gitmoji set lets changelog/version-bump commits skip
+  outcome-focused title enforcement ([GH-797])
+
+### Improvements
+
+- **Delegate tracker CRUD to background agents** — project-scope
+  and ticket-create offload Linear/GitHub API calls to a haiku
+  agent, returning compact summaries instead of dumping 26k token
+  API responses into context ([GH-842])
+- **Unblock MCP event loop from subprocess calls** — convert all
+  MCP tool handlers to async using asyncio subprocess, eliminating
+  up to 60s blocking during shell execution ([GH-815])
+- **Enable batch thread resolution in PR comments** — resolve
+  all review threads in two GraphQL calls instead of O(2N)
+  sequential calls, avoiding rate limits in large PRs ([GH-828])
+- **Surface lesson-learned guidance from stale PRs** — extract
+  orchestration anti-patterns, test-pattern checks, and hook
+  state documentation from 5 stale draft PRs into rules
+
+### Fixes
+
+- **Enforce named parameter Skill() syntax** — fix positional
+  Skill() calls in ticket-create and ticket-jtbd that caused
+  agent misrouting ([GH-804])
+- **Enforce PR comment resolution in fanout** — Phase 5 now
+  blocks completion until all PR review comments are resolved;
+  per-item check added in Phase 3 ([GH-829])
+- **Prevent plan gate skip at adaptive friction** — clarify
+  that auto-select means execute the recommended option, not
+  skip the approval gate entirely ([GH-808])
+- **Enable portable plugin path in pr-monitor** — replace
+  hardcoded versioned path with ${CLAUDE_PLUGIN_ROOT} variable
+  ([GH-806])
+- **Prevent session state race between sessions** — atomic
+  os.rename() claim prevents two concurrent sessions from
+  reading and deleting the same state file ([GH-816])
+
+### Security
+
+- **Protect settings.json from concurrent writes** — introduce
+  fcntl advisory locking with atomic write-then-rename so
+  concurrent sessions cannot overwrite each other's changes
+  ([GH-817])
+
+### Breaking Changes
+
+- **Isolate codex port to separate repo** — remove codex-skills/
+  directory (45 skill ports), codex install/validate scripts,
+  and docs/codex.md ([GH-678])
+- **Unify documentation under docs/ directory** — ADRs moved
+  from doc/adr/ to docs/adr/; update any external links or
+  scripts referencing the old path ([GH-838])
+
 ## 0.55.0 — Merge Safety & Skill Guardrails
 
 Released 2026-04-08
