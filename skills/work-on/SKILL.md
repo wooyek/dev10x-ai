@@ -137,9 +137,9 @@ argument is classified independently:
 | `https://sentry.io/.../issues/N` | `sentry-issue` | Extract issue ID |
 | `https://*.sentry.io/issues/N` | `sentry-issue` | Extract issue ID |
 | `https://...atlassian.net/browse/XX-N` | `jira-ticket` | Extract ticket ID |
-| `GH-N` | `github-issue` | Route to `detect-tracker.sh` |
-| `TEAM-N` (Linear prefix) | `linear-ticket` | Route to `detect-tracker.sh` |
-| `TT-N` | `jira-ticket` | Route to `detect-tracker.sh` |
+| `GH-N` | `github-issue` | Route to `mcp__plugin_Dev10x_cli__detect_tracker` |
+| `TEAM-N` (Linear prefix) | `linear-ticket` | Route to `mcp__plugin_Dev10x_cli__detect_tracker` |
+| `TT-N` | `jira-ticket` | Route to `mcp__plugin_Dev10x_cli__detect_tracker` |
 | `#N` (bare number) | `github-pr` | Resolve against current repo |
 | Anything else | `note` | Store as free-text context |
 
