@@ -12,6 +12,7 @@ user-invocable: true
 invocation-name: Dev10x:release-notes
 allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/release-notes/scripts/collect-prs.py:*)
+  - mcp__plugin_Dev10x_cli__collect_prs
   - Bash(gh pr view:*)
   - Bash(gh pr list:*)
   - Bash(gh release edit:*)

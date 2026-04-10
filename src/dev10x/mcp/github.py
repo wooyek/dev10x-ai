@@ -493,3 +493,43 @@ async def pr_notify(
         return ok(json.loads(proc.stdout))
     except json.JSONDecodeError:
         return ok({"success": True, "output": proc.stdout.strip()})
+
+
+async def check_top_level_comments(
+    *,
+    pr_number: int,
+    repo: str,
+) -> Result[dict[str, Any]]:
+    result = await async_run_script(
+        "skills/gh-pr-merge/scripts/check-top-level-comments.sh",
+        *repo.split("/"),
+        str(pr_number),
+    )
+    if result.returncode != 0:
+        return err(result.stderr.strip())
+    try:
+        findings = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return err(f"Invalid JSON output: {result.stdout[:200]}")
+    return ok({"findings": findings, "count": len(findings)})
+
+
+async def unresolved_threads(
+    *,
+    repo: str,
+    limit: int = 200,
+) -> Result[dict[str, Any]]:
+    result = await async_run_script(
+        "skills/gh-pr-doctor/scripts/gh-unresolved-threads.py",
+        "--repo",
+        repo,
+        "--limit",
+        str(limit),
+    )
+    if result.returncode != 0:
+        return err(result.stderr.strip())
+    try:
+        prs = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return err(f"Invalid JSON output: {result.stdout[:200]}")
+    return ok({"prs": prs, "count": len(prs)})

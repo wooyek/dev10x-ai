@@ -14,6 +14,7 @@ user-invocable: true
 invocation-name: Dev10x:gh-pr-doctor
 allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-pr-doctor/scripts/:*)
+  - mcp__plugin_Dev10x_cli__unresolved_threads
   - AskUserQuestion
 ---
 
