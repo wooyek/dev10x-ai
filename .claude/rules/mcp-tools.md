@@ -80,6 +80,15 @@ supporting each tool:
 | `plan_sync_set_context` | `cli` | GH-802 | v0.60.0+ |
 | `plan_sync_json_summary` | `cli` | GH-802 | v0.60.0+ |
 | `plan_sync_archive` | `cli` | GH-802 | v0.60.0+ |
+| `check_top_level_comments` | `cli` | GH-807 | v0.60.0+ |
+| `unresolved_threads` | `cli` | GH-807 | v0.60.0+ |
+| `ci_check_status` | `cli` | GH-807 | v0.60.0+ |
+| `update_paths` | `cli` | GH-807 | v0.60.0+ |
+| `collect_prs` | `cli` | GH-807 | v0.60.0+ |
+| `generate_skill_index` | `cli` | GH-807 | v0.60.0+ |
+| `audit_extract_session` | `cli` | GH-807 | v0.60.0+ |
+| `audit_analyze_actions` | `cli` | GH-807 | v0.60.0+ |
+| `audit_analyze_permissions` | `cli` | GH-807 | v0.60.0+ |
 | `query` | `db` | PR #126 | v0.25.0+ |
 
 When adding a new tool, update this table and note any dependencies on

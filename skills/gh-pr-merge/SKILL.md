@@ -15,6 +15,7 @@ allowed-tools:
   - Bash(gh pr checks:*)
   - Bash(gh api graphql:*)
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-pr-merge/scripts/:*)
+  - mcp__plugin_Dev10x_cli__check_top_level_comments
   - Bash(gh repo view:*)
   - Bash(git status:*)
   - Bash(git log:*)

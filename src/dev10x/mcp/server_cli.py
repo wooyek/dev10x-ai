@@ -544,5 +544,246 @@ async def plan_sync_archive() -> dict:
     return await plan_tools.archive()
 
 
+# ── GitHub review tools ────────────────────────────────────────
+
+
+@server.tool()
+async def check_top_level_comments(
+    pr_number: int,
+    repo: str,
+) -> dict:
+    """Check for unaddressed automated review comments on a PR.
+
+    Args:
+        pr_number: PR number to scan
+        repo: Repository in owner/repo format
+
+    Returns:
+        Dictionary with keys: findings (list), count (int)
+    """
+    from dev10x.mcp import github as gh
+
+    return (await gh.check_top_level_comments(pr_number=pr_number, repo=repo)).to_dict()
+
+
+@server.tool()
+async def unresolved_threads(
+    repo: str,
+    limit: int = 200,
+) -> dict:
+    """Scan merged PRs for unresolved review comment threads.
+
+    Args:
+        repo: Repository in owner/repo format
+        limit: Max PRs to scan (default 200)
+
+    Returns:
+        Dictionary with keys: prs (list), count (int)
+    """
+    from dev10x.mcp import github as gh
+
+    return (await gh.unresolved_threads(repo=repo, limit=limit)).to_dict()
+
+
+# ── CI monitoring tools ────────────────────────────────────────
+
+
+@server.tool()
+async def ci_check_status(
+    pr_number: int,
+    repo: str,
+    required_only: bool = False,
+    wait: bool = False,
+    poll_interval: int = 30,
+    initial_wait: int = 60,
+    max_polls: int = 60,
+) -> dict:
+    """Check CI status for a PR and return a structured verdict.
+
+    Args:
+        pr_number: PR number
+        repo: Repository in owner/repo format
+        required_only: Only check required status checks
+        wait: Poll until terminal verdict (green/failing/conflicting)
+        poll_interval: Seconds between polls (default 30)
+        initial_wait: Initial wait before first poll (default 60)
+        max_polls: Maximum number of polls (default 60)
+
+    Returns:
+        Dictionary with verdict, mergeable status, and check details
+    """
+    from dev10x.mcp import monitor as mon
+
+    return await mon.ci_check_status(
+        pr_number=pr_number,
+        repo=repo,
+        required_only=required_only,
+        wait=wait,
+        poll_interval=poll_interval,
+        initial_wait=initial_wait,
+        max_polls=max_polls,
+    )
+
+
+# ── Permission maintenance tools ───────────────────────────────
+
+
+@server.tool()
+async def update_paths(
+    version: str | None = None,
+    dry_run: bool = False,
+    ensure_base: bool = False,
+    generalize: bool = False,
+    init: bool = False,
+    quiet: bool = False,
+) -> dict:
+    """Maintain Dev10x plugin permission settings across projects.
+
+    Args:
+        version: Target version to update to (auto-detects if omitted)
+        dry_run: Preview changes without modifying files
+        ensure_base: Add missing base permissions from projects.yaml
+        generalize: Replace session-specific args with wildcards
+        init: Create userspace config from plugin default
+        quiet: Suppress per-file details
+
+    Returns:
+        Dictionary with keys: success (bool), output (str)
+    """
+    from dev10x.mcp import permission as perm
+
+    return await perm.update_paths(
+        version=version,
+        dry_run=dry_run,
+        ensure_base=ensure_base,
+        generalize=generalize,
+        init=init,
+        quiet=quiet,
+    )
+
+
+# ── Release tools ──────────────────────────────────────────────
+
+
+@server.tool()
+async def collect_prs(
+    repo_path: str,
+    from_tag: str | None = None,
+    to_tag: str | None = None,
+    ticket_pattern: str | None = None,
+) -> dict:
+    """Collect PRs between git tags for release notes.
+
+    Args:
+        repo_path: Path to the git repository
+        from_tag: Start tag (optional)
+        to_tag: End tag (optional)
+        ticket_pattern: Regex override for ticket pattern
+
+    Returns:
+        Dictionary with keys: success (bool), output (str)
+    """
+    from dev10x.mcp import release as rel
+
+    return await rel.collect_prs(
+        repo_path=repo_path,
+        from_tag=from_tag,
+        to_tag=to_tag,
+        ticket_pattern=ticket_pattern,
+    )
+
+
+# ── Skill index tools ─────────────────────────────────────────
+
+
+@server.tool()
+async def generate_skill_index(
+    force: bool = False,
+) -> dict:
+    """Generate SKILLS.md and .skills-menu.txt files.
+
+    Args:
+        force: Regenerate even when cache is fresh
+
+    Returns:
+        Dictionary with keys: success (bool), output (str)
+    """
+    from dev10x.mcp import skill_index as idx
+
+    return await idx.generate_all(force=force)
+
+
+# ── Skill audit tools ─────────────────────────────────────────
+
+
+@server.tool()
+async def audit_extract_session(
+    jsonl_path: str,
+    output_path: str | None = None,
+) -> dict:
+    """Extract a Claude Code JSONL session into readable markdown.
+
+    Args:
+        jsonl_path: Path to the JSONL session file
+        output_path: Optional output file path
+
+    Returns:
+        Dictionary with keys: success (bool), output (str)
+    """
+    from dev10x.mcp import audit
+
+    return await audit.extract_session(
+        jsonl_path=jsonl_path,
+        output_path=output_path,
+    )
+
+
+@server.tool()
+async def audit_analyze_actions(
+    transcript_path: str,
+    output_path: str | None = None,
+) -> dict:
+    """Analyze actions from a session transcript.
+
+    Args:
+        transcript_path: Path to the markdown transcript
+        output_path: Optional output file path
+
+    Returns:
+        Dictionary with keys: success (bool), output (str)
+    """
+    from dev10x.mcp import audit
+
+    return await audit.analyze_actions(
+        transcript_path=transcript_path,
+        output_path=output_path,
+    )
+
+
+@server.tool()
+async def audit_analyze_permissions(
+    transcript_path: str,
+    settings_path: str | None = None,
+    output_path: str | None = None,
+) -> dict:
+    """Analyze permission friction from a session transcript.
+
+    Args:
+        transcript_path: Path to the markdown transcript
+        settings_path: Optional settings.json path
+        output_path: Optional output file path
+
+    Returns:
+        Dictionary with keys: success (bool), output (str)
+    """
+    from dev10x.mcp import audit
+
+    return await audit.analyze_permissions(
+        transcript_path=transcript_path,
+        settings_path=settings_path,
+        output_path=output_path,
+    )
+
+
 def main() -> None:
     server.run()

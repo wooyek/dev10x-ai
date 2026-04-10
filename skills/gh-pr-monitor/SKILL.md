@@ -18,6 +18,8 @@ allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-context/scripts/:*)
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-pr-monitor/scripts/:*)
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/gh-pr-merge/scripts/:*)
+  - mcp__plugin_Dev10x_cli__ci_check_status
+  - mcp__plugin_Dev10x_cli__check_top_level_comments
   - Bash(gh:*)
   - Skill(Dev10x:qa-scope)
   - Skill(Dev10x:request-review)

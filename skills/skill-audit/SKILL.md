@@ -22,6 +22,9 @@ allowed-tools:
   - Edit(~/.claude/**)
   - Edit(/tmp/claude/skill-audit/**)
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/skill-audit/scripts/:*)
+  - mcp__plugin_Dev10x_cli__audit_extract_session
+  - mcp__plugin_Dev10x_cli__audit_analyze_actions
+  - mcp__plugin_Dev10x_cli__audit_analyze_permissions
   - Bash(ls -t ~/.claude/:*)
   - Bash(wc:*)
   - Bash(git config --list:*)

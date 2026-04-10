@@ -16,6 +16,7 @@ user-invocable: true
 invocation-name: Dev10x:upgrade-cleanup
 allowed-tools:
   - Bash(${CLAUDE_PLUGIN_ROOT}/skills/upgrade-cleanup/scripts/:*)
+  - mcp__plugin_Dev10x_cli__update_paths
   - Agent(Dev10x:permission-auditor)
 ---
 
